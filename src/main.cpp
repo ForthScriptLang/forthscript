@@ -18,7 +18,7 @@ int main() {
     heap.insertObject(arr1);
     heap.insertObject(arr2);
 
-    heap.insertRootMarker([&](Heap& heap) { heap.markObject(arr1); });
+    // heap.insertRootMarker([&](Heap& heap) { heap.markObject(arr1); });
 
     heap.collectGarbage();
 

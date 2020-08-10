@@ -56,6 +56,7 @@ void Heap::collectGarbage() {
         if (current->marked) {
             GC_LOG("Object at " << current << " survived");
             current->marked = false;
+            current = current->next;
         } else {
             Object *toDelete = current;
             GC_LOG("Destroying object at " << toDelete);
@@ -66,8 +67,8 @@ void Heap::collectGarbage() {
                 prev->next = current;
             }
             GC_LOG("Destroyed object at " << toDelete);
+            delete toDelete;
         }
-        current = current->next;
     }
     GC_LOG("GC Done");
 }
