@@ -7,10 +7,11 @@
 #include <vector>
 
 struct Object {
-    struct Object *next_to_scan, *next;
+    struct Object *next_to_scan, *next, *prev;
+    size_t referenceCount : 63;
     bool marked : 1;
 
-    virtual void iterateReferences(std::function<void(Object *&)> callback) = 0;
+    virtual Object *addPointedToQueue(struct Object *head) = 0;
     virtual ~Object();
 };
 
@@ -44,13 +45,13 @@ struct String : Object {
     size_t length;
     const char *str;
     virtual ~String();
-    virtual void iterateReferences(std::function<void(Object *&)> callback);
+    virtual Object *addPointedToQueue(struct Object *head);
 };
 
 struct Array : Object {
     std::vector<Value> values;
     virtual ~Array();
-    virtual void iterateReferences(std::function<void(Object *&)> callback);
+    virtual Object *addPointedToQueue(struct Object *head);
 };
 
 String *makeStringObject(const char *str, size_t size);

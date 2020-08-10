@@ -27,13 +27,16 @@ Array *makeArrayObject(Value defaultVal, size_t size) {
     return arr;
 }
 
-void Array::iterateReferences(std::function<void(Object *&)> callback) {
+Object *Array::addPointedToQueue(Object *start) {
+    Object *new_tail = start;
     for (size_t i = 0; i < values.size(); ++i) {
-        if (isHeapType(values[i].type)) {
-            callback(values[i].object);
+        if (isHeapType(values[i].type) && !(values[i].object->marked)) {
+            new_tail->next_to_scan = values[i].object;
+            new_tail = values[i].object;
+            new_tail->marked = true;
         }
     }
+    return new_tail;
 }
 
-void String::iterateReferences(
-    [[maybe_unused]] std::function<void(Object *&)> callback) {}
+Object *String::addPointedToQueue(Object *start) { return start; }

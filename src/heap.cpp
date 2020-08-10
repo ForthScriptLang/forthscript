@@ -23,20 +23,8 @@ void Heap::markObject(Object *obj) {
     Object *queue_tail = obj;
     obj->marked = true;
     while (queue_head != nullptr) {
-        GC_LOG("Searching for references inside " << queue_head << " object");
-        queue_head->iterateReferences([&](Object *&ref) {
-            GC_LOG("Encountered reference to " << ref);
-            if (ref->marked) {
-                GC_LOG("Object at " << ref << " is marked already");
-                return;
-            }
-            GC_LOG("Marking object at " << ref
-                                        << " and adding it to the scan queue");
-            ref->marked = true;
-            queue_tail->next_to_scan = ref;
-            queue_tail = ref;
-        });
-        GC_LOG("Moving to the next object");
+        GC_LOG("Marking object at " << queue_head);
+        queue_tail = queue_head->addPointedToQueue(queue_tail);
         queue_head = queue_head->next_to_scan;
     }
 }
