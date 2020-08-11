@@ -21,6 +21,7 @@ void Heap::markObject(Object *obj) {
     GC_LOG("Started recursive marking from object at " << obj);
     Object *queue_head = obj;
     Object *queue_tail = obj;
+    queue_tail->next_to_scan = nullptr;
     obj->marked = true;
     while (queue_head != nullptr) {
         GC_LOG("Marking object at " << queue_head);
@@ -44,6 +45,7 @@ void Heap::collectGarbage() {
         if (current->marked) {
             GC_LOG("Object at " << current << " survived");
             current->marked = false;
+            current->next_to_scan = nullptr;
             current = current->next;
         } else {
             Object *toDelete = current;
