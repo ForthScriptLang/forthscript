@@ -42,8 +42,7 @@ struct Value {
 };
 
 struct String : Object {
-    size_t length;
-    const char *str;
+    std::u32string str;
     virtual ~String();
     virtual Object *addPointedToQueue(struct Object *head);
 };
@@ -54,5 +53,5 @@ struct Array : Object {
     virtual Object *addPointedToQueue(struct Object *head);
 };
 
-String *makeStringObject(const char *str, size_t size);
+String *makeStringObject(const std::u32string &val);
 Array *makeArrayObject(Value defaultVal, size_t size);

@@ -6,14 +6,13 @@
 
 Object::~Object() {}
 
-String::~String() { free((void *)str); }
+String::~String() {}
 
 Array::~Array() {}
 
-String *makeStringObject(const char *str) {
+String *makeStringObject(const std::u32string &val) {
     String *obj = new String;
-    obj->length = strlen(str);
-    obj->str = strdup(str);
+    obj->str = val;
     obj->marked = false;
     obj->next = obj->next_to_scan = nullptr;
     return obj;
