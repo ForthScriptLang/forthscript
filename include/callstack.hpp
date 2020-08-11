@@ -6,6 +6,7 @@
 
 struct StackFrame {
     bool native;
+    size_t ip;
     Array *code;
     std::u32string name;
 };

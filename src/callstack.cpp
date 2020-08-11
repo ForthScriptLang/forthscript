@@ -16,7 +16,7 @@ bool CallStack::addArrayCallFrame(Array *code, const std::u32string &name) {
     if (frames.size() == recursionLimit) {
         return false;
     }
-    frames.push_back(StackFrame{false, code, name});
+    frames.push_back(StackFrame{false, 0, code, name});
     return true;
 }
 
@@ -24,7 +24,7 @@ bool CallStack::addNativeCallFrame(const std::u32string &name) {
     if (frames.size() == recursionLimit) {
         return false;
     }
-    frames.push_back(StackFrame{true, nullptr, name});
+    frames.push_back(StackFrame{true, 0, nullptr, name});
     return true;
 }
 
