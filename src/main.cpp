@@ -1,3 +1,4 @@
+#include <callstack.hpp>
 #include <dbg.hpp>
 #include <heap.hpp>
 #include <iostream>
@@ -7,7 +8,9 @@
 int main() {
     Heap heap;
     SymbolTable table;
+    CallStack stack(1024);
     table.registerRootMarker(heap);
+    stack.registerRootMarker(heap);
 
     Array* arr1 = makeArrayObject(Value(), 2);
     Array* arr2 = makeArrayObject(Value(), 1);
@@ -44,6 +47,7 @@ int main() {
     heap.collectGarbage();
 
     DBG_ONLY(std::cerr << "==========================" << std::endl);
+    stack.addArrayCallFrame(arr1, U"y");
     table.setVariable(U"y", none);
     heap.collectGarbage();
 
