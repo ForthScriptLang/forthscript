@@ -14,7 +14,7 @@ class SymbolTable {
    public:
     void createScope();
     void declareVariable(const std::u32string& name, Value val);
-    bool setVariable(const std::u32string& name, Value val);
+    void setVariable(const std::u32string& name, Value val);
     Value getVariable(const std::u32string& name);
     void registerRootMarker(Heap& heap);
 };
