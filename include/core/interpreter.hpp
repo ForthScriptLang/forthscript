@@ -1,13 +1,13 @@
 #pragma once
 
-#include <callstack.hpp>
-#include <evalstack.hpp>
+#include <core/callstack.hpp>
+#include <core/evalstack.hpp>
+#include <core/symtable.hpp>
+#include <core/values.hpp>
 #include <functional>
 #include <heap.hpp>
 #include <string>
-#include <symtable.hpp>
 #include <unordered_map>
-#include <values.hpp>
 
 enum class ExecutionResultType { Error, Success };
 enum class ExecutionErrorType {

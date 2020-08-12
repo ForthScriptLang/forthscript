@@ -1,7 +1,7 @@
 #pragma once
 
+#include <core/values.hpp>
 #include <functional>
-#include <values.hpp>
 #include <vector>
 
 #define HEAP_LOG(x) DBG_ONLY(std::cerr << "[ Heap ] " << x << std::endl)

@@ -1,6 +1,6 @@
 #include <assert.h>
 
-#include <interpreter.hpp>
+#include <core/interpreter.hpp>
 
 Interpreter::Interpreter(size_t maxRecursionDepth)
     : callStack(maxRecursionDepth) {
@@ -66,9 +66,8 @@ ExecutionResult Interpreter::callInterpreter(Array* code, bool newScope) {
                     }
                     Value& newTrace = evalStack.stack.back();
                     if (newTrace.type != ValueType::Array) {
-                        return ExecutionResult{
-                            ExecutionResultType::Error,
-                            ExecutionErrorType::TypeError};
+                        return ExecutionResult{ExecutionResultType::Error,
+                                               ExecutionErrorType::TypeError};
                     }
                     topFrame.ip++;
                     if (!callStack.addArrayCallFrame(newTrace.arr,

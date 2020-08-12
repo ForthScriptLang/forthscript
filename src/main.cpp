@@ -1,10 +1,10 @@
-#include <callstack.hpp>
+#include <core/callstack.hpp>
+#include <core/interpreter.hpp>
+#include <core/symtable.hpp>
+#include <core/values.hpp>
 #include <dbg.hpp>
 #include <heap.hpp>
-#include <interpreter.hpp>
 #include <iostream>
-#include <symtable.hpp>
-#include <values.hpp>
 
 int main() {
     Interpreter interp(1024);

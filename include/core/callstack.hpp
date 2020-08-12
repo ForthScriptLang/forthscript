@@ -1,8 +1,8 @@
 #pragma once
 
+#include <core/values.hpp>
 #include <deque>
-#include <heap.hpp>
-#include <values.hpp>
+#include <core/heap.hpp>
 
 struct StackFrame {
     bool native;

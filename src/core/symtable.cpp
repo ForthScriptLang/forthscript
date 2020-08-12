@@ -1,4 +1,4 @@
-#include <symtable.hpp>
+#include <core/symtable.hpp>
 
 void SymbolTable::createScope() {
     declaredInScope.push_back(std::unordered_set<std::u32string>());
