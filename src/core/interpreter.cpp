@@ -45,18 +45,11 @@ ExecutionResult Interpreter::callInterpreter(Array* code, bool newScope) {
             case ValueType::Boolean:
             case ValueType::Numeric:
             case ValueType::String:
-                evalStack.stack.push_back(ins);
-                topFrame.ip++;
-                break;
             case ValueType::Placeholder:
-            case ValueType::Array: {
-                Value newArr;
-                newArr.type = ins.type;
-                newArr.arr = heap.deepCopy(ins.arr);
+            case ValueType::Array:
                 evalStack.stack.push_back(ins);
                 topFrame.ip++;
                 break;
-            }
             case ValueType::Word:
                 if (ins.str->str == U"!" || ins.str->str == U",") {
                     if (evalStack.stack.empty()) {
