@@ -1,51 +1,42 @@
 #include <callstack.hpp>
 #include <dbg.hpp>
 #include <heap.hpp>
+#include <interpreter.hpp>
 #include <iostream>
 #include <symtable.hpp>
 #include <values.hpp>
 
 int main() {
-    Heap heap;
-    SymbolTable table;
-    CallStack stack(1024);
-    table.registerRootMarker(heap);
-    stack.registerRootMarker(heap);
-
-    Array* arr1 = heap.makeArrayObject(Value(), 2);
-    Array* arr2 = heap.makeArrayObject(Value(), 1);
-    String* str = heap.makeStringObject(U"test string");
-
-    Value arr1Pointer;
-    arr1Pointer.arr = arr1;
-    arr1Pointer.type = ValueType::Array;
-
-    Value arr2Pointer;
-    arr2Pointer.arr = arr2;
-    arr2Pointer.type = ValueType::Array;
-
-    Value strPointer;
-    strPointer.str = str;
-    strPointer.type = ValueType::String;
-
-    Value none;
-    none.type = ValueType::Nil;
-
-    arr1->values[0] = arr2Pointer;
-    arr1->values[1] = strPointer;
-
-    arr2->values[0] = arr1Pointer;
-
-    table.createScope();
-    table.declareVariable(U"x", strPointer);
-    table.declareVariable(U"y", arr1Pointer);
-
-    heap.collectGarbage();
-
-    DBG_ONLY(std::cerr << "==========================" << std::endl);
-    stack.addArrayCallFrame(arr1, U"y");
-    table.setVariable(U"y", none);
-    heap.collectGarbage();
-
+    Interpreter interp(1024);
+    Array* code = interp.heap.makeArrayObject(Value(), 3);
+    code->values[0].type = code->values[1].type = ValueType::Numeric;
+    code->values[0].numericValue = code->values[1].numericValue = 2;
+    code->values[2].type = ValueType::Word;
+    code->values[2].str = interp.heap.makeStringObject(U"+");
+    interp.defineNativeWord(U"+", [](Interpreter& interp) {
+        if (interp.evalStack.stack.size() < 2) {
+            return ExecutionResult{ExecutionResultType::Error,
+                                   ExecutionErrorType::EvalStackUnderflow};
+        }
+        Value& first =
+            interp.evalStack.stack[interp.evalStack.stack.size() - 2];
+        Value& second =
+            interp.evalStack.stack[interp.evalStack.stack.size() - 1];
+        if (first.type != ValueType::Numeric &&
+            second.type != ValueType::Numeric) {
+            return ExecutionResult{ExecutionResultType::Error,
+                                   ExecutionErrorType::EvalStackUnderflow};
+        }
+        Value result;
+        result.type = ValueType::Numeric;
+        result.numericValue = first.numericValue + second.numericValue;
+        interp.evalStack.stack.pop_back();
+        interp.evalStack.stack.pop_back();
+        interp.evalStack.stack.push_back(result);
+        return ExecutionResult{ExecutionResultType::Error,
+                               ExecutionErrorType::EvalStackUnderflow};
+    });
+    interp.callInterpreter(code);
+    std::cout << interp.evalStack.stack[0].numericValue << std::endl;
     return 0;
 }
