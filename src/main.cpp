@@ -1,9 +1,9 @@
 #include <core/callstack.hpp>
+#include <core/heap.hpp>
 #include <core/interpreter.hpp>
 #include <core/symtable.hpp>
 #include <core/values.hpp>
 #include <dbg.hpp>
-#include <heap.hpp>
 #include <iostream>
 
 int main() {

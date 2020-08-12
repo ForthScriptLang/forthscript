@@ -2,10 +2,10 @@
 
 #include <core/callstack.hpp>
 #include <core/evalstack.hpp>
+#include <core/heap.hpp>
 #include <core/symtable.hpp>
 #include <core/values.hpp>
 #include <functional>
-#include <heap.hpp>
 #include <string>
 #include <unordered_map>
 

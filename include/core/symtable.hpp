@@ -1,8 +1,8 @@
 #pragma once
 
+#include <core/heap.hpp>
 #include <core/values.hpp>
 #include <deque>
-#include <heap.hpp>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
