@@ -23,11 +23,12 @@ enum class ValueType {
     WordAssign = 129,
     WordDeclare = 130,
     String = 131,
-    Array = 132,
-    Placeholder = 133
+    Array = 388,
+    Placeholder = 389
 };
 
 inline bool isHeapType(ValueType type) { return (((int)(type)) & 128) != 0; }
+inline bool isArrayType(ValueType type) { return (((int)(type)) & 256) != 0; }
 
 struct Value {
     ValueType type;
@@ -52,6 +53,3 @@ struct Array : Object {
     virtual ~Array();
     virtual Object *addPointedToQueue(struct Object *head);
 };
-
-String *makeStringObject(const std::u32string &val);
-Array *makeArrayObject(Value defaultVal, size_t size);

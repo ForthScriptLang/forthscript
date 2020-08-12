@@ -18,4 +18,9 @@ struct Heap {
     void markObject(Object *obj);
     void collectGarbage();
     Heap();
+
+    String *makeStringObject(const std::u32string &val);
+    Array *makeArrayObject(Value defaultVal, size_t size);
+    Array *shallowCopy(Array *other);
+    Array *deepCopy(Array *other);
 };

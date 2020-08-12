@@ -13,12 +13,11 @@ void SymbolTable::declareVariable(const std::u32string& name, Value val) {
     }
 }
 
-bool SymbolTable::setVariable(const std::u32string& name, Value val) {
+void SymbolTable::setVariable(const std::u32string& name, Value val) {
     if (values[name].empty()) {
-        return false;
+        declareVariable(name, val);
     }
     values[name].back() = val;
-    return true;
 }
 
 Value SymbolTable::getVariable(const std::u32string& name) {
