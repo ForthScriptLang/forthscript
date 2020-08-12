@@ -12,9 +12,9 @@ int main() {
     table.registerRootMarker(heap);
     stack.registerRootMarker(heap);
 
-    Array* arr1 = makeArrayObject(Value(), 2);
-    Array* arr2 = makeArrayObject(Value(), 1);
-    String* str = makeStringObject(U"test string");
+    Array* arr1 = heap.makeArrayObject(Value(), 2);
+    Array* arr2 = heap.makeArrayObject(Value(), 1);
+    String* str = heap.makeStringObject(U"test string");
 
     Value arr1Pointer;
     arr1Pointer.arr = arr1;
@@ -35,10 +35,6 @@ int main() {
     arr1->values[1] = strPointer;
 
     arr2->values[0] = arr1Pointer;
-
-    heap.insertObject(arr1);
-    heap.insertObject(arr2);
-    heap.insertObject(str);
 
     table.createScope();
     table.declareVariable(U"x", strPointer);

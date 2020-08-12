@@ -53,8 +53,3 @@ struct Array : Object {
     virtual ~Array();
     virtual Object *addPointedToQueue(struct Object *head);
 };
-
-String *makeStringObject(const std::u32string &val);
-Array *makeArrayObject(Value defaultVal, size_t size);
-Array *duplicateArray(Array *other);
-Array *recursiveCopy(Array *other);
