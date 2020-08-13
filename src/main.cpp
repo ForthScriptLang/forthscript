@@ -1,5 +1,5 @@
+#include <io/parser.hpp>
 #include <iostream>
-#include <parser/parser.hpp>
 
 int main() {
     Heap h;

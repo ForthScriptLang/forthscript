@@ -1,4 +1,4 @@
-#include <parser/lexer.hpp>
+#include <io/lexer.hpp>
 
 enum class LexerState { Undefined, String, Identifier, Number, Comment };
 

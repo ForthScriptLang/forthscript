@@ -1,6 +1,6 @@
-#include <parser/lexer.hpp>
-#include <parser/parser.hpp>
-#include <parser/strings.hpp>
+#include <io/lexer.hpp>
+#include <io/parser.hpp>
+#include <io/strings.hpp>
 #include <stack>
 
 ParseResult parse(const std::u32string &str, Heap &h) {
@@ -77,7 +77,15 @@ ParseResult parse(const std::u32string &str, Heap &h) {
             case LexemeType::String: {
                 Value stringLiteral;
                 stringLiteral.type = ValueType::String;
-                stringLiteral.str = h.makeStringObject(current.val);
+                String *str = convertFromBackslashed(current.val, h);
+                if (str == nullptr) {
+                    result.status = ParseResult::Status::ParserError;
+                    result.description = U"Invalid string literal";
+                    result.errorPos = current.pos;
+                    result.code = nullptr;
+                    return result;
+                }
+                stringLiteral.str = str;
                 topTask.second->values.push_back(stringLiteral);
                 break;
             }
