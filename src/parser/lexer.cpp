@@ -60,8 +60,8 @@ size_t lookupOperator(const std::u32string& str, size_t pos) {
     }
 }
 
-Lexems lex(const std::u32string& str) {
-    Lexems result;
+LexResult lex(const std::u32string& str) {
+    LexResult result;
     result.error = false;
     result.errorPos = 0;
     std::vector<Lexeme>& lexems = result.lexems;
@@ -78,6 +78,7 @@ Lexems lex(const std::u32string& str) {
                     lexeme.type = LexemeType::String;
                     lexeme.val = std::u32string_view(str.data() + bufStart,
                                                      i - bufStart);
+                    lexeme.pos = bufStart;
                     lexems.push_back(lexeme);
                     state = LexerState::Undefined;
                 } else if (current == '\\') {
@@ -92,6 +93,7 @@ Lexems lex(const std::u32string& str) {
                     lexeme.type = identType;
                     lexeme.val = std::u32string_view(str.data() + bufStart,
                                                      i - bufStart);
+                    lexeme.pos = bufStart;
                     lexems.push_back(lexeme);
                     state = LexerState::Undefined;
                     i--;
@@ -103,6 +105,7 @@ Lexems lex(const std::u32string& str) {
                     lexeme.type = LexemeType::Number;
                     lexeme.val = std::u32string_view(str.data() + bufStart,
                                                      i - bufStart);
+                    lexeme.pos = bufStart;
                     lexems.push_back(lexeme);
                     state = LexerState::Undefined;
                     i--;
@@ -126,24 +129,29 @@ Lexems lex(const std::u32string& str) {
                     bufStart = i;
                 } else if (current == U'[') {
                     Lexeme lexeme;
+                    lexeme.pos = i;
                     lexeme.type = LexemeType::OpenSquareBrace;
                     lexems.push_back(lexeme);
                 } else if (current == U']') {
                     Lexeme lexeme;
+                    lexeme.pos = i;
                     lexeme.type = LexemeType::CloseSquareBrace;
                     lexems.push_back(lexeme);
                 } else if (current == U'{') {
                     Lexeme lexeme;
+                    lexeme.pos = i;
                     lexeme.type = LexemeType::OpenCurlyBrace;
                     lexems.push_back(lexeme);
                 } else if (current == U'}') {
                     Lexeme lexeme;
+                    lexeme.pos = i;
                     lexeme.type = LexemeType::CloseCurlyBrace;
                     lexems.push_back(lexeme);
                 } else if (lookupOperator(str, i) != 0) {
                     size_t size = lookupOperator(str, i);
                     Lexeme lexeme;
                     lexeme.type = LexemeType::Word;
+                    lexeme.pos = i;
                     lexeme.val =
                         std::u32string_view(str.data() + bufStart, size);
                     lexems.push_back(lexeme);
@@ -152,6 +160,8 @@ Lexems lex(const std::u32string& str) {
                     if (i == len - 1 || !isValidIdentStart(str[i + 1])) {
                         result.errorPos = i;
                         result.error = true;
+                        result.errorDescription =
+                            U"Missing identifier after $ sign";
                         result.lexems.clear();
                         return result;
                     }
@@ -162,6 +172,8 @@ Lexems lex(const std::u32string& str) {
                     if (i == len - 1 || !isValidIdentStart(str[i + 1])) {
                         result.errorPos = i;
                         result.error = true;
+                        result.errorDescription =
+                            U"Missing identifier after = sign";
                         result.lexems.clear();
                         return result;
                     }
@@ -181,6 +193,8 @@ Lexems lex(const std::u32string& str) {
     switch (state) {
         case LexerState::String:
             result.errorPos = len;
+            result.error = true;
+            result.errorDescription = U"Not terminated string";
             result.lexems.clear();
             return result;
         case LexerState::Identifier: {
@@ -188,6 +202,7 @@ Lexems lex(const std::u32string& str) {
             lexeme.type = LexemeType::Word;
             lexeme.val =
                 std::u32string_view(str.data() + bufStart, len - bufStart);
+            lexeme.pos = bufStart;
             lexems.push_back(lexeme);
             break;
         }
@@ -196,6 +211,7 @@ Lexems lex(const std::u32string& str) {
             lexeme.type = LexemeType::Number;
             lexeme.val =
                 std::u32string_view(str.data() + bufStart, len - bufStart);
+            lexeme.pos = bufStart;
             lexems.push_back(lexeme);
             break;
         }

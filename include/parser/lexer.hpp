@@ -19,12 +19,14 @@ enum class LexemeType {
 struct Lexeme {
     LexemeType type;
     std::u32string_view val;
+    size_t pos;
 };
 
-struct Lexems {
+struct LexResult {
     bool error;
     int64_t errorPos;
+    std::u32string errorDescription;
     std::vector<Lexeme> lexems;
 };
 
-Lexems lex(const std::u32string& str);
+LexResult lex(const std::u32string& str);
