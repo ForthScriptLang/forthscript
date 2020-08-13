@@ -2,6 +2,8 @@
 
 #include <core/values.hpp>
 #include <functional>
+#include <string>
+#include <string_view>
 #include <vector>
 
 #define HEAP_LOG(x) DBG_ONLY(std::cerr << "[ Heap ] " << x << std::endl)
@@ -20,6 +22,7 @@ struct Heap {
     Heap();
 
     String *makeStringObject(const std::u32string &val);
+    String *makeStringObject(const std::u32string_view &val);
     Array *makeArrayObject(Value defaultVal, size_t size);
     Array *shallowCopy(Array *other);
     Array *deepCopy(Array *other);

@@ -74,6 +74,15 @@ String *Heap::makeStringObject(const std::u32string &val) {
     return obj;
 }
 
+String *Heap::makeStringObject(const std::u32string_view &val) {
+    String *obj = new String;
+    obj->str = val;
+    obj->marked = false;
+    obj->next = obj->next_to_scan = nullptr;
+    insertObject(obj);
+    return obj;
+}
+
 Array *Heap::makeArrayObject(Value defaultVal, size_t size) {
     Array *arr = new Array;
     arr->marked = false;

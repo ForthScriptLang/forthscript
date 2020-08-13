@@ -1,10 +1,9 @@
 #include <iostream>
-#include <parser/lexer.hpp>
+#include <parser/parser.hpp>
 
 int main() {
+    Heap h;
     std::u32string toParse = U"[\"iu\"0+]dup 1\"rii\"set_at#hi hello\n!print";
-    Lexems lexems = lex(toParse);
-    for (const auto& lexem : lexems.lexems) {
-        std::cout << (int)lexem.type << "\n";
-    }
+    const std::u32string &asRef = toParse;
+    ParseResult result = parse(asRef, h);
 }
