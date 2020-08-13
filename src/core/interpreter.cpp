@@ -34,7 +34,7 @@ ExecutionResult Interpreter::callInterpreter(Array* code, bool newScope) {
         }
         // if ip is beyond frame size, perform automatic return
         if (topFrame.code->values.size() <= topFrame.ip) {
-            callStack.frames.pop_back();
+            callStack.removeTopCallFrame();
             continue;
         }
         // fetch current instruction
@@ -84,6 +84,7 @@ ExecutionResult Interpreter::callInterpreter(Array* code, bool newScope) {
                     if (result.result != ExecutionResultType::Success) {
                         return result;
                     }
+                    callStack.removeTopCallFrame();
                     topFrame.ip++;
                 } else {
                     evalStack.stack.push_back(
