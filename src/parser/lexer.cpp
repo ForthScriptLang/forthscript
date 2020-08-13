@@ -17,6 +17,49 @@ bool isWhitespace(char32_t val) {
     return val == U' ' || val == U'\t' || val == U'\n' || val == U'\r';
 }
 
+size_t lookupOperator(const std::u32string& str, size_t pos) {
+    switch (str[pos]) {
+        case U'+':
+            return 1;
+        case U'-':
+            return 1;
+        case U'!':
+            if (pos == str.length() - 1) {
+                return 1;
+            } else if (str[pos + 1] == U'=') {
+                return 1;
+            }
+            return 1;
+        case U',':
+            return 1;
+        case U'%':
+            return 1;
+        case U'<':
+            if (pos == str.length() - 1) {
+                return 1;
+            } else if (str[pos + 1] == U'=') {
+                return 2;
+            }
+            return 1;
+        case U'>':
+            if (pos == str.length() - 1) {
+                return 1;
+            } else if (str[pos + 1] == U'=') {
+                return 2;
+            }
+            return 1;
+        case U'=':
+            if (pos == str.length() - 1) {
+                return 0;
+            } else if (str[pos + 1] == U'=') {
+                return 1;
+            }
+            return 0;
+        default:
+            return 0;
+    }
+}
+
 Lexems lex(const std::u32string& str) {
     Lexems result;
     result.error = false;
@@ -24,6 +67,7 @@ Lexems lex(const std::u32string& str) {
     std::vector<Lexeme>& lexems = result.lexems;
     size_t len = str.length();
     size_t bufStart = 0;
+    LexemeType identType;
     LexerState state = LexerState::Undefined;
     for (size_t i = 0; i < len; ++i) {
         char current = str[i];
@@ -45,7 +89,7 @@ Lexems lex(const std::u32string& str) {
             case LexerState::Identifier:
                 if (!isValidIdentChar(current)) {
                     Lexeme lexeme;
-                    lexeme.type = LexemeType::Word;
+                    lexeme.type = identType;
                     lexeme.val = std::u32string_view(str.data() + bufStart,
                                                      i - bufStart);
                     lexems.push_back(lexeme);
@@ -75,6 +119,7 @@ Lexems lex(const std::u32string& str) {
                     bufStart = i;
                 } else if (isValidIdentStart(current)) {
                     state = LexerState::Identifier;
+                    identType = LexemeType::Word;
                     bufStart = i;
                 } else if (current == U'\"') {
                     state = LexerState::String;
@@ -95,6 +140,34 @@ Lexems lex(const std::u32string& str) {
                     Lexeme lexeme;
                     lexeme.type = LexemeType::CloseCurlyBrace;
                     lexems.push_back(lexeme);
+                } else if (lookupOperator(str, i) != 0) {
+                    size_t size = lookupOperator(str, i);
+                    Lexeme lexeme;
+                    lexeme.type = LexemeType::Word;
+                    lexeme.val =
+                        std::u32string_view(str.data() + bufStart, size);
+                    lexems.push_back(lexeme);
+                    i += size - 1;
+                } else if (current == U'$') {
+                    if (i == len - 1 || !isValidIdentStart(str[i + 1])) {
+                        result.errorPos = i;
+                        result.error = true;
+                        result.lexems.clear();
+                        return result;
+                    }
+                    identType = LexemeType::WordDeclare;
+                    state = LexerState::Identifier;
+                    bufStart = ++i;
+                } else if (current == U'=') {
+                    if (i == len - 1 || !isValidIdentStart(str[i + 1])) {
+                        result.errorPos = i;
+                        result.error = true;
+                        result.lexems.clear();
+                        return result;
+                    }
+                    identType = LexemeType::WordAssignment;
+                    state = LexerState::Identifier;
+                    bufStart = ++i;
                 } else if (current == U'#') {
                     state = LexerState::Comment;
                 } else if (!isWhitespace(current)) {

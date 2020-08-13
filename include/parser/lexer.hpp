@@ -11,6 +11,8 @@ enum class LexemeType {
     CloseCurlyBrace,
     Number,
     Word,
+    WordAssignment,
+    WordDeclare,
     String
 };
 
