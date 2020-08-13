@@ -1,9 +1,14 @@
+#include <codecvt>
 #include <io/parser.hpp>
+#include <io/termio.hpp>
 #include <iostream>
+#include <locale>
 
 int main() {
-    Heap h;
-    std::u32string toParse = U"[\"iu\"0+]dup 1\"rii\"set_at#hi hello\n!print";
-    const std::u32string &asRef = toParse;
-    ParseResult result = parse(asRef, h);
+    while (true) {
+        print(U">>> ");
+        std::u32string line = readLine();
+        print(line);
+        print(U"\n");
+    }
 }
