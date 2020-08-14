@@ -6,6 +6,10 @@
 
 void prettyprintNumeric(int64_t val, std::u32string& str,
                         bool firstCall = true) {
+    if (val < 0) {
+        str.push_back(U'-');
+        val *= -1;
+    }
     if (val == 0) {
         if (firstCall) {
             str.push_back(U'0');
