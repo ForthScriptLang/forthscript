@@ -206,7 +206,7 @@ LexResult lex(const std::u32string& str) {
             return result;
         case LexerState::Identifier: {
             Lexeme lexeme;
-            lexeme.type = LexemeType::Word;
+            lexeme.type = identType;
             lexeme.val =
                 std::u32string_view(str.data() + bufStart, len - bufStart);
             lexeme.pos = bufStart;
