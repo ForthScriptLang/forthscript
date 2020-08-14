@@ -30,6 +30,8 @@ size_t lookupOperator(const std::u32string& str, size_t pos) {
                 return 2;
             }
             return 1;
+        case U'@':
+            return 1;
         case U',':
             return 1;
         case U'%':
