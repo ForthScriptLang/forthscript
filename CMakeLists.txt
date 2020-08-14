@@ -1,4 +1,6 @@
-cmake_minimum_required(VERSION 3.5.1)
+cmake_minimum_required(VERSION 3.9.4)
+
+include(CheckIPOSupported)
 
 project(overstacked)
 
@@ -8,7 +10,7 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/build)
 
 # Setting NDEBUG variable
 message(STATUS "Build type selected = ${CMAKE_BUILD_TYPE}")
-if(NOT CMAKE_BUILD_TYPE MATCHES Debug)
+if (CMAKE_BUILD_TYPE MATCHES Release)
 	add_definitions(-DNDEBUG)
 endif()
 
@@ -24,3 +26,12 @@ include_directories(include)
 file(GLOB_RECURSE SOURCES src/*.cpp)
 
 add_executable(overstacked ${SOURCES})
+
+# Enable lto on release
+if (CMAKE_BUILD_TYPE MATCHES Release)
+    check_ipo_supported(RESULT supported OUTPUT error)
+    if ( supported )
+        message(STATUS "LTO builds are supported")
+        set_property(TARGET overstacked PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+    endif()
+endif()
