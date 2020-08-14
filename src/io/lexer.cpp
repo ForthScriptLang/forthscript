@@ -58,7 +58,7 @@ size_t lookupOperator(const std::u32string& str, size_t pos) {
             if (pos == str.length() - 1) {
                 return 0;
             } else if (str[pos + 1] == U'=') {
-                return 1;
+                return 2;
             }
             return 0;
         default:

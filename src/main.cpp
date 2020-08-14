@@ -6,10 +6,16 @@
 #include <iostream>
 #include <locale>
 #include <std/arith.hpp>
+#include <std/comparisons.hpp>
+#include <std/stack.hpp>
 
 int main() {
     Interpreter interp(1024);
+    // initialize standard library
     addArithNativeWords(interp);
+    addComparisonsNativeWords(interp);
+    addStackManipNativeWords(interp);
+
     interp.symTable.createScope();
     while (true) {
         print(U"[");
