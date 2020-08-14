@@ -27,7 +27,7 @@ size_t lookupOperator(const std::u32string& str, size_t pos) {
             if (pos == str.length() - 1) {
                 return 1;
             } else if (str[pos + 1] == U'=') {
-                return 1;
+                return 2;
             }
             return 1;
         case U',':
@@ -125,8 +125,16 @@ LexResult lex(const std::u32string& str) {
                     identType = LexemeType::Word;
                     bufStart = i;
                 } else if (current == U'\"') {
+                    if (i == len - 1) {
+                        result.errorPos = i;
+                        result.error = true;
+                        result.errorDescription =
+                            U"Missing string literal after \"";
+                        result.lexems.clear();
+                        return result;
+                    }
                     state = LexerState::String;
-                    bufStart = i;
+                    bufStart = i + 1;
                 } else if (current == U'[') {
                     Lexeme lexeme;
                     lexeme.pos = i;
@@ -152,8 +160,7 @@ LexResult lex(const std::u32string& str) {
                     Lexeme lexeme;
                     lexeme.type = LexemeType::Word;
                     lexeme.pos = i;
-                    lexeme.val =
-                        std::u32string_view(str.data() + bufStart, size);
+                    lexeme.val = std::u32string_view(str.data() + i, size);
                     lexems.push_back(lexeme);
                     i += size - 1;
                 } else if (current == U'$') {
