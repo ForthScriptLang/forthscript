@@ -67,6 +67,13 @@ std::u32string prettyprint(Value val) {
     while (!tasks.empty()) {
         PrintArrayTask& topTask = tasks.top();
         visited.insert(topTask.first.arr);
+        if (topTask.second == 0) {
+            if (topTask.first.type == ValueType::Array) {
+                result.append(U"[");
+            } else {
+                result.append(U"{");
+            }
+        }
         if (topTask.second >= topTask.first.arr->values.size()) {
             if (topTask.first.type == ValueType::Array) {
                 result.push_back(U']');
@@ -75,28 +82,28 @@ std::u32string prettyprint(Value val) {
             }
             tasks.pop();
             if (!tasks.empty()) {
-                result.push_back(U' ');
+                if (tasks.top().second < tasks.top().first.arr->values.size()) {
+                    result.push_back(U' ');
+                }
             }
             continue;
-        }
-        if (topTask.second == 0) {
-            if (topTask.first.type == ValueType::Array) {
-                result.append(U"[ ");
-            } else {
-                result.append(U"{ ");
-            }
         }
         Value& toPrint = topTask.first.arr->values[topTask.second];
         topTask.second++;
         if (!isArrayType(toPrint.type)) {
             prettyprintPrimitive(toPrint, result);
-            result.push_back(U' ');
+            if (topTask.second < topTask.first.arr->values.size()) {
+                result.push_back(U' ');
+            }
         } else {
             if (visited.find(toPrint.arr) != visited.end()) {
                 if (toPrint.type == ValueType::Placeholder) {
-                    result.append(U"{...} ");
+                    result.append(U"{...}");
                 } else {
-                    result.append(U"[...] ");
+                    result.append(U"[...]");
+                }
+                if (topTask.second < topTask.first.arr->values.size()) {
+                    result.push_back(U' ');
                 }
             } else {
                 tasks.push(PrintArrayTask(toPrint, 0));
