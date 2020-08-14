@@ -12,11 +12,12 @@ void CallStack::registerRootMarker(Heap &heap) {
     });
 }
 
-bool CallStack::addArrayCallFrame(Array *code, const std::u32string &name) {
+bool CallStack::addArrayCallFrame(Array *code, const std::u32string &name,
+                                  bool newScope) {
     if (frames.size() == recursionLimit) {
         return false;
     }
-    frames.push_back(StackFrame{false, 0, code, name});
+    frames.push_back(StackFrame{false, newScope, 0, code, name});
     return true;
 }
 
@@ -24,10 +25,14 @@ bool CallStack::addNativeCallFrame(const std::u32string &name) {
     if (frames.size() == recursionLimit) {
         return false;
     }
-    frames.push_back(StackFrame{true, 0, nullptr, name});
+    frames.push_back(StackFrame{true, false, 0, nullptr, name});
     return true;
 }
 
-void CallStack::removeTopCallFrame() { frames.pop_back(); }
+bool CallStack::removeTopCallFrame() {
+    bool newScope = frames.back().newScope;
+    frames.pop_back();
+    return newScope;
+}
 
 void CallStack::setRecursionLimit(size_t limit) { recursionLimit = limit; }

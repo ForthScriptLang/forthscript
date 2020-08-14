@@ -15,11 +15,7 @@ void Interpreter::defineNativeWord(const std::u32string& name,
 }
 
 ExecutionResult Interpreter::callInterpreter(Array* code, bool newScope) {
-    callStack.addArrayCallFrame(code, U"_start");
-    if (newScope) {
-        symTable.createScope();
-        callStack.addArrayCallFrame(code, U"_start");
-    }
+    callStack.addArrayCallFrame(code, U"_start", newScope);
     while (true) {
         // nothing on the call stack => interpreter can be exited
         if (callStack.frames.empty()) {
@@ -35,7 +31,9 @@ ExecutionResult Interpreter::callInterpreter(Array* code, bool newScope) {
         }
         // if ip is beyond frame size, perform automatic return
         if (topFrame.code->values.size() <= topFrame.ip) {
-            callStack.removeTopCallFrame();
+            if (callStack.removeTopCallFrame()) {
+                symTable.leaveScope();
+            }
             continue;
         }
         // fetch current instruction
@@ -64,8 +62,8 @@ ExecutionResult Interpreter::callInterpreter(Array* code, bool newScope) {
                                                ExecutionErrorType::TypeError};
                     }
                     topFrame.ip++;
-                    if (!callStack.addArrayCallFrame(newTrace.arr,
-                                                     U"<unknown>")) {
+                    if (!callStack.addArrayCallFrame(newTrace.arr, U"<unknown>",
+                                                     ins.str->str == U"!")) {
                         return ExecutionResult{
                             ExecutionResultType::Error,
                             ExecutionErrorType::CallStackOverflow};

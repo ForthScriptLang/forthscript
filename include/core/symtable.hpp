@@ -13,6 +13,7 @@ class SymbolTable {
 
    public:
     void createScope();
+    void leaveScope();
     void declareVariable(const std::u32string& name, Value val);
     void setVariable(const std::u32string& name, Value val);
     Value getVariable(const std::u32string& name);

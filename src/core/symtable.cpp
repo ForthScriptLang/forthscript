@@ -4,6 +4,12 @@ void SymbolTable::createScope() {
     declaredInScope.push_back(std::unordered_set<std::u32string>());
 }
 
+void SymbolTable::leaveScope() {
+    for (const std::u32string& str : declaredInScope.back()) {
+        values[str].pop_back();
+    }
+}
+
 void SymbolTable::declareVariable(const std::u32string& name, Value val) {
     if (declaredInScope.back().find(name) == declaredInScope.back().end()) {
         declaredInScope.back().insert(name);

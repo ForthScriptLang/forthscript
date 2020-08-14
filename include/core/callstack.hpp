@@ -1,11 +1,12 @@
 #pragma once
 
+#include <core/heap.hpp>
 #include <core/values.hpp>
 #include <deque>
-#include <core/heap.hpp>
 
 struct StackFrame {
     bool native;
+    bool newScope;
     size_t ip;
     Array *code;
     std::u32string name;
@@ -17,8 +18,9 @@ struct CallStack {
 
     CallStack(size_t recLimit);
     void registerRootMarker(Heap &heap);
-    bool addArrayCallFrame(Array *code, const std::u32string &name);
+    bool addArrayCallFrame(Array *code, const std::u32string &name,
+                           bool newScope);
     bool addNativeCallFrame(const std::u32string &name);
-    void removeTopCallFrame();
+    bool removeTopCallFrame();
     void setRecursionLimit(size_t limit);
 };
