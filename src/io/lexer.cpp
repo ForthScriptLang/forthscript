@@ -23,6 +23,10 @@ size_t lookupOperator(const std::u32string& str, size_t pos) {
             return 1;
         case U'-':
             return 1;
+        case U'*':
+            return 1;
+        case U'/':
+            return 1;
         case U'!':
             if (pos == str.length() - 1) {
                 return 1;
@@ -193,6 +197,7 @@ LexResult lex(const std::u32string& str) {
                     state = LexerState::Comment;
                 } else if (!isWhitespace(current)) {
                     result.errorPos = i;
+                    result.error = true;
                     result.lexems.clear();
                     return result;
                 }

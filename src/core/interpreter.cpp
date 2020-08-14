@@ -18,6 +18,7 @@ ExecutionResult Interpreter::callInterpreter(Array* code, bool newScope) {
     callStack.addArrayCallFrame(code, U"_start");
     if (newScope) {
         symTable.createScope();
+        callStack.addArrayCallFrame(code, U"_start");
     }
     while (true) {
         // nothing on the call stack => interpreter can be exited
@@ -72,6 +73,7 @@ ExecutionResult Interpreter::callInterpreter(Array* code, bool newScope) {
                     if (ins.str->str == U"!") {
                         symTable.createScope();
                     }
+                    evalStack.stack.pop_back();
                     continue;
                 } else if (nativeWords.find(ins.str->str) !=
                            nativeWords.end()) {
