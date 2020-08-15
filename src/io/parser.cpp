@@ -77,15 +77,15 @@ ParseResult parse(const std::u32string &str, Heap &h) {
             case LexemeType::String: {
                 Value stringLiteral;
                 stringLiteral.type = ValueType::String;
-                String *str = convertFromBackslashed(current.val, h);
-                if (str == nullptr) {
+                String *strObject = convertFromBackslashed(current.val, h);
+                if (strObject == nullptr) {
                     result.status = ParseResult::Status::ParserError;
                     result.description = U"Invalid string literal";
                     result.errorPos = current.pos;
                     result.code = nullptr;
                     return result;
                 }
-                stringLiteral.str = str;
+                stringLiteral.str = strObject;
                 topTask.second->values.push_back(stringLiteral);
                 break;
             }

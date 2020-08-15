@@ -76,7 +76,7 @@ LexResult lex(const std::u32string& str) {
     LexemeType identType;
     LexerState state = LexerState::Undefined;
     for (size_t i = 0; i < len; ++i) {
-        char current = str[i];
+        char32_t current = str[i];
         switch (state) {
             case LexerState::String:
                 if (current == '\"') {
