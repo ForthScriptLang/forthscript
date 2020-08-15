@@ -27,5 +27,6 @@ struct Interpreter {
 
     Interpreter(size_t maxRecursionDepth);
     void defineNativeWord(const std::u32string& name, NativeWord word);
-    ExecutionResult callInterpreter(Array* code, bool newScope = true);
+    ExecutionResult callInterpreter(Array* code, const std::u32string& name,
+                                    bool newScope);
 };

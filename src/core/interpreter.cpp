@@ -14,8 +14,10 @@ void Interpreter::defineNativeWord(const std::u32string& name,
     nativeWords[name] = word;
 }
 
-ExecutionResult Interpreter::callInterpreter(Array* code, bool newScope) {
-    callStack.addArrayCallFrame(code, U"_start", newScope);
+ExecutionResult Interpreter::callInterpreter(Array* code,
+                                             const std::u32string& name,
+                                             bool newScope) {
+    callStack.addArrayCallFrame(code, name, newScope);
     if (newScope) {
         symTable.createScope();
     }

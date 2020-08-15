@@ -1,5 +1,6 @@
 #include <codecvt>
 #include <core/interpreter.hpp>
+#include <io/fileio.hpp>
 #include <io/parser.hpp>
 #include <io/prettyprint.hpp>
 #include <io/termio.hpp>
@@ -8,7 +9,16 @@
 #include <std/arith.hpp>
 #include <std/comparisons.hpp>
 #include <std/controlflow.hpp>
+#include <std/os.hpp>
 #include <std/stack.hpp>
+
+void initStd(Interpreter& interp) {
+    addArithNativeWords(interp);
+    addComparisonsNativeWords(interp);
+    addStackManipNativeWords(interp);
+    addControlFlowNativeWords(interp);
+    addOSModuleNativeWords(interp);
+}
 
 void reportSyntaxError(ParseResult res) {
     if (res.status == ParseResult::Status::LexerError) {
@@ -23,24 +33,19 @@ void reportSyntaxError(ParseResult res) {
 }
 
 void reportRuntimeError(ExecutionResult res, Interpreter& interp) {
-    print(U"Runtime error: ");
-    print(res.error);
-    print(U"\n");
     for (size_t i = 0; i < interp.callStack.frames.size(); ++i) {
         print(U"at <");
         print(interp.callStack.frames[i].name);
         print(U">\n");
     }
+    print(U"Runtime error: ");
+    print(res.error);
+    print(U"\n");
 }
 
-int main() {
+void hostRepl() {
     Interpreter interp(1024);
-    // initialize standard library
-    addArithNativeWords(interp);
-    addComparisonsNativeWords(interp);
-    addStackManipNativeWords(interp);
-    addControlFlowNativeWords(interp);
-
+    initStd(interp);
     interp.symTable.createScope();
     while (true) {
         print(U"[");
@@ -58,11 +63,37 @@ int main() {
             interp.heap.collectGarbage();
             continue;
         }
-        ExecutionResult res = interp.callInterpreter(result.code, false);
+        ExecutionResult res =
+            interp.callInterpreter(result.code, U"repl_start", false);
         if (res.result != ExecutionResultType::Success) {
             reportRuntimeError(res, interp);
             interp.evalStack.stack.clear();
             interp.heap.collectGarbage();
         }
     }
+}
+
+int main(int argc, char** argv) {
+    if (argc < 2) {
+        hostRepl();
+        return 0;
+    }
+    char* filename = argv[1];
+    Interpreter interp(1024);
+    initStd(interp);
+    std::u32string source = readFile(filename);
+    ParseResult result = parse(source, interp.heap);
+    if (result.isError()) {
+        reportSyntaxError(result);
+        interp.heap.collectGarbage();
+        return -1;
+    }
+    ExecutionResult res = interp.callInterpreter(result.code, U"main", false);
+    if (res.result != ExecutionResultType::Success) {
+        reportRuntimeError(res, interp);
+        interp.evalStack.stack.clear();
+        interp.heap.collectGarbage();
+        return -1;
+    }
+    return 0;
 }

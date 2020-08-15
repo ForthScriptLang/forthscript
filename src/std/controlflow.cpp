@@ -17,12 +17,14 @@ ExecutionResult ifElseOp(Interpreter& interp) {
         return ExecutionResult{ExecutionResultType::Error, U"Type error"};
     }
     if (condition.booleanValue) {
-        ExecutionResult res = interp.callInterpreter(ifCodeVal.arr, true);
+        ExecutionResult res =
+            interp.callInterpreter(ifCodeVal.arr, U"if_body", true);
         if (res.result != ExecutionResultType::Success) {
             return res;
         }
     } else {
-        ExecutionResult res = interp.callInterpreter(elseCodeVal.arr, true);
+        ExecutionResult res =
+            interp.callInterpreter(elseCodeVal.arr, U"else_body", true);
         if (res.result != ExecutionResultType::Success) {
             return res;
         }
@@ -45,7 +47,7 @@ ExecutionResult ifOp(Interpreter& interp) {
                                U"Evaluation stack underflow"};
     }
     if (condition.booleanValue) {
-        ExecutionResult res = interp.callInterpreter(ifCodeVal.arr, true);
+        ExecutionResult res = interp.callInterpreter(ifCodeVal.arr, U"", true);
         if (res.result != ExecutionResultType::Success) {
             return res;
         }
@@ -67,7 +69,8 @@ ExecutionResult whileOp(Interpreter& interp) {
         return ExecutionResult{ExecutionResultType::Error, U"Type error"};
     }
     while (true) {
-        ExecutionResult res = interp.callInterpreter(condCode.arr, true);
+        ExecutionResult res =
+            interp.callInterpreter(condCode.arr, U"condition", true);
         if (res.result != ExecutionResultType::Success) {
             return res;
         }
@@ -83,7 +86,7 @@ ExecutionResult whileOp(Interpreter& interp) {
         if (!val.booleanValue) {
             break;
         }
-        res = interp.callInterpreter(loopCode.arr, true);
+        res = interp.callInterpreter(loopCode.arr, U"loop_body", true);
         if (res.result != ExecutionResultType::Success) {
             return res;
         }
@@ -108,7 +111,8 @@ ExecutionResult forOp(Interpreter& interp) {
         return ExecutionResult{ExecutionResultType::Error, U"Type error"};
     }
     while (true) {
-        ExecutionResult res = interp.callInterpreter(condCode.arr, true);
+        ExecutionResult res =
+            interp.callInterpreter(condCode.arr, U"condition", true);
         if (res.result != ExecutionResultType::Success) {
             return res;
         }
@@ -124,11 +128,11 @@ ExecutionResult forOp(Interpreter& interp) {
         if (!val.booleanValue) {
             break;
         }
-        res = interp.callInterpreter(loopCode.arr, true);
+        res = interp.callInterpreter(loopCode.arr, U"loop_body", true);
         if (res.result != ExecutionResultType::Success) {
             return res;
         }
-        res = interp.callInterpreter(iterCode.arr, true);
+        res = interp.callInterpreter(iterCode.arr, U"next_body", true);
         if (res.result != ExecutionResultType::Success) {
             return res;
         }
@@ -140,4 +144,5 @@ void addControlFlowNativeWords(Interpreter& interp) {
     interp.defineNativeWord(U"while", whileOp);
     interp.defineNativeWord(U"if_else", ifElseOp);
     interp.defineNativeWord(U"if", ifOp);
+    interp.defineNativeWord(U"for", forOp);
 }
