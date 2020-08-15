@@ -1,4 +1,7 @@
 #include <core/symtable.hpp>
+#include <dbg.hpp>
+#include <io/termio.hpp>
+#include <iostream>
 
 void SymbolTable::createScope() {
     declaredInScope.push_back(std::unordered_set<std::u32string>());
@@ -11,6 +14,7 @@ void SymbolTable::leaveScope() {
             values.erase(str);
         }
     }
+    declaredInScope.pop_back();
 }
 
 void SymbolTable::declareVariable(const std::u32string& name, Value val) {
