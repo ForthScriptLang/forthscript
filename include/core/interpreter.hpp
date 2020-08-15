@@ -9,7 +9,7 @@
 #include <string>
 #include <unordered_map>
 
-enum class ExecutionResultType { Error, Success };
+enum class ExecutionResultType { Error, Success, Return, Break };
 
 struct ExecutionResult {
     ExecutionResultType result;
