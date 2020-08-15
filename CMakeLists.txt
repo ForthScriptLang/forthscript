@@ -16,7 +16,7 @@ endif()
 
 #Enabling warnings as errors
 if (MSVC)
-    add_compile_options(/W4 /WX)
+    add_compile_options(/W4)
 else()
     add_compile_options(-Wall -Wextra -pedantic -Werror)
 endif()
