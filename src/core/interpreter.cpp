@@ -43,16 +43,22 @@ ExecutionResult Interpreter::callInterpreter(Array* code,
                                            U""};
                 }
                 if (topFrame.ip == 0) {
-                    callStack.frames.pop_back();
+                    if (callStack.removeTopCallFrame()) {
+                        symTable.leaveScope();
+                    }
                     continue;
                 }
                 if (topFrame.code->values.size() == 0) {
-                    callStack.frames.pop_back();
+                    if (callStack.removeTopCallFrame()) {
+                        symTable.leaveScope();
+                    }
                     continue;
                 }
                 const Value& val = topFrame.code->values[topFrame.ip - 1];
                 if (val.type != ValueType::Word) {
-                    callStack.frames.pop_back();
+                    if (callStack.removeTopCallFrame()) {
+                        symTable.leaveScope();
+                    }
                     continue;
                 }
                 if (state == InterpreterState::Breaking) {
