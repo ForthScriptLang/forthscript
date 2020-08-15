@@ -95,7 +95,7 @@ ExecutionResult whileOp(Interpreter& interp) {
 }
 
 ExecutionResult forOp(Interpreter& interp) {
-    if (interp.evalStack.stack.size() < 2) {
+    if (interp.evalStack.stack.size() < 3) {
         return ExecutionResult{ExecutionResultType::Error,
                                U"Evaluation stack underflow"};
     }
