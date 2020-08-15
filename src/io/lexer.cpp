@@ -198,6 +198,7 @@ LexResult lex(const std::u32string& str) {
                 } else if (!isWhitespace(current)) {
                     result.errorPos = i;
                     result.error = true;
+                    result.errorDescription = U"Unexpected symbol";
                     result.lexems.clear();
                     return result;
                 }

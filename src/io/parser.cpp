@@ -119,6 +119,12 @@ ParseResult parse(const std::u32string &str, Heap &h) {
             }
         }
     }
-
+    if (tasks.size() > 1) {
+        result.status = ParseResult::Status::ParserError;
+        result.description = U"Close brackets missing";
+        result.errorPos = str.size();
+        result.code = nullptr;
+        return result;
+    }
     return result;
 }

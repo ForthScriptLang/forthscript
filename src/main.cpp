@@ -10,6 +10,29 @@
 #include <std/controlflow.hpp>
 #include <std/stack.hpp>
 
+void reportSyntaxError(ParseResult res) {
+    if (res.status == ParseResult::Status::LexerError) {
+        print(U"Lexer error at position ");
+    } else {
+        print(U"Parser error at position ");
+    }
+    std::cout << res.errorPos;
+    print(U": ");
+    print(res.description);
+    print(U"\n");
+}
+
+void reportRuntimeError(ExecutionResult res, Interpreter& interp) {
+    print(U"Runtime error: ");
+    print(res.error);
+    print(U"\n");
+    for (size_t i = 0; i < interp.callStack.frames.size(); ++i) {
+        print(U"at <");
+        print(interp.callStack.frames[i].name);
+        print(U">\n");
+    }
+}
+
 int main() {
     Interpreter interp(1024);
     // initialize standard library
@@ -31,13 +54,15 @@ int main() {
         std::u32string s = readLine();
         ParseResult result = parse(s, interp.heap);
         if (result.isError()) {
-            print(U"Meh, error\n");
+            reportSyntaxError(result);
             interp.heap.collectGarbage();
             continue;
         }
         ExecutionResult res = interp.callInterpreter(result.code, false);
         if (res.result != ExecutionResultType::Success) {
-            print(U"Meh, runtime error\n");
+            reportRuntimeError(res, interp);
+            interp.evalStack.stack.clear();
+            interp.heap.collectGarbage();
         }
     }
 }
