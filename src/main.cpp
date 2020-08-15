@@ -11,6 +11,7 @@
 #include <std/controlflow.hpp>
 #include <std/os.hpp>
 #include <std/stack.hpp>
+#include <std/strings.hpp>
 
 void initStd(Interpreter& interp) {
     addArithNativeWords(interp);
@@ -18,6 +19,7 @@ void initStd(Interpreter& interp) {
     addStackManipNativeWords(interp);
     addControlFlowNativeWords(interp);
     addOSModuleNativeWords(interp);
+    addStringManipulationNativeWords(interp);
 }
 
 void reportSyntaxError(ParseResult res) {
