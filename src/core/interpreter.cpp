@@ -63,8 +63,19 @@ ExecutionResult Interpreter::callInterpreter(Array* code,
                         return ExecutionResult{ExecutionResultType::Error,
                                                U"Type error"};
                     }
+                    std::u32string frameName = U"<unknown>";
+                    // fancy method for getting func name
+                    if (topFrame.ip != 0 &&
+                        topFrame.code->values[topFrame.ip - 1].type ==
+                            ValueType::Word &&
+                        nativeWords.find(
+                            topFrame.code->values[topFrame.ip - 1].str->str) ==
+                            nativeWords.end()) {
+                        frameName =
+                            topFrame.code->values[topFrame.ip - 1].str->str;
+                    }
                     topFrame.ip++;
-                    if (!callStack.addArrayCallFrame(newTrace.arr, U"<unknown>",
+                    if (!callStack.addArrayCallFrame(newTrace.arr, frameName,
                                                      ins.str->str == U"!")) {
                         return ExecutionResult{ExecutionResultType::Error,
                                                U"Call stack overflow"};

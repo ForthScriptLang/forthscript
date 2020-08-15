@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
         interp.heap.collectGarbage();
         return -1;
     }
-    ExecutionResult res = interp.callInterpreter(result.code, U"main", false);
+    ExecutionResult res = interp.callInterpreter(result.code, U"main", true);
     if (res.result != ExecutionResultType::Success) {
         reportRuntimeError(res, interp);
         interp.evalStack.stack.clear();
