@@ -4,7 +4,7 @@ NativeWord makeFromUnaryOperator(UnaryOperator op) {
     return [op](struct Interpreter& interp) {
         if (interp.evalStack.stack.size() < 1) {
             return ExecutionResult{ExecutionResultType::Error,
-                                   ExecutionErrorType::EvalStackUnderflow};
+                                   U"Evaluation stack underflow"};
         }
         Value& first =
             interp.evalStack.stack[interp.evalStack.stack.size() - 1];
@@ -12,7 +12,7 @@ NativeWord makeFromUnaryOperator(UnaryOperator op) {
         interp.evalStack.stack.pop_back();
         interp.evalStack.stack.push_back(result);
         return ExecutionResult{ExecutionResultType::Success,
-                               ExecutionErrorType::Success};
+                               U"Evaluation stack underflow"};
     };
 }
 
@@ -20,7 +20,7 @@ NativeWord makeFromBinaryOperator(BinaryOperator op) {
     return [op](struct Interpreter& interp) {
         if (interp.evalStack.stack.size() < 2) {
             return ExecutionResult{ExecutionResultType::Error,
-                                   ExecutionErrorType::EvalStackUnderflow};
+                                   U"Evaluation stack underflow"};
         }
         Value& first =
             interp.evalStack.stack[interp.evalStack.stack.size() - 2];
@@ -30,8 +30,7 @@ NativeWord makeFromBinaryOperator(BinaryOperator op) {
         interp.evalStack.stack.pop_back();
         interp.evalStack.stack.pop_back();
         interp.evalStack.stack.push_back(result);
-        return ExecutionResult{ExecutionResultType::Success,
-                               ExecutionErrorType::Success};
+        return ExecutionResult{ExecutionResultType::Success, U""};
     };
 }
 
@@ -39,7 +38,7 @@ NativeWord makeFromTernaryOperator(TernaryOperator op) {
     return [op](struct Interpreter& interp) {
         if (interp.evalStack.stack.size() < 2) {
             return ExecutionResult{ExecutionResultType::Error,
-                                   ExecutionErrorType::EvalStackUnderflow};
+                                   U"Evaluation stack underflow"};
         }
         Value& first =
             interp.evalStack.stack[interp.evalStack.stack.size() - 3];
@@ -52,7 +51,6 @@ NativeWord makeFromTernaryOperator(TernaryOperator op) {
         interp.evalStack.stack.pop_back();
         interp.evalStack.stack.pop_back();
         interp.evalStack.stack.push_back(result);
-        return ExecutionResult{ExecutionResultType::Success,
-                               ExecutionErrorType::Success};
+        return ExecutionResult{ExecutionResultType::Success, U""};
     };
 }

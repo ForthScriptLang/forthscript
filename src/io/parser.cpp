@@ -90,10 +90,17 @@ ParseResult parse(const std::u32string &str, Heap &h) {
                 break;
             }
             case LexemeType::Word: {
-                Value wordLiteral;
-                wordLiteral.type = ValueType::Word;
-                wordLiteral.str = h.makeStringObject(current.val);
-                topTask.second->values.push_back(wordLiteral);
+                if (current.val == U"True" || current.val == U"False") {
+                    Value boolLiteral;
+                    boolLiteral.type = ValueType::Boolean;
+                    boolLiteral.booleanValue = current.val == U"True";
+                    topTask.second->values.push_back(boolLiteral);
+                } else {
+                    Value wordLiteral;
+                    wordLiteral.type = ValueType::Word;
+                    wordLiteral.str = h.makeStringObject(current.val);
+                    topTask.second->values.push_back(wordLiteral);
+                }
                 break;
             }
             case LexemeType::WordAssignment: {

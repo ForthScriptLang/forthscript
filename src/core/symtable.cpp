@@ -7,6 +7,9 @@ void SymbolTable::createScope() {
 void SymbolTable::leaveScope() {
     for (const std::u32string& str : declaredInScope.back()) {
         values[str].pop_back();
+        if (values[str].empty()) {
+            values.erase(str);
+        }
     }
 }
 

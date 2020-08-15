@@ -10,18 +10,10 @@
 #include <unordered_map>
 
 enum class ExecutionResultType { Error, Success };
-enum class ExecutionErrorType {
-    Success,
-    DivisionByZero,
-    CallStackOverflow,
-    TypeError,
-    EvalStackUnderflow,
-
-};
 
 struct ExecutionResult {
     ExecutionResultType result;
-    ExecutionErrorType error;
+    std::u32string error;
 };
 
 using NativeWord = std::function<ExecutionResult(struct Interpreter&)>;

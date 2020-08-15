@@ -7,6 +7,7 @@
 #include <locale>
 #include <std/arith.hpp>
 #include <std/comparisons.hpp>
+#include <std/controlflow.hpp>
 #include <std/stack.hpp>
 
 int main() {
@@ -15,6 +16,7 @@ int main() {
     addArithNativeWords(interp);
     addComparisonsNativeWords(interp);
     addStackManipNativeWords(interp);
+    addControlFlowNativeWords(interp);
 
     interp.symTable.createScope();
     while (true) {
@@ -34,7 +36,7 @@ int main() {
             continue;
         }
         ExecutionResult res = interp.callInterpreter(result.code, false);
-        if (res.error != ExecutionErrorType::Success) {
+        if (res.result != ExecutionResultType::Success) {
             print(U"Meh, runtime error\n");
         }
     }
