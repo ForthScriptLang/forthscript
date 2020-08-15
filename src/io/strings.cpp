@@ -5,7 +5,7 @@ String *convertFromBackslashed(const std::u32string_view &view, Heap &h) {
     String *result = h.makeStringObject(dummy);
     size_t len = view.size();
     for (size_t i = 0; i < len; ++i) {
-        if (result->str[i] == U'\\') {
+        if (view[i] == U'\\') {
             if (i == len - 1) {
                 return nullptr;
             }
