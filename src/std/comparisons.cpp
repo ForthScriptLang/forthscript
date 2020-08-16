@@ -40,7 +40,7 @@ Value eqOperator(Value val1, Value val2, [[maybe_unused]] Interpreter& interp) {
         case ValueType::Word:
         case ValueType::WordAssign:
         case ValueType::WordDeclare:
-            result.booleanValue = val1.str->str == val2.str->str;
+            result.booleanValue = val1.str->get() == val2.str->get();
             break;
         case ValueType::Nil:
             result.booleanValue = true;

@@ -33,10 +33,8 @@ Value addOperator(Value val1, Value val2, Interpreter& interp) {
                val2.type == ValueType::String) {
         Value stringResult;
         stringResult.type = ValueType::String;
-        std::u32string_view dummy;
-        stringResult.str = interp.heap.makeStringObject(dummy);
-        stringResult.str->str += val1.str->str;
-        stringResult.str->str += val2.str->str;
+        std::u32string result = val1.str->get() + val2.str->get();
+        stringResult.str = interp.heap.makeStringObject(result);
         return stringResult;
     } else if (val1.type == ValueType::Array && val2.type == ValueType::Array) {
         Value arrayResult;
@@ -69,11 +67,12 @@ Value mulOperator(Value val1, Value val2, Interpreter& interp) {
         Value stringResult;
         stringResult.type = ValueType::String;
         std::u32string_view dummy;
-        stringResult.str = interp.heap.makeStringObject(dummy);
-        stringResult.str->str.reserve(val1.str->str.size() * val2.numericValue);
+        std::u32string result;
+        result.reserve(val1.str->get().size() * val2.numericValue);
         for (size_t i = 0; i < (size_t)val2.numericValue; ++i) {
-            stringResult.str->str.append(val1.str->str);
+            result.append(val1.str->get());
         }
+        stringResult.str = new String(result);
         return stringResult;
     } else if (val1.type == ValueType::Array &&
                val2.type == ValueType::Numeric) {

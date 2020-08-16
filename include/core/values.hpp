@@ -31,7 +31,7 @@ inline bool isHeapType(ValueType type) { return (((int)(type)) & 128) != 0; }
 inline bool isArrayType(ValueType type) { return (((int)(type)) & 256) != 0; }
 
 struct Value {
-    ValueType type;
+    ValueType type = ValueType::Nil;
     union {
         bool booleanValue;
         int64_t numericValue;
@@ -39,13 +39,23 @@ struct Value {
         struct String *str;
         struct Array *arr;
     };
-    inline Value() { type = ValueType::Nil; }
 };
 
 struct String : Object {
-    std::u32string str;
     virtual ~String();
     virtual Object *addPointedToQueue(struct Object *head);
+    inline const std::u32string &get() const { return str; }
+    inline String(const std::u32string &str) { this->str = str; }
+    inline String(std::u32string_view sv) { str = sv; }
+    // this is used for symbol table
+    // as strings are interned
+    // there is only one object representing a given string
+    // symbol table can just find this vector directly
+    // instead of doing costly lookup in hash map
+    std::vector<Value> *values = nullptr;
+
+   private:
+    std::u32string str;
 };
 
 struct Array : Object {

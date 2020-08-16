@@ -53,8 +53,7 @@ void Heap::collectGarbage() {
 }
 
 String *Heap::makeStringObject(const std::u32string &val) {
-    String *obj = new String;
-    obj->str = val;
+    String *obj = new String(val);
     obj->marked = false;
     obj->next = obj->next_to_scan = nullptr;
     insertObject(obj);
@@ -62,8 +61,7 @@ String *Heap::makeStringObject(const std::u32string &val) {
 }
 
 String *Heap::makeStringObject(const std::u32string_view &val) {
-    String *obj = new String;
-    obj->str = val;
+    String *obj = new String(val);
     obj->marked = false;
     obj->next = obj->next_to_scan = nullptr;
     insertObject(obj);

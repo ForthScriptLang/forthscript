@@ -11,7 +11,7 @@ ExecutionResult printStrOp(Interpreter& interp) {
     if (top.type != ValueType::String) {
         return ExecutionResult{ExecutionResultType::Error, U"Type error"};
     }
-    print(top.str->str);
+    print(top.str->get());
     return ExecutionResult{ExecutionResultType::Success, U""};
 }
 

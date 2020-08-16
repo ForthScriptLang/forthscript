@@ -53,7 +53,7 @@ ExecutionResult Interpreter::callInterpreter(Array* code,
                 topFrame.ip++;
                 break;
             case ValueType::Word:
-                if (ins.str->str == U"!" || ins.str->str == U",") {
+                if (ins.str->get() == U"!" || ins.str->get() == U",") {
                     if (evalStack.stack.empty()) {
                         return ExecutionResult{ExecutionResultType::Error,
                                                U"Evaluation stack underflow"};
@@ -69,29 +69,29 @@ ExecutionResult Interpreter::callInterpreter(Array* code,
                         topFrame.code->values[topFrame.ip - 1].type ==
                             ValueType::Word &&
                         nativeWords.find(
-                            topFrame.code->values[topFrame.ip - 1].str->str) ==
+                            topFrame.code->values[topFrame.ip - 1].str->get()) ==
                             nativeWords.end()) {
                         frameName =
-                            topFrame.code->values[topFrame.ip - 1].str->str;
+                            topFrame.code->values[topFrame.ip - 1].str->get();
                     }
                     topFrame.ip++;
                     if (!callStack.addArrayCallFrame(newTrace.arr, frameName,
-                                                     ins.str->str == U"!")) {
+                                                     ins.str->get() == U"!")) {
                         return ExecutionResult{ExecutionResultType::Error,
                                                U"Call stack overflow"};
                     }
-                    if (ins.str->str == U"!") {
+                    if (ins.str->get() == U"!") {
                         symTable.createScope();
                     }
                     evalStack.stack.pop_back();
                     continue;
-                } else if (nativeWords.find(ins.str->str) !=
+                } else if (nativeWords.find(ins.str->get()) !=
                            nativeWords.end()) {
-                    if (!callStack.addNativeCallFrame(ins.str->str)) {
+                    if (!callStack.addNativeCallFrame(ins.str->get())) {
                         return ExecutionResult{ExecutionResultType::Error,
                                                U"Call stack overflow"};
                     }
-                    ExecutionResult result = nativeWords[ins.str->str](*this);
+                    ExecutionResult result = nativeWords[ins.str->get()](*this);
                     if (result.result != ExecutionResultType::Success) {
                         return result;
                     }
@@ -99,7 +99,7 @@ ExecutionResult Interpreter::callInterpreter(Array* code,
                     topFrame.ip++;
                 } else {
                     evalStack.stack.push_back(
-                        symTable.getVariable(ins.str->str));
+                        symTable.getVariable(ins.str->get()));
                     topFrame.ip++;
                 }
                 break;
@@ -112,9 +112,9 @@ ExecutionResult Interpreter::callInterpreter(Array* code,
                 Value val = evalStack.stack.back();
                 evalStack.stack.pop_back();
                 if (ins.type == ValueType::WordAssign) {
-                    symTable.setVariable(ins.str->str, val);
+                    symTable.setVariable(ins.str->get(), val);
                 } else {
-                    symTable.declareVariable(ins.str->str, val);
+                    symTable.declareVariable(ins.str->get(), val);
                 }
                 topFrame.ip++;
                 break;
