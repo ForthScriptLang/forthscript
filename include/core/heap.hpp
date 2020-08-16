@@ -1,5 +1,6 @@
 #pragma once
 
+#include <core/stringpool.hpp>
 #include <core/values.hpp>
 #include <functional>
 #include <string>
@@ -21,8 +22,10 @@ struct Heap {
     void collectGarbage();
     Heap();
 
+    StringPool pool;
     String *makeStringObject(const std::u32string &val);
     String *makeStringObject(const std::u32string_view &val);
+
     Array *makeArrayObject(Value defaultVal, size_t size);
     Array *shallowCopy(Array *other);
     Array *deepCopy(Array *other);

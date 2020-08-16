@@ -50,22 +50,32 @@ void Heap::collectGarbage() {
             delete toDelete;
         }
     }
+    // Handling strings (they are referenced by pool instead of list)
+    for (auto iter = pool.begin(); iter != pool.end(); ++iter) {
+        if ((*iter)->marked) {
+            (*iter)->marked = false;
+        } else {
+            String *str = *iter;
+            pool.erase(iter);
+            delete str;
+        }
+    }
 }
 
 String *Heap::makeStringObject(const std::u32string &val) {
-    String *obj = new String(val);
-    obj->marked = false;
-    obj->next = obj->next_to_scan = nullptr;
-    insertObject(obj);
-    return obj;
+    return makeStringObject(std::u32string_view(val));
 }
 
 String *Heap::makeStringObject(const std::u32string_view &val) {
     String *obj = new String(val);
     obj->marked = false;
     obj->next = obj->next_to_scan = nullptr;
-    insertObject(obj);
-    return obj;
+    auto result = pool.insert(obj);
+    if (result.second) {
+        return obj;
+    } else {
+        return *result.first;
+    }
 }
 
 Array *Heap::makeArrayObject(Value defaultVal, size_t size) {
