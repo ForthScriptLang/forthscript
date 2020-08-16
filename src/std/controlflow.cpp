@@ -1,16 +1,14 @@
 #include <std/controlflow.hpp>
 
 ExecutionResult ifElseOp(Interpreter& interp) {
-    if (interp.evalStack.stack.size() < 3) {
+    if (!interp.evalStack.assertDepth(3)) {
         return ExecutionResult{ExecutionResultType::Error,
                                U"Evaluation stack underflow"};
     }
-    Value ifCodeVal = interp.evalStack.stack.back();
-    interp.evalStack.stack.pop_back();
-    Value elseCodeVal = interp.evalStack.stack.back();
-    interp.evalStack.stack.pop_back();
-    Value condition = interp.evalStack.stack.back();
-    interp.evalStack.stack.pop_back();
+
+    Value elseCodeVal = interp.evalStack.popBack().value();
+    Value ifCodeVal = interp.evalStack.popBack().value();
+    Value condition = interp.evalStack.popBack().value();
     if (elseCodeVal.type != ValueType::Array ||
         ifCodeVal.type != ValueType::Array ||
         condition.type != ValueType::Boolean) {
@@ -33,14 +31,13 @@ ExecutionResult ifElseOp(Interpreter& interp) {
 }
 
 ExecutionResult ifOp(Interpreter& interp) {
-    if (interp.evalStack.stack.size() < 2) {
+    if (!interp.evalStack.assertDepth(2)) {
         return ExecutionResult{ExecutionResultType::Error,
                                U"Evaluation stack underflow"};
     }
-    Value ifCodeVal = interp.evalStack.stack.back();
-    interp.evalStack.stack.pop_back();
-    Value condition = interp.evalStack.stack.back();
-    interp.evalStack.stack.pop_back();
+
+    Value ifCodeVal = interp.evalStack.popBack().value();
+    Value condition = interp.evalStack.popBack().value();
     if (ifCodeVal.type != ValueType::Array ||
         condition.type != ValueType::Boolean) {
         return ExecutionResult{ExecutionResultType::Error,
@@ -56,14 +53,13 @@ ExecutionResult ifOp(Interpreter& interp) {
 }
 
 ExecutionResult whileOp(Interpreter& interp) {
-    if (interp.evalStack.stack.size() < 2) {
+    if (!interp.evalStack.assertDepth(2)) {
         return ExecutionResult{ExecutionResultType::Error,
                                U"Evaluation stack underflow"};
     }
-    Value loopCode = interp.evalStack.stack.back();
-    interp.evalStack.stack.pop_back();
-    Value condCode = interp.evalStack.stack.back();
-    interp.evalStack.stack.pop_back();
+
+    Value loopCode = interp.evalStack.popBack().value();
+    Value condCode = interp.evalStack.popBack().value();
     if (condCode.type != ValueType::Array ||
         loopCode.type != ValueType::Array) {
         return ExecutionResult{ExecutionResultType::Error, U"Type error"};
@@ -74,16 +70,11 @@ ExecutionResult whileOp(Interpreter& interp) {
         if (res.result != ExecutionResultType::Success) {
             return res;
         }
-        if (interp.evalStack.stack.empty()) {
-            return ExecutionResult{ExecutionResultType::Error,
-                                   U"Evaluation stack underflow"};
-        }
-        Value val = interp.evalStack.stack.back();
-        interp.evalStack.stack.pop_back();
-        if (val.type != ValueType::Boolean) {
+        std::optional<Value> testResult = interp.evalStack.popBack();
+        if (testResult.value().type != ValueType::Boolean) {
             ExecutionResult{ExecutionResultType::Error, U"Type error"};
         }
-        if (!val.booleanValue) {
+        if (!testResult.value().booleanValue) {
             break;
         }
         res = interp.callInterpreter(loopCode.arr, U"loop_body", true);
@@ -95,16 +86,13 @@ ExecutionResult whileOp(Interpreter& interp) {
 }
 
 ExecutionResult forOp(Interpreter& interp) {
-    if (interp.evalStack.stack.size() < 2) {
+    if (!interp.evalStack.assertDepth(3)) {
         return ExecutionResult{ExecutionResultType::Error,
                                U"Evaluation stack underflow"};
     }
-    Value loopCode = interp.evalStack.stack.back();
-    interp.evalStack.stack.pop_back();
-    Value iterCode = interp.evalStack.stack.back();
-    interp.evalStack.stack.pop_back();
-    Value condCode = interp.evalStack.stack.back();
-    interp.evalStack.stack.pop_back();
+    Value loopCode = interp.evalStack.popBack().value();
+    Value iterCode = interp.evalStack.popBack().value();
+    Value condCode = interp.evalStack.popBack().value();
     if (condCode.type != ValueType::Array ||
         iterCode.type != ValueType::Array ||
         loopCode.type != ValueType::Array) {
@@ -116,16 +104,11 @@ ExecutionResult forOp(Interpreter& interp) {
         if (res.result != ExecutionResultType::Success) {
             return res;
         }
-        if (interp.evalStack.stack.empty()) {
-            return ExecutionResult{ExecutionResultType::Error,
-                                   U"Evaluation stack underflow"};
-        }
-        Value val = interp.evalStack.stack.back();
-        interp.evalStack.stack.pop_back();
-        if (val.type != ValueType::Boolean) {
+        std::optional<Value> testResult = interp.evalStack.popBack();
+        if (testResult.value().type != ValueType::Boolean) {
             ExecutionResult{ExecutionResultType::Error, U"Type error"};
         }
-        if (!val.booleanValue) {
+        if (!testResult.value().booleanValue) {
             break;
         }
         res = interp.callInterpreter(loopCode.arr, U"loop_body", true);

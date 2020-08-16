@@ -9,3 +9,23 @@ void EvaluationStack::registerRootMarker(Heap &heap) {
         }
     });
 }
+
+std::optional<Value> EvaluationStack::popBack() {
+    if (stack.empty()) {
+        return std::optional<Value>();
+    }
+    Value result = stack.back();
+    stack.pop_back();
+    return result;
+}
+
+void EvaluationStack::pushBack(Value val) { stack.push_back(val); }
+
+void EvaluationStack::clear() {
+    stack.clear();
+    stack.shrink_to_fit();
+}
+
+bool EvaluationStack::assertDepth(size_t count) {
+    return stack.size() >= count;
+}

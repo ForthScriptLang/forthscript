@@ -49,16 +49,17 @@ ExecutionResult Interpreter::callInterpreter(Array* code,
             case ValueType::String:
             case ValueType::Placeholder:
             case ValueType::Array:
-                evalStack.stack.push_back(ins);
+                evalStack.pushBack(ins);
                 topFrame.ip++;
                 break;
             case ValueType::Word:
                 if (ins.str->get() == U"!" || ins.str->get() == U",") {
-                    if (evalStack.stack.empty()) {
+                    std::optional<Value> newTraceOptional = evalStack.popBack();
+                    if (!newTraceOptional) {
                         return ExecutionResult{ExecutionResultType::Error,
                                                U"Evaluation stack underflow"};
                     }
-                    Value& newTrace = evalStack.stack.back();
+                    Value newTrace = newTraceOptional.value();
                     if (newTrace.type != ValueType::Array) {
                         return ExecutionResult{ExecutionResultType::Error,
                                                U"Type error"};
@@ -68,8 +69,8 @@ ExecutionResult Interpreter::callInterpreter(Array* code,
                     if (topFrame.ip != 0 &&
                         topFrame.code->values[topFrame.ip - 1].type ==
                             ValueType::Word &&
-                        nativeWords.find(
-                            topFrame.code->values[topFrame.ip - 1].str->get()) ==
+                        nativeWords.find(topFrame.code->values[topFrame.ip - 1]
+                                             .str->get()) ==
                             nativeWords.end()) {
                         frameName =
                             topFrame.code->values[topFrame.ip - 1].str->get();
@@ -83,7 +84,6 @@ ExecutionResult Interpreter::callInterpreter(Array* code,
                     if (ins.str->get() == U"!") {
                         symTable.createScope();
                     }
-                    evalStack.stack.pop_back();
                     continue;
                 } else if (nativeWords.find(ins.str->get()) !=
                            nativeWords.end()) {
@@ -98,19 +98,18 @@ ExecutionResult Interpreter::callInterpreter(Array* code,
                     callStack.removeTopCallFrame();
                     topFrame.ip++;
                 } else {
-                    evalStack.stack.push_back(
-                        symTable.getVariable(ins.str->get()));
+                    evalStack.pushBack(symTable.getVariable(ins.str->get()));
                     topFrame.ip++;
                 }
                 break;
             case ValueType::WordAssign:
             case ValueType::WordDeclare:
-                if (evalStack.stack.empty()) {
+                std::optional<Value> valOptional = evalStack.popBack();
+                if (!valOptional) {
                     return ExecutionResult{ExecutionResultType::Error,
                                            U"Evaluation stack underflow"};
                 }
-                Value val = evalStack.stack.back();
-                evalStack.stack.pop_back();
+                Value val = valOptional.value();
                 if (ins.type == ValueType::WordAssign) {
                     symTable.setVariable(ins.str->get(), val);
                 } else {

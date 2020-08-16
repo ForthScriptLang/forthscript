@@ -1,56 +1,47 @@
 #include <std/stack.hpp>
 
 ExecutionResult dropOp(Interpreter& interp) {
-    if (interp.evalStack.stack.empty()) {
+    if (!interp.evalStack.popBack()) {
         return ExecutionResult{ExecutionResultType::Error,
                                U"Evaluation stack overflow"};
     }
-    // ( a -- )
-    interp.evalStack.stack.pop_back();
     return ExecutionResult{ExecutionResultType::Success, U""};
 }
 
 ExecutionResult swapOp(Interpreter& interp) {
-    if (interp.evalStack.stack.size() < 2) {
+    if (!interp.evalStack.assertDepth(2)) {
         return ExecutionResult{ExecutionResultType::Error,
                                U"Evaluation stack overflow"};
     }
-    // ( a b -- b a )
-    Value val1 = interp.evalStack.stack.back();  // b
-    interp.evalStack.stack.pop_back();
-    Value val2 = interp.evalStack.stack.back();  // a
-    interp.evalStack.stack.pop_back();
-    interp.evalStack.stack.push_back(val1);
-    interp.evalStack.stack.push_back(val2);
+    Value b = interp.evalStack.popBack().value();
+    Value a = interp.evalStack.popBack().value();
+    interp.evalStack.pushBack(b);
+    interp.evalStack.pushBack(a);
     return ExecutionResult{ExecutionResultType::Success, U""};
 }
 
 ExecutionResult dupOp(Interpreter& interp) {
-    if (interp.evalStack.stack.empty()) {
+    std::optional<Value> a = interp.evalStack.popBack();
+    if (!a) {
         return ExecutionResult{ExecutionResultType::Error,
                                U"Evaluation stack overflow"};
     }
-    // ( a -- a a )
-    Value val1 = interp.evalStack.stack.back();  // a
-    interp.evalStack.stack.pop_back();
-    interp.evalStack.stack.push_back(val1);
-    interp.evalStack.stack.push_back(val1);
+    interp.evalStack.pushBack(a.value());
+    interp.evalStack.pushBack(a.value());
     return ExecutionResult{ExecutionResultType::Success, U""};
 }
 
 ExecutionResult overOp(Interpreter& interp) {
-    if (interp.evalStack.stack.size() < 2) {
+    std::optional<Value> a, b;
+    b = interp.evalStack.popBack();
+    a = interp.evalStack.popBack();
+    if (!a || !b) {
         return ExecutionResult{ExecutionResultType::Error,
                                U"Evaluation stack overflow"};
     }
-    // (a b -- a b a)
-    Value val1 = interp.evalStack.stack.back();  // b
-    interp.evalStack.stack.pop_back();
-    Value val2 = interp.evalStack.stack.back();  // a
-    interp.evalStack.stack.pop_back();
-    interp.evalStack.stack.push_back(val2);  // a
-    interp.evalStack.stack.push_back(val1);  // b
-    interp.evalStack.stack.push_back(val2);  // a
+    interp.evalStack.pushBack(a.value());
+    interp.evalStack.pushBack(b.value());
+    interp.evalStack.pushBack(a.value());
     return ExecutionResult{ExecutionResultType::Success, U""};
 }
 

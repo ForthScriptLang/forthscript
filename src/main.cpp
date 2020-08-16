@@ -51,9 +51,9 @@ void hostRepl() {
     interp.symTable.createScope();
     while (true) {
         print(U"[");
-        for (size_t i = 0; i < interp.evalStack.stack.size(); ++i) {
-            print(prettyprint(interp.evalStack.stack[i]));
-            if (i != interp.evalStack.stack.size() - 1) {
+        for (size_t i = 0; i < interp.evalStack.getStack().size(); ++i) {
+            print(prettyprint(interp.evalStack.getStack()[i]));
+            if (i != interp.evalStack.getStack().size() - 1) {
                 print(U" ");
             }
         }
@@ -69,7 +69,8 @@ void hostRepl() {
             interp.callInterpreter(result.code, U"repl_start", false);
         if (res.result != ExecutionResultType::Success) {
             reportRuntimeError(res, interp);
-            interp.evalStack.stack.clear();
+            interp.evalStack.clear();
+            interp.callStack.frames.clear();
             interp.heap.collectGarbage();
         }
     }
@@ -93,7 +94,8 @@ int main(int argc, char** argv) {
     ExecutionResult res = interp.callInterpreter(result.code, U"main", true);
     if (res.result != ExecutionResultType::Success) {
         reportRuntimeError(res, interp);
-        interp.evalStack.stack.clear();
+        interp.evalStack.clear();
+        interp.callStack.frames.clear();
         interp.heap.collectGarbage();
         return -1;
     }

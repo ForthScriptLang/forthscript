@@ -2,16 +2,15 @@
 #include <std/os.hpp>
 
 ExecutionResult printStrOp(Interpreter& interp) {
-    if (interp.evalStack.stack.empty()) {
+    std::optional<Value> top = interp.evalStack.popBack();
+    if (!top) {
         return ExecutionResult{ExecutionResultType::Error,
                                U"Evaluation stack underflow"};
     }
-    Value top = interp.evalStack.stack.back();
-    interp.evalStack.stack.pop_back();
-    if (top.type != ValueType::String) {
+    if (top.value().type != ValueType::String) {
         return ExecutionResult{ExecutionResultType::Error, U"Type error"};
     }
-    print(top.str->get());
+    print(top.value().str->get());
     return ExecutionResult{ExecutionResultType::Success, U""};
 }
 

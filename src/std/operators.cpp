@@ -2,55 +2,42 @@
 
 NativeWord makeFromUnaryOperator(UnaryOperator op) {
     return [op](struct Interpreter& interp) {
-        if (interp.evalStack.stack.size() < 1) {
+        if (!interp.evalStack.assertDepth(1)) {
             return ExecutionResult{ExecutionResultType::Error,
                                    U"Evaluation stack underflow"};
         }
-        Value& first =
-            interp.evalStack.stack[interp.evalStack.stack.size() - 1];
+        Value first = interp.evalStack.popBack().value();
         Value result = op(first, interp);
-        interp.evalStack.stack.pop_back();
-        interp.evalStack.stack.push_back(result);
-        return ExecutionResult{ExecutionResultType::Success,
-                               U"Evaluation stack underflow"};
+        interp.evalStack.pushBack(result);
+        return ExecutionResult{ExecutionResultType::Success, U""};
     };
 }
 
 NativeWord makeFromBinaryOperator(BinaryOperator op) {
     return [op](struct Interpreter& interp) {
-        if (interp.evalStack.stack.size() < 2) {
+        if (!interp.evalStack.assertDepth(2)) {
             return ExecutionResult{ExecutionResultType::Error,
                                    U"Evaluation stack underflow"};
         }
-        Value& first =
-            interp.evalStack.stack[interp.evalStack.stack.size() - 2];
-        Value& second =
-            interp.evalStack.stack[interp.evalStack.stack.size() - 1];
+        Value second = interp.evalStack.popBack().value(),
+              first = interp.evalStack.popBack().value();
         Value result = op(first, second, interp);
-        interp.evalStack.stack.pop_back();
-        interp.evalStack.stack.pop_back();
-        interp.evalStack.stack.push_back(result);
+        interp.evalStack.pushBack(result);
         return ExecutionResult{ExecutionResultType::Success, U""};
     };
 }
 
 NativeWord makeFromTernaryOperator(TernaryOperator op) {
     return [op](struct Interpreter& interp) {
-        if (interp.evalStack.stack.size() < 2) {
+        if (!interp.evalStack.assertDepth(3)) {
             return ExecutionResult{ExecutionResultType::Error,
                                    U"Evaluation stack underflow"};
         }
-        Value& first =
-            interp.evalStack.stack[interp.evalStack.stack.size() - 3];
-        Value& second =
-            interp.evalStack.stack[interp.evalStack.stack.size() - 2];
-        Value& third =
-            interp.evalStack.stack[interp.evalStack.stack.size() - 1];
+        Value third = interp.evalStack.popBack().value(),
+              second = interp.evalStack.popBack().value(),
+              first = interp.evalStack.popBack().value();
         Value result = op(first, second, third, interp);
-        interp.evalStack.stack.pop_back();
-        interp.evalStack.stack.pop_back();
-        interp.evalStack.stack.pop_back();
-        interp.evalStack.stack.push_back(result);
+        interp.evalStack.pushBack(result);
         return ExecutionResult{ExecutionResultType::Success, U""};
     };
 }
