@@ -1,32 +1,26 @@
 {
   "data": [
     {
-      "name": "Summ",
       "input": "1 1 + to_string print_str",
       "expectedOutput": "2"
     },
     {
-      "name": "Minus",
       "input": "1 1 - to_string print_str",
       "expectedOutput": "0"
     },
     {
-      "name": "Minus",
       "input": "4 8 * to_string print_str",
       "expectedOutput": "32"
     },
     {
-      "name": "Minus",
       "input": "34 2 / to_string print_str",
       "expectedOutput": "17"
     },
     {
-      "name": "Minus",
       "input": "4 3 / to_string print_str",
       "expectedOutput": "1"
     },
     {
-      "name": "Minus",
       "input": "7 3 % to_string print_str",
       "expectedOutput": "1"
     }

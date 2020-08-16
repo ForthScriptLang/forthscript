@@ -13,7 +13,7 @@ interpreterPath = "..\\build\\overstacked.exe"
 
 @create_tests('test_operators', 'simpleCases.json')
 class Test(unittest.TestCase):
-    def test_operators(self, name, input, expectedOutput):
+    def test_operators(self, input, expectedOutput):
         f = tempfile.NamedTemporaryFile(delete=False)
         f.write(input.encode("utf-8"))
         #print("inputEncoded: ", input.encode("utf-8"))
