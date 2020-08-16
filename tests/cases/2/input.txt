@@ -1,0 +1,10 @@
+1
+2
+[ $a a 2 + ] =pl
+pl!
+a
+drop
+pl!
+pl,
+to_string
+print_str
