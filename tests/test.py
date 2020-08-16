@@ -9,7 +9,7 @@ import unittest
 import tempfile
 from helper import create_tests
 
-interpreterPath = "..\\build\\overstacked.exe"
+interpreterPath = "../build/overstacked.exe"
 
 @create_tests('test_operators', 'simpleCases.json')
 class Test(unittest.TestCase):
