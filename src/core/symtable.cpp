@@ -10,6 +10,7 @@ void SymbolTable::leaveScope() {
          ++i) {
         declared[i]->popValue();
     }
+    declared.resize(numDefined.size() - numDefined.back());
     numDefined.pop_back();
 }
 

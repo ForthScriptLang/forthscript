@@ -59,7 +59,7 @@ ExecutionResult Interpreter::callInterpreter(Array* code, bool newScope) {
         if_unlikely(state != InterpreterState::Interpreting) {
             // waiting for "for" or "while"
             while (true) {
-                if (callStack.frames.empty()) {
+                if_unlikely(callStack.frames.empty()) {
                     return ExecutionResult{ExecutionResultType::Error,
                                            U"Nowhere to break"};
                 }
@@ -139,19 +139,19 @@ ExecutionResult Interpreter::callInterpreter(Array* code, bool newScope) {
             case ValueType::Word:
                 if (ins.str == callString || ins.str == commaString) {
                     std::optional<Value> newTraceOptional = evalStack.popBack();
-                    if (!newTraceOptional) {
+                    if_unlikely(!newTraceOptional) {
                         return EvalStackUnderflow();
                     }
                     Value newTrace = newTraceOptional.value();
-                    if (newTrace.type != ValueType::Array) {
+                    if_unlikely(newTrace.type != ValueType::Array) {
                         return TypeError();
                     }
                     topFrame.ip++;
-                    if (!callStack.addArrayCallFrame(newTrace.arr,
-                                                     ins.str == callString)) {
+                    if_unlikely(!callStack.addArrayCallFrame(
+                        newTrace.arr, ins.str == callString)) {
                         return CallStackOverflow();
                     }
-                    if (ins.str->get() == U"!") {
+                    if (ins.str == callString) {
                         symTable.createScope();
                     }
                     continue;
@@ -164,20 +164,24 @@ ExecutionResult Interpreter::callInterpreter(Array* code, bool newScope) {
                     Value val = symTable.getVariable(ins.str);
                     topFrame.ip++;
                     if (val.type == ValueType::NativeWord) {
-                        if (!callStack.addNativeCallFrame()) {
+                        if_unlikely(!callStack.addNativeCallFrame()) {
                             return CallStackOverflow();
                         }
                         ExecutionResult result = val.word(*this);
                         callStack.removeTopCallFrame();
-                        if (result.result != ExecutionResultType::Success) {
-                            if (result.result == ExecutionResultType::Break) {
+                        if_unlikely(result.result !=
+                                    ExecutionResultType::Success) {
+                            if_likely(result.result ==
+                                      ExecutionResultType::Break) {
                                 state = InterpreterState::Breaking;
                                 continue;
-                            } else if (result.result ==
-                                       ExecutionResultType::Return) {
+                            }
+                            else if_likely(result.result ==
+                                           ExecutionResultType::Return) {
                                 state = InterpreterState::Returning;
                                 continue;
-                            } else {
+                            }
+                            else {
                                 return result;
                             }
                         }
@@ -189,9 +193,7 @@ ExecutionResult Interpreter::callInterpreter(Array* code, bool newScope) {
             case ValueType::WordAssign:
             case ValueType::WordDeclare:
                 std::optional<Value> valOptional = evalStack.popBack();
-                if (!valOptional) {
-                    return EvalStackUnderflow();
-                }
+                if_unlikely(!valOptional) { return EvalStackUnderflow(); }
                 Value val = valOptional.value();
                 if (ins.type == ValueType::WordAssign) {
                     symTable.setVariable(ins.str, val);
