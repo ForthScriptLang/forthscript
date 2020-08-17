@@ -52,12 +52,15 @@ void Heap::collectGarbage() {
         }
     }
     // Handling strings (they are referenced by pool instead of list)
-    for (auto iter = pool.begin(); iter != pool.end(); ++iter) {
+    for (auto iter = pool.begin(); iter != pool.end();) {
         if ((*iter)->marked) {
             (*iter)->marked = false;
+            ++iter;
         } else {
-            String *str = *iter;
-            pool.erase(iter);
+            auto toDelete = iter;
+            ++iter;
+            String *str = *toDelete;
+            pool.erase(toDelete);
             delete str;
         }
     }
