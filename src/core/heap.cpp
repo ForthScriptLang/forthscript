@@ -6,7 +6,12 @@
 #include <queue>
 #include <unordered_map>
 
-Heap::Heap() { head = nullptr; }
+Heap::Heap() {
+    head = nullptr;
+    objectCount = 0;
+    // give some room before gc starts
+    prevCount = 128;
+}
 
 void Heap::insertObject(Object *obj) {
     obj->next = head;
@@ -59,6 +64,7 @@ void Heap::collectGarbage() {
             } else {
                 prev->next = current;
             }
+            --objectCount;
             delete toDelete;
         }
     }
@@ -72,6 +78,7 @@ void Heap::collectGarbage() {
             ++iter;
             String *str = *toDelete;
             pool.erase(toDelete);
+            --objectCount;
             delete str;
         }
     }
@@ -87,6 +94,7 @@ String *Heap::makeStringObject(const std::u32string_view &val) {
     obj->next = obj->next_to_scan = nullptr;
     auto result = pool.insert(obj);
     if (result.second) {
+        objectCount++;
         return obj;
     } else {
         delete obj;
@@ -100,6 +108,7 @@ String *Heap::makeStringObject(std::u32string &&val) {
     obj->next = obj->next_to_scan = nullptr;
     auto result = pool.insert(obj);
     if (result.second) {
+        objectCount++;
         return obj;
     } else {
         delete obj;
@@ -109,6 +118,7 @@ String *Heap::makeStringObject(std::u32string &&val) {
 
 Array *Heap::makeArrayObject(Value defaultVal, size_t size) {
     Array *arr = new Array;
+    objectCount++;
     arr->marked = false;
     arr->next = arr->next_to_scan = nullptr;
     arr->values = std::vector<Value>(size, defaultVal);
@@ -118,6 +128,7 @@ Array *Heap::makeArrayObject(Value defaultVal, size_t size) {
 
 Array *Heap::shallowCopy(Array *other) {
     Array *arr = new Array;
+    objectCount++;
     arr->marked = false;
     arr->next = arr->next_to_scan = nullptr;
     arr->values.reserve(other->values.size());
@@ -155,4 +166,11 @@ Array *Heap::deepCopy(Array *other) {
         }
     }
     return result;
+}
+
+void Heap::runGCIfOverThreshold() {
+    if (objectCount > 2 * prevCount && objectCount > 256) {
+        collectGarbage();
+        prevCount = objectCount;
+    }
 }

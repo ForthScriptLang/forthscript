@@ -53,6 +53,8 @@ ExecutionResult Interpreter::callInterpreter(Array* code, bool newScope) {
         symTable.createScope();
     }
     while (true) {
+        // check for garbage collection
+        heap.runGCIfOverThreshold();
         // handling break and return
         if_unlikely(state != InterpreterState::Interpreting) {
             // waiting for "for" or "while"
