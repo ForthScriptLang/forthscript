@@ -1,0 +1,2 @@
+1 $i [i 1000000 <] [i 1 + =i] [] for
+i to_string print_str

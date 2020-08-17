@@ -51,6 +51,7 @@ struct String : Object {
     virtual Object *addPointedToQueue(struct Object *head);
     inline const std::u32string &get() const { return str; }
     inline String(const std::u32string &str) { this->str = str; }
+    inline String(std::u32string &&str) { this->str = str; }
     inline String(std::u32string_view sv) { str = sv; }
 
     // this is used for symbol table

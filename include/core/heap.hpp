@@ -24,6 +24,7 @@ struct Heap {
 
     StringPool pool;
     String *makeStringObject(const std::u32string &val);
+    String *makeStringObject(std::u32string &&val);
     String *makeStringObject(const std::u32string_view &val);
 
     Array *makeArrayObject(Value defaultVal, size_t size);

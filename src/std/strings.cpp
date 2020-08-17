@@ -7,7 +7,7 @@ Value toStringOp(Value val, Interpreter& interp) {
     std::u32string resultCppStr = prettyprint(val);
     Value result;
     result.type = ValueType::String;
-    result.str = interp.heap.makeStringObject(resultCppStr);
+    result.str = interp.heap.makeStringObject(std::move(resultCppStr));
     return result;
 }
 

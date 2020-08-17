@@ -94,6 +94,19 @@ String *Heap::makeStringObject(const std::u32string_view &val) {
     }
 }
 
+String *Heap::makeStringObject(std::u32string &&val) {
+    String *obj = new String(val);
+    obj->marked = false;
+    obj->next = obj->next_to_scan = nullptr;
+    auto result = pool.insert(obj);
+    if (result.second) {
+        return obj;
+    } else {
+        delete obj;
+        return *result.first;
+    }
+}
+
 Array *Heap::makeArrayObject(Value defaultVal, size_t size) {
     Array *arr = new Array;
     arr->marked = false;
