@@ -1,4 +1,7 @@
 #include <core/symtable.hpp>
+#include <dbg.hpp>
+#include <io/termio.hpp>
+#include <iostream>
 
 void SymbolTable::createScope() { numDefined.push_back(0); }
 
