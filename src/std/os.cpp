@@ -4,14 +4,13 @@
 ExecutionResult printStrOp(Interpreter& interp) {
     std::optional<Value> top = interp.evalStack.popBack();
     if (!top) {
-        return ExecutionResult{ExecutionResultType::Error,
-                               U"Evaluation stack underflow"};
+        return EvalStackUnderflow();
     }
     if (top.value().type != ValueType::String) {
-        return ExecutionResult{ExecutionResultType::Error, U"Type error"};
+        return TypeError();
     }
     print(top.value().str->get());
-    return ExecutionResult{ExecutionResultType::Success, U""};
+    return Success();
 }
 
 void addOSModuleNativeWords(Interpreter& interp) {

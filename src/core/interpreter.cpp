@@ -2,6 +2,26 @@
 
 #include <core/interpreter.hpp>
 
+Success::Success() {
+    result = ExecutionResultType::Success;
+    error = U"Success";
+}
+
+EvalStackUnderflow::EvalStackUnderflow() {
+    result = ExecutionResultType::Error;
+    error = U"Evaluation stack underflow";
+}
+
+CallStackOverflow::CallStackOverflow() {
+    result = ExecutionResultType::Error;
+    error = U"Call stack overflow";
+}
+
+TypeError::TypeError() {
+    result = ExecutionResultType::Error;
+    error = U"Type error";
+}
+
 Interpreter::Interpreter(size_t maxRecursionDepth)
     : callStack(maxRecursionDepth) {
     callStack.registerRootMarker(heap);
@@ -21,8 +41,7 @@ void Interpreter::defineNativeWord(const std::u32string& name,
     commaString = heap.makeStringObject(std::u32string(U","));
 }
 
-ExecutionResult Interpreter::callInterpreter(Array* code,
-                                             bool newScope) {
+ExecutionResult Interpreter::callInterpreter(Array* code, bool newScope) {
     callStack.addArrayCallFrame(code, newScope);
     if (newScope) {
         symTable.createScope();
@@ -30,13 +49,13 @@ ExecutionResult Interpreter::callInterpreter(Array* code,
     while (true) {
         // nothing on the call stack => interpreter can be exited
         if (callStack.frames.empty()) {
-            return ExecutionResult{ExecutionResultType::Success, U""};
+            return Success();
         }
         StackFrame& topFrame = callStack.frames.back();
         // if native subroutine of the stack, aknowledge success
         // and return
         if (topFrame.native) {
-            return ExecutionResult{ExecutionResultType::Success, U""};
+            return Success();
         }
         // if ip is beyond frame size, perform automatic return
         if (topFrame.code->values.size() <= topFrame.ip) {
@@ -63,19 +82,16 @@ ExecutionResult Interpreter::callInterpreter(Array* code,
                 if (ins.str == callString || ins.str == commaString) {
                     std::optional<Value> newTraceOptional = evalStack.popBack();
                     if (!newTraceOptional) {
-                        return ExecutionResult{ExecutionResultType::Error,
-                                               U"Evaluation stack underflow"};
+                        return EvalStackUnderflow();
                     }
                     Value newTrace = newTraceOptional.value();
                     if (newTrace.type != ValueType::Array) {
-                        return ExecutionResult{ExecutionResultType::Error,
-                                               U"Type error"};
+                        return TypeError();
                     }
                     topFrame.ip++;
                     if (!callStack.addArrayCallFrame(newTrace.arr,
                                                      ins.str == callString)) {
-                        return ExecutionResult{ExecutionResultType::Error,
-                                               U"Call stack overflow"};
+                        return CallStackOverflow();
                     }
                     if (ins.str->get() == U"!") {
                         symTable.createScope();
@@ -85,8 +101,7 @@ ExecutionResult Interpreter::callInterpreter(Array* code,
                     Value val = symTable.getVariable(ins.str);
                     if (val.type == ValueType::NativeWord) {
                         if (!callStack.addNativeCallFrame()) {
-                            return ExecutionResult{ExecutionResultType::Error,
-                                                   U"Call stack overflow"};
+                            return CallStackOverflow();
                         }
                         ExecutionResult result = val.word(*this);
                         if (result.result != ExecutionResultType::Success) {
@@ -103,8 +118,7 @@ ExecutionResult Interpreter::callInterpreter(Array* code,
             case ValueType::WordDeclare:
                 std::optional<Value> valOptional = evalStack.popBack();
                 if (!valOptional) {
-                    return ExecutionResult{ExecutionResultType::Error,
-                                           U"Evaluation stack underflow"};
+                    return EvalStackUnderflow();
                 }
                 Value val = valOptional.value();
                 if (ins.type == ValueType::WordAssign) {

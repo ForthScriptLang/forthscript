@@ -2,33 +2,30 @@
 
 ExecutionResult dropOp(Interpreter& interp) {
     if (!interp.evalStack.popBack()) {
-        return ExecutionResult{ExecutionResultType::Error,
-                               U"Evaluation stack overflow"};
+        return EvalStackUnderflow();
     }
-    return ExecutionResult{ExecutionResultType::Success, U""};
+    return Success();
 }
 
 ExecutionResult swapOp(Interpreter& interp) {
     if (!interp.evalStack.assertDepth(2)) {
-        return ExecutionResult{ExecutionResultType::Error,
-                               U"Evaluation stack overflow"};
+        return EvalStackUnderflow();
     }
     Value b = interp.evalStack.popBack().value();
     Value a = interp.evalStack.popBack().value();
     interp.evalStack.pushBack(b);
     interp.evalStack.pushBack(a);
-    return ExecutionResult{ExecutionResultType::Success, U""};
+    return Success();
 }
 
 ExecutionResult dupOp(Interpreter& interp) {
     std::optional<Value> a = interp.evalStack.popBack();
     if (!a) {
-        return ExecutionResult{ExecutionResultType::Error,
-                               U"Evaluation stack overflow"};
+        return EvalStackUnderflow();
     }
     interp.evalStack.pushBack(a.value());
     interp.evalStack.pushBack(a.value());
-    return ExecutionResult{ExecutionResultType::Success, U""};
+    return Success();
 }
 
 ExecutionResult overOp(Interpreter& interp) {
@@ -36,13 +33,12 @@ ExecutionResult overOp(Interpreter& interp) {
     b = interp.evalStack.popBack();
     a = interp.evalStack.popBack();
     if (!a || !b) {
-        return ExecutionResult{ExecutionResultType::Error,
-                               U"Evaluation stack overflow"};
+        return EvalStackUnderflow();
     }
     interp.evalStack.pushBack(a.value());
     interp.evalStack.pushBack(b.value());
     interp.evalStack.pushBack(a.value());
-    return ExecutionResult{ExecutionResultType::Success, U""};
+    return Success();
 }
 
 void addStackManipNativeWords(Interpreter& interp) {

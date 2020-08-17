@@ -13,7 +13,23 @@ enum class ExecutionResultType { Error, Success };
 
 struct ExecutionResult {
     ExecutionResultType result;
-    std::u32string error;
+    const char32_t* error;
+};
+
+struct Success : public ExecutionResult {
+    Success();
+};
+
+struct EvalStackUnderflow : public ExecutionResult {
+    EvalStackUnderflow();
+};
+
+struct CallStackOverflow : public ExecutionResult {
+    CallStackOverflow();
+};
+
+struct TypeError : public ExecutionResult {
+    TypeError();
 };
 
 struct Interpreter {

@@ -37,7 +37,7 @@ void reportSyntaxError(ParseResult res) {
 void reportRuntimeError(ExecutionResult res,
                         [[maybe_unused]] Interpreter& interp) {
     print(U"Runtime error: ");
-    print(res.error);
+    print(std::u32string(res.error));
     print(U"\n");
 }
 
