@@ -2,17 +2,15 @@
 #include <std/os.hpp>
 
 ExecutionResult printStrOp(Interpreter& interp) {
-    if (interp.evalStack.stack.empty()) {
-        return ExecutionResult{ExecutionResultType::Error,
-                               U"Evaluation stack underflow"};
+    std::optional<Value> top = interp.evalStack.popBack();
+    if (!top) {
+        return EvalStackUnderflow();
     }
-    Value top = interp.evalStack.stack.back();
-    interp.evalStack.stack.pop_back();
-    if (top.type != ValueType::String) {
-        return ExecutionResult{ExecutionResultType::Error, U"Type error"};
+    if (top.value().type != ValueType::String) {
+        return TypeError();
     }
-    print(top.str->str);
-    return ExecutionResult{ExecutionResultType::Success, U""};
+    print(top.value().str->get());
+    return Success();
 }
 
 void addOSModuleNativeWords(Interpreter& interp) {

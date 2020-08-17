@@ -1,11 +1,17 @@
 #include <algorithm>
 #include <core/heap.hpp>
 #include <dbg.hpp>
+#include <io/termio.hpp>
 #include <iostream>
 #include <queue>
 #include <unordered_map>
 
-Heap::Heap() { head = nullptr; }
+Heap::Heap() {
+    head = nullptr;
+    objectCount = 0;
+    // give some room before gc starts
+    prevCount = 128;
+}
 
 void Heap::insertObject(Object *obj) {
     obj->next = head;
@@ -32,6 +38,17 @@ void Heap::collectGarbage() {
     for (const RootMarker &marker : rootMarkers) {
         marker(*this);
     }
+    // we are handling symbol table stacks separately
+    for (String *string : pool) {
+        if (string->values != nullptr) {
+            string->marked = true;
+            for (auto val : *string->values) {
+                if (isHeapType(val.first.type) && !val.first.object->marked) {
+                    markObject(val.first.object);
+                }
+            }
+        }
+    }
     Object *current = head;
     Object *prev = nullptr;
     while (current != nullptr) {
@@ -47,31 +64,61 @@ void Heap::collectGarbage() {
             } else {
                 prev->next = current;
             }
+            --objectCount;
             delete toDelete;
+        }
+    }
+    // Handling strings (they are referenced by pool instead of list)
+    for (auto iter = pool.begin(); iter != pool.end();) {
+        if ((*iter)->marked) {
+            (*iter)->marked = false;
+            ++iter;
+        } else {
+            auto toDelete = iter;
+            ++iter;
+            String *str = *toDelete;
+            pool.erase(toDelete);
+            --objectCount;
+            delete str;
         }
     }
 }
 
 String *Heap::makeStringObject(const std::u32string &val) {
-    String *obj = new String;
-    obj->str = val;
-    obj->marked = false;
-    obj->next = obj->next_to_scan = nullptr;
-    insertObject(obj);
-    return obj;
+    return makeStringObject(std::u32string_view(val));
 }
 
 String *Heap::makeStringObject(const std::u32string_view &val) {
-    String *obj = new String;
-    obj->str = val;
+    String *obj = new String(val);
     obj->marked = false;
     obj->next = obj->next_to_scan = nullptr;
-    insertObject(obj);
-    return obj;
+    auto result = pool.insert(obj);
+    if (result.second) {
+        objectCount++;
+        return obj;
+    } else {
+        delete obj;
+        return *result.first;
+    }
+}
+
+String *Heap::makeStringObject(std::u32string &&val) {
+    String *obj = new String(val);
+    obj->marked = false;
+    obj->next = obj->next_to_scan = nullptr;
+    auto result = pool.insert(obj);
+    if (result.second) {
+        objectCount++;
+        return obj;
+    } else {
+        delete obj;
+        return *result.first;
+    }
 }
 
 Array *Heap::makeArrayObject(Value defaultVal, size_t size) {
     Array *arr = new Array;
+    objectCount++;
     arr->marked = false;
     arr->next = arr->next_to_scan = nullptr;
     arr->values = std::vector<Value>(size, defaultVal);
@@ -81,6 +128,7 @@ Array *Heap::makeArrayObject(Value defaultVal, size_t size) {
 
 Array *Heap::shallowCopy(Array *other) {
     Array *arr = new Array;
+    objectCount++;
     arr->marked = false;
     arr->next = arr->next_to_scan = nullptr;
     arr->values.reserve(other->values.size());
@@ -118,4 +166,11 @@ Array *Heap::deepCopy(Array *other) {
         }
     }
     return result;
+}
+
+void Heap::runGCIfOverThreshold() {
+    if (objectCount > 2 * prevCount && objectCount > 256) {
+        collectGarbage();
+        prevCount = objectCount;
+    }
 }

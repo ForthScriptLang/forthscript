@@ -36,22 +36,25 @@ void prettyprintPrimitive(const Value& val, std::u32string& str) {
             str.append(U"Nil");
             break;
         case ValueType::String: {
-            std::u32string backslashed = convertToBackslashed(val.str->str);
+            std::u32string backslashed = convertToBackslashed(val.str->get());
             str.push_back(U'\"');
             str.append(backslashed);
             str.push_back(U'\"');
             break;
         }
         case ValueType::Word:
-            str.append(val.str->str);
+            str.append(val.str->get());
             break;
         case ValueType::WordAssign:
             str.push_back(U'=');
-            str.append(val.str->str);
+            str.append(val.str->get());
             break;
         case ValueType::WordDeclare:
             str.push_back(U'$');
-            str.append(val.str->str);
+            str.append(val.str->get());
+            break;
+        case ValueType::NativeWord:
+            str.append(U"<NativeWord>");
             break;
         default:
             break;

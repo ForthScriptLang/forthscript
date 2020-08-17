@@ -3,53 +3,38 @@
 #include <io/termio.hpp>
 #include <iostream>
 
-void SymbolTable::createScope() {
-    declaredInScope.push_back(std::unordered_set<std::u32string>());
-}
+void SymbolTable::createScope() { numDefined.push_back(0); }
 
 void SymbolTable::leaveScope() {
-    for (const std::u32string& str : declaredInScope.back()) {
-        values[str].pop_back();
-        if (values[str].empty()) {
-            values.erase(str);
-        }
+    for (size_t i = declared.size() - numDefined.back(); i < declared.size();
+         ++i) {
+        declared[i]->popValue();
     }
-    declaredInScope.pop_back();
+    numDefined.pop_back();
 }
 
-void SymbolTable::declareVariable(const std::u32string& name, Value val) {
-    if (declaredInScope.back().find(name) == declaredInScope.back().end()) {
-        declaredInScope.back().insert(name);
-        values[name].push_back(val);
+void SymbolTable::declareVariable(String* name, Value val) {
+    if (name->values == nullptr ||
+        name->values->back().second != numDefined.size()) {
+        // variable was not declared in this scope yet
+        name->pushValue(val, numDefined.size());
     } else {
-        values[name].back() = val;
+        name->getLastValue() = val;
     }
 }
 
-void SymbolTable::setVariable(const std::u32string& name, Value val) {
-    if (values[name].empty()) {
-        declareVariable(name, val);
+void SymbolTable::setVariable(String* name, Value val) {
+    if (name->values == nullptr) {
+        name->pushValue(val, numDefined.size());
+    } else {
+        name->getLastValue() = val;
     }
-    values[name].back() = val;
 }
 
-Value SymbolTable::getVariable(const std::u32string& name) {
-    if (values[name].empty()) {
-        Value none;
-        none.type = ValueType::Nil;
-        return none;
+Value SymbolTable::getVariable(String* name) {
+    if (name->values == nullptr) {
+        return Value();
+    } else {
+        return name->getLastValue();
     }
-    return values[name].back();
-}
-
-void SymbolTable::registerRootMarker(Heap& heap) {
-    heap.insertRootMarker([this](Heap& heap) {
-        for (const auto& pair : values) {
-            for (const auto& val : pair.second) {
-                if (isHeapType(val.type) && !(val.object->marked)) {
-                    heap.markObject(val.object);
-                }
-            }
-        }
-    });
 }

@@ -24,3 +24,25 @@ Object *Array::addPointedToQueue(Object *start) {
 }
 
 Object *String::addPointedToQueue(Object *start) { return start; }
+
+void String::pushValue(Value val, size_t scope) {
+    if (values == nullptr) {
+        values = new std::vector<std::pair<Value, size_t>>;
+    }
+    values->push_back(std::pair<Value, size_t>(val, scope));
+}
+
+Value &String::getLastValue() {
+    if (values == nullptr) {
+        throw std::runtime_error("no reference on the stack");
+    }
+    return std::get<0>(values->back());
+}
+
+void String::popValue() {
+    values->pop_back();
+    if (values->empty()) {
+        delete values;
+        values = nullptr;
+    }
+}

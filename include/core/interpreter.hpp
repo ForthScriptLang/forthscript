@@ -13,20 +13,34 @@ enum class ExecutionResultType { Error, Success, Return, Break };
 
 struct ExecutionResult {
     ExecutionResultType result;
-    std::u32string error;
+    const char32_t* error;
 };
 
-using NativeWord = std::function<ExecutionResult(struct Interpreter&)>;
+struct Success : public ExecutionResult {
+    Success();
+};
+
+struct EvalStackUnderflow : public ExecutionResult {
+    EvalStackUnderflow();
+};
+
+struct CallStackOverflow : public ExecutionResult {
+    CallStackOverflow();
+};
+
+struct TypeError : public ExecutionResult {
+    TypeError();
+};
 
 struct Interpreter {
     CallStack callStack;
     EvaluationStack evalStack;
     Heap heap;
     SymbolTable symTable;
-    std::unordered_map<std::u32string, NativeWord> nativeWords;
+    String *breakString, *returnString, *callString, *commaString, *forString,
+        *whileString;
 
     Interpreter(size_t maxRecursionDepth);
-    void defineNativeWord(const std::u32string& name, NativeWord word);
-    ExecutionResult callInterpreter(Array* code, const std::u32string& name,
-                                    bool newScope);
+    void defineNativeWord(const std::u32string& str, NativeWord word);
+    ExecutionResult callInterpreter(Array* code, bool newScope);
 };

@@ -1,57 +1,44 @@
 #include <std/stack.hpp>
 
 ExecutionResult dropOp(Interpreter& interp) {
-    if (interp.evalStack.stack.empty()) {
-        return ExecutionResult{ExecutionResultType::Error,
-                               U"Evaluation stack overflow"};
+    if (!interp.evalStack.popBack()) {
+        return EvalStackUnderflow();
     }
-    // ( a -- )
-    interp.evalStack.stack.pop_back();
-    return ExecutionResult{ExecutionResultType::Success, U""};
+    return Success();
 }
 
 ExecutionResult swapOp(Interpreter& interp) {
-    if (interp.evalStack.stack.size() < 2) {
-        return ExecutionResult{ExecutionResultType::Error,
-                               U"Evaluation stack overflow"};
+    if (!interp.evalStack.assertDepth(2)) {
+        return EvalStackUnderflow();
     }
-    // ( a b -- b a )
-    Value val1 = interp.evalStack.stack.back();  // b
-    interp.evalStack.stack.pop_back();
-    Value val2 = interp.evalStack.stack.back();  // a
-    interp.evalStack.stack.pop_back();
-    interp.evalStack.stack.push_back(val1);
-    interp.evalStack.stack.push_back(val2);
-    return ExecutionResult{ExecutionResultType::Success, U""};
+    Value b = interp.evalStack.popBack().value();
+    Value a = interp.evalStack.popBack().value();
+    interp.evalStack.pushBack(b);
+    interp.evalStack.pushBack(a);
+    return Success();
 }
 
 ExecutionResult dupOp(Interpreter& interp) {
-    if (interp.evalStack.stack.empty()) {
-        return ExecutionResult{ExecutionResultType::Error,
-                               U"Evaluation stack overflow"};
+    std::optional<Value> a = interp.evalStack.popBack();
+    if (!a) {
+        return EvalStackUnderflow();
     }
-    // ( a -- a a )
-    Value val1 = interp.evalStack.stack.back();  // a
-    interp.evalStack.stack.pop_back();
-    interp.evalStack.stack.push_back(val1);
-    interp.evalStack.stack.push_back(val1);
-    return ExecutionResult{ExecutionResultType::Success, U""};
+    interp.evalStack.pushBack(a.value());
+    interp.evalStack.pushBack(a.value());
+    return Success();
 }
 
 ExecutionResult overOp(Interpreter& interp) {
-    if (interp.evalStack.stack.size() < 2) {
-        return ExecutionResult{ExecutionResultType::Error,
-                               U"Evaluation stack overflow"};
+    std::optional<Value> a, b;
+    b = interp.evalStack.popBack();
+    a = interp.evalStack.popBack();
+    if (!a || !b) {
+        return EvalStackUnderflow();
     }
-    // (a b -- a b a)
-    Value val1 = interp.evalStack.stack.back();  // b
-    interp.evalStack.stack.pop_back();
-    Value val2 = interp.evalStack.stack.back();  // a
-    interp.evalStack.stack.pop_back();
-    interp.evalStack.stack.push_back(val2);  // a
-    interp.evalStack.stack.push_back(val1);  // b
-    interp.evalStack.stack.push_back(val2);  // a
-    return ExecutionResult{ExecutionResultType::Success, U""};
+    interp.evalStack.pushBack(a.value());
+    interp.evalStack.pushBack(b.value());
+    interp.evalStack.pushBack(a.value());
+    return Success();
 }
 
 void addStackManipNativeWords(Interpreter& interp) {

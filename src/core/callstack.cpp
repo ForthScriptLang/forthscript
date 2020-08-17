@@ -12,20 +12,20 @@ void CallStack::registerRootMarker(Heap &heap) {
     });
 }
 
-bool CallStack::addArrayCallFrame(Array *code, const std::u32string &name,
+bool CallStack::addArrayCallFrame(Array *code,
                                   bool newScope) {
     if (frames.size() == recursionLimit) {
         return false;
     }
-    frames.push_back(StackFrame{false, newScope, 0, code, name});
+    frames.push_back(StackFrame{false, newScope, 0, code});
     return true;
 }
 
-bool CallStack::addNativeCallFrame(const std::u32string &name) {
+bool CallStack::addNativeCallFrame() {
     if (frames.size() == recursionLimit) {
         return false;
     }
-    frames.push_back(StackFrame{true, false, 0, nullptr, name});
+    frames.push_back(StackFrame{true, false, 0, nullptr});
     return true;
 }
 

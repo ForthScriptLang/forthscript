@@ -1,34 +1,62 @@
-#include <assert.h>
-
 #include <core/interpreter.hpp>
+#include <expect.hpp>
+
+Success::Success() {
+    result = ExecutionResultType::Success;
+    error = U"Success";
+}
+
+EvalStackUnderflow::EvalStackUnderflow() {
+    result = ExecutionResultType::Error;
+    error = U"Evaluation stack underflow";
+}
+
+CallStackOverflow::CallStackOverflow() {
+    result = ExecutionResultType::Error;
+    error = U"Call stack overflow";
+}
+
+TypeError::TypeError() {
+    result = ExecutionResultType::Error;
+    error = U"Type error";
+}
 
 Interpreter::Interpreter(size_t maxRecursionDepth)
     : callStack(maxRecursionDepth) {
     callStack.registerRootMarker(heap);
     evalStack.registerRootMarker(heap);
-    symTable.registerRootMarker(heap);
 }
 
 void Interpreter::defineNativeWord(const std::u32string& name,
                                    NativeWord word) {
-    nativeWords[name] = word;
+    String* str = heap.makeStringObject(name);
+    Value val;
+    val.word = word;
+    val.type = ValueType::NativeWord;
+    symTable.declareVariable(str, val);
+    forString = heap.makeStringObject(std::u32string(U"for"));
+    whileString = heap.makeStringObject(std::u32string(U"while"));
+    breakString = heap.makeStringObject(std::u32string(U"break"));
+    returnString = heap.makeStringObject(std::u32string(U"return"));
+    callString = heap.makeStringObject(std::u32string(U"!"));
+    commaString = heap.makeStringObject(std::u32string(U","));
 }
 
-ExecutionResult Interpreter::callInterpreter(Array* code,
-                                             const std::u32string& name,
-                                             bool newScope) {
+ExecutionResult Interpreter::callInterpreter(Array* code, bool newScope) {
     enum class InterpreterState {
         Interpreting,
         Breaking,
         Returning
     } state = InterpreterState::Interpreting;
-    callStack.addArrayCallFrame(code, name, newScope);
+    callStack.addArrayCallFrame(code, newScope);
     if (newScope) {
         symTable.createScope();
     }
     while (true) {
+        // check for garbage collection
+        heap.runGCIfOverThreshold();
         // handling break and return
-        if (state != InterpreterState::Interpreting) {
+        if_unlikely(state != InterpreterState::Interpreting) {
             // waiting for "for" or "while"
             while (true) {
                 if (callStack.frames.empty()) {
@@ -62,27 +90,30 @@ ExecutionResult Interpreter::callInterpreter(Array* code,
                     continue;
                 }
                 if (state == InterpreterState::Breaking) {
-                    if (val.str->str == U"while" || val.str->str == U"for") {
+                    if (val.str == whileString || val.str == forString) {
                         state = InterpreterState::Interpreting;
                         break;
                     }
                 } else if (state == InterpreterState::Returning) {
-                    if (val.str->str == U"!" || val.str->str == U",") {
+                    if (val.str == callString || val.str == commaString) {
                         state = InterpreterState::Interpreting;
                         break;
                     }
+                }
+                if (callStack.removeTopCallFrame()) {
+                    symTable.leaveScope();
                 }
             }
         }
         // nothing on the call stack => interpreter can be exited
         if (callStack.frames.empty()) {
-            return ExecutionResult{ExecutionResultType::Success, U""};
+            return Success();
         }
         StackFrame& topFrame = callStack.frames.back();
         // if native subroutine of the stack, aknowledge success
         // and return
         if (topFrame.native) {
-            return ExecutionResult{ExecutionResultType::Success, U""};
+            return Success();
         }
         // if ip is beyond frame size, perform automatic return
         if (topFrame.code->values.size() <= topFrame.ip) {
@@ -101,87 +132,71 @@ ExecutionResult Interpreter::callInterpreter(Array* code,
             case ValueType::String:
             case ValueType::Placeholder:
             case ValueType::Array:
-                evalStack.stack.push_back(ins);
+            case ValueType::NativeWord:
+                evalStack.pushBack(ins);
                 topFrame.ip++;
                 break;
             case ValueType::Word:
-                if (ins.str->str == U"!" || ins.str->str == U",") {
-                    if (evalStack.stack.empty()) {
-                        return ExecutionResult{ExecutionResultType::Error,
-                                               U"Evaluation stack underflow"};
+                if (ins.str == callString || ins.str == commaString) {
+                    std::optional<Value> newTraceOptional = evalStack.popBack();
+                    if (!newTraceOptional) {
+                        return EvalStackUnderflow();
                     }
-                    Value& newTrace = evalStack.stack.back();
+                    Value newTrace = newTraceOptional.value();
                     if (newTrace.type != ValueType::Array) {
-                        return ExecutionResult{ExecutionResultType::Error,
-                                               U"Type error"};
-                    }
-                    std::u32string frameName = U"<unknown>";
-                    // fancy method for getting func name
-                    if (topFrame.ip != 0 &&
-                        topFrame.code->values[topFrame.ip - 1].type ==
-                            ValueType::Word &&
-                        nativeWords.find(
-                            topFrame.code->values[topFrame.ip - 1].str->str) ==
-                            nativeWords.end()) {
-                        frameName =
-                            topFrame.code->values[topFrame.ip - 1].str->str;
+                        return TypeError();
                     }
                     topFrame.ip++;
-                    if (!callStack.addArrayCallFrame(newTrace.arr, frameName,
-                                                     ins.str->str == U"!")) {
-                        return ExecutionResult{ExecutionResultType::Error,
-                                               U"Call stack overflow"};
+                    if (!callStack.addArrayCallFrame(newTrace.arr,
+                                                     ins.str == callString)) {
+                        return CallStackOverflow();
                     }
-                    if (ins.str->str == U"!") {
+                    if (ins.str->get() == U"!") {
                         symTable.createScope();
                     }
-                    evalStack.stack.pop_back();
                     continue;
-                } else if (ins.str->str == U"return" ||
-                           ins.str->str == U"break") {
-                    state = ins.str->str == U"return"
+                } else if (ins.str == returnString || ins.str == breakString) {
+                    state = ins.str == returnString
                                 ? InterpreterState::Returning
                                 : InterpreterState::Breaking;
-                } else if (nativeWords.find(ins.str->str) !=
-                           nativeWords.end()) {
-                    if (!callStack.addNativeCallFrame(ins.str->str)) {
-                        return ExecutionResult{ExecutionResultType::Error,
-                                               U"Call stack overflow"};
-                    }
-                    topFrame.ip++;
-                    ExecutionResult result = nativeWords[ins.str->str](*this);
-                    if (result.result != ExecutionResultType::Success) {
-                        if (result.result == ExecutionResultType::Break) {
-                            state = InterpreterState::Breaking;
-                            callStack.removeTopCallFrame();
-                            continue;
-                        } else if (result.result ==
-                                   ExecutionResultType::Return) {
-                            state = InterpreterState::Returning;
-                            callStack.removeTopCallFrame();
-                            continue;
-                        }
-                        return result;
-                    }
-                    callStack.removeTopCallFrame();
+                    continue;
                 } else {
-                    evalStack.stack.push_back(
-                        symTable.getVariable(ins.str->str));
+                    Value val = symTable.getVariable(ins.str);
                     topFrame.ip++;
+                    if (val.type == ValueType::NativeWord) {
+                        if (!callStack.addNativeCallFrame()) {
+                            return CallStackOverflow();
+                        }
+                        ExecutionResult result = val.word(*this);
+                        callStack.removeTopCallFrame();
+                        if (result.result != ExecutionResultType::Success) {
+                            if (result.result == ExecutionResultType::Break) {
+                                state = InterpreterState::Breaking;
+                                continue;
+                            } else if (result.result ==
+                                       ExecutionResultType::Return) {
+                                state = InterpreterState::Returning;
+                                continue;
+                            } else {
+                                return result;
+                            }
+                        }
+                    } else {
+                        evalStack.pushBack(val);
+                    }
                 }
                 break;
             case ValueType::WordAssign:
             case ValueType::WordDeclare:
-                if (evalStack.stack.empty()) {
-                    return ExecutionResult{ExecutionResultType::Error,
-                                           U"Evaluation stack underflow"};
+                std::optional<Value> valOptional = evalStack.popBack();
+                if (!valOptional) {
+                    return EvalStackUnderflow();
                 }
-                Value val = evalStack.stack.back();
-                evalStack.stack.pop_back();
+                Value val = valOptional.value();
                 if (ins.type == ValueType::WordAssign) {
-                    symTable.setVariable(ins.str->str, val);
+                    symTable.setVariable(ins.str, val);
                 } else {
-                    symTable.declareVariable(ins.str->str, val);
+                    symTable.declareVariable(ins.str, val);
                 }
                 topFrame.ip++;
                 break;

@@ -1,22 +1,20 @@
+#include <expect.hpp>
 #include <std/comparisons.hpp>
 #include <std/operators.hpp>
 
-using CompOperator = bool(int64_t, int64_t);
-
-NativeWord makeCompOperator(CompOperator op) {
-    return makeFromBinaryOperator(
-        [op](Value val1, Value val2,
-             [[maybe_unused]] Interpreter& interp) -> Value {
-            if (val1.type != ValueType::Numeric ||
-                val2.type != ValueType::Numeric) {
-                return Value();
-            }
-            Value intResult;
-            intResult.type = ValueType::Boolean;
-            intResult.numericValue = op(val1.numericValue, val2.numericValue);
-            return intResult;
-        });
-}
+#define MAKE_COMP_OPERATOR(name, op)                                       \
+    Value name##_comp(Value val1, Value val2,                              \
+                      [[maybe_unused]] Interpreter& interp) {              \
+        if_unlikely(val1.type != ValueType::Numeric ||                     \
+                    val2.type != ValueType::Numeric) {                     \
+            return Value();                                                \
+        }                                                                  \
+        Value intResult;                                                   \
+        intResult.type = ValueType::Boolean;                               \
+        intResult.numericValue = op(val1.numericValue, val2.numericValue); \
+        return intResult;                                                  \
+    }                                                                      \
+    MAKE_FROM_BINARY_OPERATOR(name, name##_comp)
 
 Value eqOperator(Value val1, Value val2, [[maybe_unused]] Interpreter& interp) {
     Value result;
@@ -40,7 +38,10 @@ Value eqOperator(Value val1, Value val2, [[maybe_unused]] Interpreter& interp) {
         case ValueType::Word:
         case ValueType::WordAssign:
         case ValueType::WordDeclare:
-            result.booleanValue = val1.str->str == val2.str->str;
+            result.booleanValue = val1.str == val2.str;
+            break;
+        case ValueType::NativeWord:
+            result.booleanValue = val1.word == val2.word;
             break;
         case ValueType::Nil:
             result.booleanValue = true;
@@ -55,16 +56,24 @@ Value neOperator(Value val1, Value val2, Interpreter& interp) {
     return result;
 }
 
+MAKE_FROM_BINARY_OPERATOR(eqNativeWord, eqOperator)
+MAKE_FROM_BINARY_OPERATOR(neNativeWord, neOperator)
+
 bool ltOperator(int64_t num1, int64_t num2) { return num1 < num2; }
 bool leOperator(int64_t num1, int64_t num2) { return num1 <= num2; }
 bool gtOperator(int64_t num1, int64_t num2) { return num1 > num2; }
 bool geOperator(int64_t num1, int64_t num2) { return num1 >= num2; }
 
+MAKE_COMP_OPERATOR(ltNativeWord, ltOperator)
+MAKE_COMP_OPERATOR(leNativeWord, leOperator)
+MAKE_COMP_OPERATOR(gtNativeWord, gtOperator)
+MAKE_COMP_OPERATOR(geNativeWord, geOperator)
+
 void addComparisonsNativeWords(Interpreter& interpreter) {
-    interpreter.defineNativeWord(U"<", makeCompOperator(ltOperator));
-    interpreter.defineNativeWord(U"<=", makeCompOperator(leOperator));
-    interpreter.defineNativeWord(U">", makeCompOperator(gtOperator));
-    interpreter.defineNativeWord(U">=", makeCompOperator(geOperator));
-    interpreter.defineNativeWord(U"==", makeFromBinaryOperator(eqOperator));
-    interpreter.defineNativeWord(U"!=", makeFromBinaryOperator(neOperator));
+    interpreter.defineNativeWord(U"<", ltNativeWord);
+    interpreter.defineNativeWord(U"<=", leNativeWord);
+    interpreter.defineNativeWord(U">", gtNativeWord);
+    interpreter.defineNativeWord(U">=", geNativeWord);
+    interpreter.defineNativeWord(U"==", eqNativeWord);
+    interpreter.defineNativeWord(U"!=", neNativeWord);
 }

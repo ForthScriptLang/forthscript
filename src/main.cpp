@@ -34,26 +34,23 @@ void reportSyntaxError(ParseResult res) {
     print(U"\n");
 }
 
-void reportRuntimeError(ExecutionResult res, Interpreter& interp) {
-    for (size_t i = 0; i < interp.callStack.frames.size(); ++i) {
-        print(U"at <");
-        print(interp.callStack.frames[i].name);
-        print(U">\n");
-    }
+void reportRuntimeError(ExecutionResult res,
+                        [[maybe_unused]] Interpreter& interp) {
     print(U"Runtime error: ");
-    print(res.error);
+    print(std::u32string(res.error));
     print(U"\n");
 }
 
 void hostRepl() {
     Interpreter interp(1024);
-    initStd(interp);
+    // initStd requires scope for adding native words
     interp.symTable.createScope();
+    initStd(interp);
     while (true) {
         print(U"[");
-        for (size_t i = 0; i < interp.evalStack.stack.size(); ++i) {
-            print(prettyprint(interp.evalStack.stack[i]));
-            if (i != interp.evalStack.stack.size() - 1) {
+        for (size_t i = 0; i < interp.evalStack.getStack().size(); ++i) {
+            print(prettyprint(interp.evalStack.getStack()[i]));
+            if (i != interp.evalStack.getStack().size() - 1) {
                 print(U" ");
             }
         }
@@ -65,11 +62,11 @@ void hostRepl() {
             interp.heap.collectGarbage();
             continue;
         }
-        ExecutionResult res =
-            interp.callInterpreter(result.code, U"repl_start", false);
+        ExecutionResult res = interp.callInterpreter(result.code, false);
         if (res.result != ExecutionResultType::Success) {
             reportRuntimeError(res, interp);
-            interp.evalStack.stack.clear();
+            interp.evalStack.clear();
+            interp.callStack.frames.clear();
             interp.heap.collectGarbage();
         }
     }
@@ -82,6 +79,8 @@ int main(int argc, char** argv) {
     }
     char* filename = argv[1];
     Interpreter interp(1024);
+    // initStd requires scope for adding native words
+    interp.symTable.createScope();
     initStd(interp);
     std::u32string source = readFile(filename);
     ParseResult result = parse(source, interp.heap);
@@ -90,10 +89,11 @@ int main(int argc, char** argv) {
         interp.heap.collectGarbage();
         return -1;
     }
-    ExecutionResult res = interp.callInterpreter(result.code, U"main", true);
+    ExecutionResult res = interp.callInterpreter(result.code, false);
     if (res.result != ExecutionResultType::Success) {
         reportRuntimeError(res, interp);
-        interp.evalStack.stack.clear();
+        interp.evalStack.clear();
+        interp.callStack.frames.clear();
         interp.heap.collectGarbage();
         return -1;
     }

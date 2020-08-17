@@ -1,5 +1,6 @@
 #pragma once
 
+#include <core/stringpool.hpp>
 #include <core/values.hpp>
 #include <functional>
 #include <string>
@@ -19,10 +20,17 @@ struct Heap {
 
     void markObject(Object *obj);
     void collectGarbage();
+    void runGCIfOverThreshold();
     Heap();
 
+    StringPool pool;
     String *makeStringObject(const std::u32string &val);
+    String *makeStringObject(std::u32string &&val);
     String *makeStringObject(const std::u32string_view &val);
+
+    size_t objectCount;
+    size_t prevCount;
+
     Array *makeArrayObject(Value defaultVal, size_t size);
     Array *shallowCopy(Array *other);
     Array *deepCopy(Array *other);

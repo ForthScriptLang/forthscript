@@ -9,7 +9,6 @@ struct StackFrame {
     bool newScope;
     size_t ip;
     Array *code;
-    std::u32string name;
 };
 
 struct CallStack {
@@ -18,9 +17,8 @@ struct CallStack {
 
     CallStack(size_t recLimit);
     void registerRootMarker(Heap &heap);
-    bool addArrayCallFrame(Array *code, const std::u32string &name,
-                           bool newScope);
-    bool addNativeCallFrame(const std::u32string &name);
+    bool addArrayCallFrame(Array *code, bool newScope);
+    bool addNativeCallFrame();
     bool removeTopCallFrame();
     void setRecursionLimit(size_t limit);
 };
