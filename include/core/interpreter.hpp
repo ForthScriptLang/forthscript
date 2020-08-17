@@ -16,8 +16,6 @@ struct ExecutionResult {
     std::u32string error;
 };
 
-using NativeWord = std::function<ExecutionResult(struct Interpreter&)>;
-
 struct Interpreter {
     CallStack callStack;
     EvaluationStack evalStack;

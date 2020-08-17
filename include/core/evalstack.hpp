@@ -12,8 +12,8 @@ class EvaluationStack {
     void registerRootMarker(Heap &heap);
     std::optional<Value> popBack();
     void pushBack(Value val);
-    bool assertDepth(size_t count);
+    bool assertDepth(size_t count) const;
     void clear();
 
-    inline const std::vector<Value> getStack() { return stack; }
+    inline const std::vector<Value> getStack() const { return stack; }
 };

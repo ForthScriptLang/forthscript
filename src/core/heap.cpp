@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <core/heap.hpp>
 #include <dbg.hpp>
+#include <io/termio.hpp>
 #include <iostream>
 #include <queue>
 #include <unordered_map>
@@ -74,6 +75,7 @@ String *Heap::makeStringObject(const std::u32string_view &val) {
     if (result.second) {
         return obj;
     } else {
+        delete obj;
         return *result.first;
     }
 }

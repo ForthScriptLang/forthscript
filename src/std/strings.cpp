@@ -4,12 +4,15 @@
 #include <std/strings.hpp>
 
 Value toStringOp(Value val, Interpreter& interp) {
+    std::u32string resultCppStr = prettyprint(val);
     Value result;
     result.type = ValueType::String;
-    result.str = interp.heap.makeStringObject(prettyprint(val));
+    result.str = interp.heap.makeStringObject(resultCppStr);
     return result;
 }
 
+MAKE_FROM_UNARY_OPERATOR(toStringNativeWord, toStringOp)
+
 void addStringManipulationNativeWords(Interpreter& interp) {
-    interp.defineNativeWord(U"to_string", makeFromUnaryOperator(toStringOp));
+    interp.defineNativeWord(U"to_string", toStringNativeWord);
 }

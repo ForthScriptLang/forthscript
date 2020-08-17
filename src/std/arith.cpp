@@ -1,27 +1,8 @@
 #include <stdint.h>
 
+#include <expect.hpp>
 #include <std/arith.hpp>
 #include <std/operators.hpp>
-
-using ArithOperator = int64_t(int64_t, int64_t);
-
-NativeWord makeArithOperator(ArithOperator op) {
-    return makeFromBinaryOperator(
-        [op](Value val1, Value val2,
-             [[maybe_unused]] Interpreter& interp) -> Value {
-            if (val1.type != ValueType::Numeric ||
-                val2.type != ValueType::Numeric) {
-                return Value();
-            }
-            Value intResult;
-            intResult.type = ValueType::Numeric;
-            intResult.numericValue = op(val1.numericValue, val2.numericValue);
-            return intResult;
-        });
-}
-
-int64_t subOperator(int64_t a, int64_t b) { return a - b; }
-int64_t modOperator(int64_t a, int64_t b) { return a % b; }
 
 Value addOperator(Value val1, Value val2, Interpreter& interp) {
     if (val1.type == ValueType::Numeric && val2.type == ValueType::Numeric) {
@@ -66,13 +47,12 @@ Value mulOperator(Value val1, Value val2, Interpreter& interp) {
         }
         Value stringResult;
         stringResult.type = ValueType::String;
-        std::u32string_view dummy;
-        std::u32string result;
-        result.reserve(val1.str->get().size() * val2.numericValue);
+        std::u32string copy;
+        copy.reserve(val1.str->get().size() * val2.numericValue);
         for (size_t i = 0; i < (size_t)val2.numericValue; ++i) {
-            result.append(val1.str->get());
+            copy.append(val1.str->get());
         }
-        stringResult.str = new String(result);
+        stringResult.str = interp.heap.makeStringObject(copy);
         return stringResult;
     } else if (val1.type == ValueType::Array &&
                val2.type == ValueType::Numeric) {
@@ -95,7 +75,8 @@ Value mulOperator(Value val1, Value val2, Interpreter& interp) {
 }
 
 Value divOperator(Value val1, Value val2, [[maybe_unused]] Interpreter&) {
-    if (val1.type != ValueType::Numeric || val2.type != ValueType::Numeric) {
+    if_unlikely(val1.type != ValueType::Numeric ||
+                val2.type != ValueType::Numeric) {
         return Value();
     }
     Value intResult;
@@ -107,10 +88,41 @@ Value divOperator(Value val1, Value val2, [[maybe_unused]] Interpreter&) {
     return intResult;
 }
 
+Value modOperator(Value val1, Value val2, [[maybe_unused]] Interpreter&) {
+    if_unlikely(val1.type != ValueType::Numeric ||
+                val2.type != ValueType::Numeric) {
+        return Value();
+    }
+    Value intResult;
+    intResult.type = ValueType::Numeric;
+    if (val2.numericValue == 0) {
+        return Value();
+    }
+    intResult.numericValue = val1.numericValue % val2.numericValue;
+    return intResult;
+}
+
+Value subOperator(Value val1, Value val2, [[maybe_unused]] Interpreter&) {
+    if_unlikely(val1.type != ValueType::Numeric ||
+                val2.type != ValueType::Numeric) {
+        return Value();
+    }
+    Value intResult;
+    intResult.type = ValueType::Numeric;
+    intResult.numericValue = val1.numericValue - val2.numericValue;
+    return intResult;
+}
+
+MAKE_FROM_BINARY_OPERATOR(addNativeWord, addOperator)
+MAKE_FROM_BINARY_OPERATOR(mulNativeWord, mulOperator)
+MAKE_FROM_BINARY_OPERATOR(divNativeWord, divOperator)
+MAKE_FROM_BINARY_OPERATOR(modNativeWord, modOperator)
+MAKE_FROM_BINARY_OPERATOR(subNativeWord, subOperator)
+
 void addArithNativeWords(Interpreter& interpreter) {
-    interpreter.defineNativeWord(U"+", makeFromBinaryOperator(addOperator));
-    interpreter.defineNativeWord(U"-", makeArithOperator(subOperator));
-    interpreter.defineNativeWord(U"*", makeFromBinaryOperator(mulOperator));
-    interpreter.defineNativeWord(U"/", makeFromBinaryOperator(divOperator));
-    interpreter.defineNativeWord(U"%", makeArithOperator(modOperator));
+    interpreter.defineNativeWord(U"+", addNativeWord);
+    interpreter.defineNativeWord(U"-", subNativeWord);
+    interpreter.defineNativeWord(U"*", mulNativeWord);
+    interpreter.defineNativeWord(U"/", divNativeWord);
+    interpreter.defineNativeWord(U"%", modNativeWord);
 }

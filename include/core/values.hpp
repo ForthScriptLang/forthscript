@@ -15,6 +15,8 @@ struct Object {
     virtual ~Object();
 };
 
+typedef struct ExecutionResult (*NativeWord)(struct Interpreter &);
+
 enum class ValueType {
     Nil = 1,
     Numeric = 2,

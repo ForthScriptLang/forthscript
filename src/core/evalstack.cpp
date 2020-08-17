@@ -26,6 +26,6 @@ void EvaluationStack::clear() {
     stack.shrink_to_fit();
 }
 
-bool EvaluationStack::assertDepth(size_t count) {
+bool EvaluationStack::assertDepth(size_t count) const {
     return stack.size() >= count;
 }
