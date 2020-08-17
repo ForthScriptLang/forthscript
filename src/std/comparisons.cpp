@@ -40,6 +40,8 @@ Value eqOperator(Value val1, Value val2, [[maybe_unused]] Interpreter& interp) {
         case ValueType::WordDeclare:
             result.booleanValue = val1.str == val2.str;
             break;
+        case ValueType::NativeWord:
+            result.booleanValue = val1.word == val2.word;
             break;
         case ValueType::Nil:
             result.booleanValue = true;

@@ -47,8 +47,9 @@ void reportRuntimeError(ExecutionResult res, Interpreter& interp) {
 
 void hostRepl() {
     Interpreter interp(1024);
-    initStd(interp);
+    // initStd requires scope for adding native words
     interp.symTable.createScope();
+    initStd(interp);
     while (true) {
         print(U"[");
         for (size_t i = 0; i < interp.evalStack.getStack().size(); ++i) {
@@ -83,6 +84,8 @@ int main(int argc, char** argv) {
     }
     char* filename = argv[1];
     Interpreter interp(1024);
+    // initStd requires scope for adding native words
+    interp.symTable.createScope();
     initStd(interp);
     std::u32string source = readFile(filename);
     ParseResult result = parse(source, interp.heap);
@@ -91,7 +94,7 @@ int main(int argc, char** argv) {
         interp.heap.collectGarbage();
         return -1;
     }
-    ExecutionResult res = interp.callInterpreter(result.code, U"main", true);
+    ExecutionResult res = interp.callInterpreter(result.code, U"main", false);
     if (res.result != ExecutionResultType::Success) {
         reportRuntimeError(res, interp);
         interp.evalStack.clear();

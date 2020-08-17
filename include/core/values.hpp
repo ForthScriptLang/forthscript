@@ -15,10 +15,9 @@ struct Object {
     virtual ~Object();
 };
 
-typedef struct ExecutionResult (*NativeWord)(struct Interpreter &);
-
 enum class ValueType {
-    Nil = 1,
+    Nil = 0,
+    NativeWord = 1,
     Numeric = 2,
     Boolean = 3,
     Word = 128,
@@ -32,6 +31,8 @@ enum class ValueType {
 inline bool isHeapType(ValueType type) { return (((int)(type)) & 128) != 0; }
 inline bool isArrayType(ValueType type) { return (((int)(type)) & 256) != 0; }
 
+typedef struct ExecutionResult (*NativeWord)(struct Interpreter &);
+
 struct Value {
     ValueType type = ValueType::Nil;
     union {
@@ -40,6 +41,7 @@ struct Value {
         Object *object;
         struct String *str;
         struct Array *arr;
+        NativeWord word;
     };
 };
 

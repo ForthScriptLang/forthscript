@@ -21,7 +21,6 @@ struct Interpreter {
     EvaluationStack evalStack;
     Heap heap;
     SymbolTable symTable;
-    std::unordered_map<std::u32string, NativeWord> nativeWords;
 
     Interpreter(size_t maxRecursionDepth);
     void defineNativeWord(const std::u32string& name, NativeWord word);

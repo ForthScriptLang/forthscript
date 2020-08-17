@@ -11,7 +11,10 @@ Interpreter::Interpreter(size_t maxRecursionDepth)
 
 void Interpreter::defineNativeWord(const std::u32string& name,
                                    NativeWord word) {
-    nativeWords[name] = word;
+    Value val;
+    val.word = word;
+    val.type = ValueType::NativeWord;
+    symTable.declareVariable(name, val);
 }
 
 ExecutionResult Interpreter::callInterpreter(Array* code,
@@ -49,6 +52,7 @@ ExecutionResult Interpreter::callInterpreter(Array* code,
             case ValueType::String:
             case ValueType::Placeholder:
             case ValueType::Array:
+            case ValueType::NativeWord:
                 evalStack.pushBack(ins);
                 topFrame.ip++;
                 break;
@@ -66,15 +70,6 @@ ExecutionResult Interpreter::callInterpreter(Array* code,
                     }
                     std::u32string frameName = U"<unknown>";
                     // fancy method for getting func name
-                    if (topFrame.ip != 0 &&
-                        topFrame.code->values[topFrame.ip - 1].type ==
-                            ValueType::Word &&
-                        nativeWords.find(topFrame.code->values[topFrame.ip - 1]
-                                             .str->get()) ==
-                            nativeWords.end()) {
-                        frameName =
-                            topFrame.code->values[topFrame.ip - 1].str->get();
-                    }
                     topFrame.ip++;
                     if (!callStack.addArrayCallFrame(newTrace.arr, frameName,
                                                      ins.str->get() == U"!")) {
@@ -85,20 +80,21 @@ ExecutionResult Interpreter::callInterpreter(Array* code,
                         symTable.createScope();
                     }
                     continue;
-                } else if (nativeWords.find(ins.str->get()) !=
-                           nativeWords.end()) {
-                    if (!callStack.addNativeCallFrame(ins.str->get())) {
-                        return ExecutionResult{ExecutionResultType::Error,
-                                               U"Call stack overflow"};
-                    }
-                    ExecutionResult result = nativeWords[ins.str->get()](*this);
-                    if (result.result != ExecutionResultType::Success) {
-                        return result;
-                    }
-                    callStack.removeTopCallFrame();
-                    topFrame.ip++;
                 } else {
-                    evalStack.pushBack(symTable.getVariable(ins.str->get()));
+                    Value val = symTable.getVariable(ins.str->get());
+                    if (val.type == ValueType::NativeWord) {
+                        if (!callStack.addNativeCallFrame(ins.str->get())) {
+                            return ExecutionResult{ExecutionResultType::Error,
+                                                   U"Call stack overflow"};
+                        }
+                        ExecutionResult result = val.word(*this);
+                        if (result.result != ExecutionResultType::Success) {
+                            return result;
+                        }
+                        callStack.removeTopCallFrame();
+                    } else {
+                        evalStack.pushBack(val);
+                    }
                     topFrame.ip++;
                 }
                 break;
