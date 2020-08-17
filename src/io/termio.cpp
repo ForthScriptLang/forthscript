@@ -48,6 +48,8 @@ void initREPL(Interpreter &interpreter) {
             std::string slice(editBuffer + lastSuccessfulStart);
             std::u32string prefix = toUTF32(slice);
             std::unordered_set<String *> visited;
+            std::string beforeCompleition =
+                std::string(editBuffer).substr(0, lastSuccessfulStart);
             for (String *str : interpreter.symTable.getDeclared()) {
                 if (visited.find(str) != visited.end()) {
                     continue;
@@ -55,7 +57,7 @@ void initREPL(Interpreter &interpreter) {
                 visited.insert(str);
                 if (str->get().substr(0, prefix.size()) == prefix) {
                     std::string completition = fromUTF32(str->get());
-                    completions.push_back(completition);
+                    completions.push_back(beforeCompleition + completition);
                 }
             }
             std::sort(completions.begin(), completions.end());
