@@ -5,6 +5,7 @@
 #include <io/prettyprint.hpp>
 #include <io/termio.hpp>
 #include <iostream>
+#include <linenoise.hpp>
 #include <locale>
 #include <std/arith.hpp>
 #include <std/comparisons.hpp>
@@ -42,20 +43,22 @@ void reportRuntimeError(ExecutionResult res,
 }
 
 void hostRepl() {
+    linenoise::SetHistoryMaxLen(1024);
     Interpreter interp(1024);
     // initStd requires scope for adding native words
     interp.symTable.createScope();
     initStd(interp);
     while (true) {
-        print(U"[");
+        std::u32string prompt;
+        prompt.append(U"[");
         for (size_t i = 0; i < interp.evalStack.getStack().size(); ++i) {
-            print(prettyprint(interp.evalStack.getStack()[i]));
+            prompt.append(prettyprint(interp.evalStack.getStack()[i]));
             if (i != interp.evalStack.getStack().size() - 1) {
-                print(U" ");
+                prompt.append(U" ");
             }
         }
-        print(U"]# ");
-        std::u32string s = readLine();
+        prompt.append(U"]# ");
+        std::u32string s = readLine(prompt);
         ParseResult result = parse(s, interp.heap);
         if (result.isError()) {
             reportSyntaxError(result);
