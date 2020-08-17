@@ -9,7 +9,7 @@
 #include <string>
 #include <unordered_map>
 
-enum class ExecutionResultType { Error, Success };
+enum class ExecutionResultType { Error, Success, Return, Break };
 
 struct ExecutionResult {
     ExecutionResultType result;
@@ -37,7 +37,8 @@ struct Interpreter {
     EvaluationStack evalStack;
     Heap heap;
     SymbolTable symTable;
-    String *breakString, *returnString, *callString, *commaString;
+    String *breakString, *returnString, *callString, *commaString, *forString,
+        *whileString;
 
     Interpreter(size_t maxRecursionDepth);
     void defineNativeWord(const std::u32string& str, NativeWord word);
