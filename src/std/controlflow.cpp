@@ -16,13 +16,13 @@ ExecutionResult ifElseOp(Interpreter& interp) {
     }
     if (condition.booleanValue) {
         ExecutionResult res =
-            interp.callInterpreter(ifCodeVal.arr, U"if_body", true);
+            interp.callInterpreter(ifCodeVal.arr, true);
         if (res.result != ExecutionResultType::Success) {
             return res;
         }
     } else {
         ExecutionResult res =
-            interp.callInterpreter(elseCodeVal.arr, U"else_body", true);
+            interp.callInterpreter(elseCodeVal.arr, true);
         if (res.result != ExecutionResultType::Success) {
             return res;
         }
@@ -44,7 +44,7 @@ ExecutionResult ifOp(Interpreter& interp) {
                                U"Evaluation stack underflow"};
     }
     if (condition.booleanValue) {
-        ExecutionResult res = interp.callInterpreter(ifCodeVal.arr, U"", true);
+        ExecutionResult res = interp.callInterpreter(ifCodeVal.arr, true);
         if (res.result != ExecutionResultType::Success) {
             return res;
         }
@@ -66,7 +66,7 @@ ExecutionResult whileOp(Interpreter& interp) {
     }
     while (true) {
         ExecutionResult res =
-            interp.callInterpreter(condCode.arr, U"condition", true);
+            interp.callInterpreter(condCode.arr, true);
         if (res.result != ExecutionResultType::Success) {
             return res;
         }
@@ -77,7 +77,7 @@ ExecutionResult whileOp(Interpreter& interp) {
         if (!testResult.value().booleanValue) {
             break;
         }
-        res = interp.callInterpreter(loopCode.arr, U"loop_body", true);
+        res = interp.callInterpreter(loopCode.arr, true);
         if (res.result != ExecutionResultType::Success) {
             return res;
         }
@@ -100,7 +100,7 @@ ExecutionResult forOp(Interpreter& interp) {
     }
     while (true) {
         ExecutionResult res =
-            interp.callInterpreter(condCode.arr, U"condition", true);
+            interp.callInterpreter(condCode.arr, true);
         if (res.result != ExecutionResultType::Success) {
             return res;
         }
@@ -111,11 +111,11 @@ ExecutionResult forOp(Interpreter& interp) {
         if (!testResult.value().booleanValue) {
             break;
         }
-        res = interp.callInterpreter(loopCode.arr, U"loop_body", true);
+        res = interp.callInterpreter(loopCode.arr, true);
         if (res.result != ExecutionResultType::Success) {
             return res;
         }
-        res = interp.callInterpreter(iterCode.arr, U"next_body", true);
+        res = interp.callInterpreter(iterCode.arr, true);
         if (res.result != ExecutionResultType::Success) {
             return res;
         }

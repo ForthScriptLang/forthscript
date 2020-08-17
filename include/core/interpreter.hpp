@@ -24,7 +24,6 @@ struct Interpreter {
     String *breakString, *returnString, *callString, *commaString;
 
     Interpreter(size_t maxRecursionDepth);
-    void defineNativeWord(const std::u32string& name, NativeWord word);
-    ExecutionResult callInterpreter(Array* code, const std::u32string& name,
-                                    bool newScope);
+    void defineNativeWord(const std::u32string& str, NativeWord word);
+    ExecutionResult callInterpreter(Array* code, bool newScope);
 };

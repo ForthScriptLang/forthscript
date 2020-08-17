@@ -34,12 +34,8 @@ void reportSyntaxError(ParseResult res) {
     print(U"\n");
 }
 
-void reportRuntimeError(ExecutionResult res, Interpreter& interp) {
-    for (size_t i = 0; i < interp.callStack.frames.size(); ++i) {
-        print(U"at <");
-        print(interp.callStack.frames[i].name);
-        print(U">\n");
-    }
+void reportRuntimeError(ExecutionResult res,
+                        [[maybe_unused]] Interpreter& interp) {
     print(U"Runtime error: ");
     print(res.error);
     print(U"\n");
@@ -66,8 +62,7 @@ void hostRepl() {
             interp.heap.collectGarbage();
             continue;
         }
-        ExecutionResult res =
-            interp.callInterpreter(result.code, U"repl_start", false);
+        ExecutionResult res = interp.callInterpreter(result.code, false);
         if (res.result != ExecutionResultType::Success) {
             reportRuntimeError(res, interp);
             interp.evalStack.clear();
@@ -94,7 +89,7 @@ int main(int argc, char** argv) {
         interp.heap.collectGarbage();
         return -1;
     }
-    ExecutionResult res = interp.callInterpreter(result.code, U"main", false);
+    ExecutionResult res = interp.callInterpreter(result.code, false);
     if (res.result != ExecutionResultType::Success) {
         reportRuntimeError(res, interp);
         interp.evalStack.clear();

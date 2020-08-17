@@ -22,9 +22,8 @@ void Interpreter::defineNativeWord(const std::u32string& name,
 }
 
 ExecutionResult Interpreter::callInterpreter(Array* code,
-                                             const std::u32string& name,
                                              bool newScope) {
-    callStack.addArrayCallFrame(code, name, newScope);
+    callStack.addArrayCallFrame(code, newScope);
     if (newScope) {
         symTable.createScope();
     }
@@ -72,10 +71,8 @@ ExecutionResult Interpreter::callInterpreter(Array* code,
                         return ExecutionResult{ExecutionResultType::Error,
                                                U"Type error"};
                     }
-                    std::u32string frameName = U"<unknown>";
-                    // fancy method for getting func name
                     topFrame.ip++;
-                    if (!callStack.addArrayCallFrame(newTrace.arr, frameName,
+                    if (!callStack.addArrayCallFrame(newTrace.arr,
                                                      ins.str == callString)) {
                         return ExecutionResult{ExecutionResultType::Error,
                                                U"Call stack overflow"};
@@ -87,7 +84,7 @@ ExecutionResult Interpreter::callInterpreter(Array* code,
                 } else {
                     Value val = symTable.getVariable(ins.str);
                     if (val.type == ValueType::NativeWord) {
-                        if (!callStack.addNativeCallFrame(ins.str->get())) {
+                        if (!callStack.addNativeCallFrame()) {
                             return ExecutionResult{ExecutionResultType::Error,
                                                    U"Call stack overflow"};
                         }
