@@ -5,7 +5,6 @@
 #include <io/prettyprint.hpp>
 #include <io/termio.hpp>
 #include <iostream>
-#include <linenoise.hpp>
 #include <locale>
 #include <std/arith.hpp>
 #include <std/comparisons.hpp>
@@ -43,11 +42,11 @@ void reportRuntimeError(ExecutionResult res,
 }
 
 void hostRepl() {
-    linenoise::SetHistoryMaxLen(1024);
     Interpreter interp(1024);
     // initStd requires scope for adding native words
     interp.symTable.createScope();
     initStd(interp);
+    initREPL(interp);
     while (true) {
         std::u32string prompt;
         prompt.append(U"[");

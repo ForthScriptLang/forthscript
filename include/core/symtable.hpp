@@ -17,4 +17,5 @@ class SymbolTable {
     void declareVariable(String *name, Value val);
     void setVariable(String *name, Value val);
     Value getVariable(String *name);
+    inline const std::vector<String *> &getDeclared() { return declared; };
 };
