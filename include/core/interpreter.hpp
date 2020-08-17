@@ -21,6 +21,7 @@ struct Interpreter {
     EvaluationStack evalStack;
     Heap heap;
     SymbolTable symTable;
+    String *breakString, *returnString, *callString, *commaString;
 
     Interpreter(size_t maxRecursionDepth);
     void defineNativeWord(const std::u32string& name, NativeWord word);

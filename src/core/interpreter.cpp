@@ -6,15 +6,19 @@ Interpreter::Interpreter(size_t maxRecursionDepth)
     : callStack(maxRecursionDepth) {
     callStack.registerRootMarker(heap);
     evalStack.registerRootMarker(heap);
-    symTable.registerRootMarker(heap);
 }
 
 void Interpreter::defineNativeWord(const std::u32string& name,
                                    NativeWord word) {
+    String* str = heap.makeStringObject(name);
     Value val;
     val.word = word;
     val.type = ValueType::NativeWord;
-    symTable.declareVariable(name, val);
+    symTable.declareVariable(str, val);
+    breakString = heap.makeStringObject(std::u32string(U"break"));
+    returnString = heap.makeStringObject(std::u32string(U"return"));
+    callString = heap.makeStringObject(std::u32string(U"!"));
+    commaString = heap.makeStringObject(std::u32string(U","));
 }
 
 ExecutionResult Interpreter::callInterpreter(Array* code,
@@ -57,7 +61,7 @@ ExecutionResult Interpreter::callInterpreter(Array* code,
                 topFrame.ip++;
                 break;
             case ValueType::Word:
-                if (ins.str->get() == U"!" || ins.str->get() == U",") {
+                if (ins.str == callString || ins.str == commaString) {
                     std::optional<Value> newTraceOptional = evalStack.popBack();
                     if (!newTraceOptional) {
                         return ExecutionResult{ExecutionResultType::Error,
@@ -72,7 +76,7 @@ ExecutionResult Interpreter::callInterpreter(Array* code,
                     // fancy method for getting func name
                     topFrame.ip++;
                     if (!callStack.addArrayCallFrame(newTrace.arr, frameName,
-                                                     ins.str->get() == U"!")) {
+                                                     ins.str == callString)) {
                         return ExecutionResult{ExecutionResultType::Error,
                                                U"Call stack overflow"};
                     }
@@ -81,7 +85,7 @@ ExecutionResult Interpreter::callInterpreter(Array* code,
                     }
                     continue;
                 } else {
-                    Value val = symTable.getVariable(ins.str->get());
+                    Value val = symTable.getVariable(ins.str);
                     if (val.type == ValueType::NativeWord) {
                         if (!callStack.addNativeCallFrame(ins.str->get())) {
                             return ExecutionResult{ExecutionResultType::Error,
@@ -107,9 +111,9 @@ ExecutionResult Interpreter::callInterpreter(Array* code,
                 }
                 Value val = valOptional.value();
                 if (ins.type == ValueType::WordAssign) {
-                    symTable.setVariable(ins.str->get(), val);
+                    symTable.setVariable(ins.str, val);
                 } else {
-                    symTable.declareVariable(ins.str->get(), val);
+                    symTable.declareVariable(ins.str, val);
                 }
                 topFrame.ip++;
                 break;

@@ -3,6 +3,7 @@
 #include <stdint.h>
 
 #include <functional>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -51,12 +52,16 @@ struct String : Object {
     inline const std::u32string &get() const { return str; }
     inline String(const std::u32string &str) { this->str = str; }
     inline String(std::u32string_view sv) { str = sv; }
+
     // this is used for symbol table
     // as strings are interned
     // there is only one object representing a given string
     // symbol table can just find this vector directly
     // instead of doing costly lookup in hash map
-    std::vector<Value> *values = nullptr;
+    std::vector<std::pair<Value, size_t>> *values = nullptr;
+    void pushValue(Value val, size_t scope);
+    Value &getLastValue();
+    void popValue();
 
    private:
     std::u32string str;

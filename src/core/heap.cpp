@@ -33,6 +33,17 @@ void Heap::collectGarbage() {
     for (const RootMarker &marker : rootMarkers) {
         marker(*this);
     }
+    // we are handling symbol table stacks separately
+    for (String *string : pool) {
+        if (string->values != nullptr) {
+            string->marked = true;
+            for (auto val : *string->values) {
+                if (isHeapType(val.first.type) && !val.first.object->marked) {
+                    markObject(val.first.object);
+                }
+            }
+        }
+    }
     Object *current = head;
     Object *prev = nullptr;
     while (current != nullptr) {
