@@ -17,6 +17,8 @@ void SymbolTable::declareVariable(String* name, Value val) {
     if (name->values == nullptr ||
         name->values->back().second != numDefined.size()) {
         // variable was not declared in this scope yet
+        numDefined[numDefined.size() - 1]++;
+        declared.push_back(name);
         name->pushValue(val, numDefined.size());
     } else {
         name->getLastValue() = val;
