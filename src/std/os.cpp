@@ -13,6 +13,13 @@ ExecutionResult printStrOp(Interpreter& interp) {
     return Success();
 }
 
+ExecutionResult quitOp([[maybe_unused]] Interpreter& interp) {
+    exit(0);
+    // not sure what we are doing here
+    return Success();
+}
+
 void addOSModuleNativeWords(Interpreter& interp) {
     interp.defineNativeWord(U"print_str", printStrOp);
+    interp.defineNativeWord(U"quit", quitOp);
 }
