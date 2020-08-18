@@ -132,7 +132,7 @@ Array *Heap::shallowCopy(Array *other) {
     objectCount++;
     arr->marked = false;
     arr->next = arr->next_to_scan = nullptr;
-    arr->values.reserve(other->values.size());
+    arr->values.resize(other->values.size());
     for (size_t i = 0; i < other->values.size(); ++i) {
         arr->values[i] = other->values[i];
     }

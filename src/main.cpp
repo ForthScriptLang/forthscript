@@ -7,6 +7,7 @@
 #include <iostream>
 #include <locale>
 #include <std/arith.hpp>
+#include <std/arrays.hpp>
 #include <std/comparisons.hpp>
 #include <std/controlflow.hpp>
 #include <std/indexing.hpp>
@@ -24,6 +25,7 @@ void initStd(Interpreter& interp) {
     addStringManipulationNativeWords(interp);
     addIndexingNativeWords(interp);
     addTemplatesNativeWords(interp);
+    addArrayManipulationNativeWords(interp);
 }
 
 void reportSyntaxError(ParseResult res) {
