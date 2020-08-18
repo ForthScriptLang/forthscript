@@ -1,5 +1,7 @@
 #include <core/evalstack.hpp>
 
+EvaluationStack::EvaluationStack() { stack.reserve(1024); }
+
 void EvaluationStack::registerRootMarker(Heap &heap) {
     heap.insertRootMarker([this](Heap &heap) {
         for (const auto &val : stack) {

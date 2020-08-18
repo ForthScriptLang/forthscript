@@ -9,6 +9,7 @@ class EvaluationStack {
     std::vector<Value> stack;
 
    public:
+    EvaluationStack();
     void registerRootMarker(Heap &heap);
     std::optional<Value> popBack();
     void pushBack(Value val);

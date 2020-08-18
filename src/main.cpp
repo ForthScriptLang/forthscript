@@ -13,6 +13,7 @@
 #include <std/os.hpp>
 #include <std/stack.hpp>
 #include <std/strings.hpp>
+#include <std/templates.hpp>
 
 void initStd(Interpreter& interp) {
     addArithNativeWords(interp);
@@ -22,6 +23,7 @@ void initStd(Interpreter& interp) {
     addOSModuleNativeWords(interp);
     addStringManipulationNativeWords(interp);
     addIndexingNativeWords(interp);
+    addTemplatesNativeWords(interp);
 }
 
 void reportSyntaxError(ParseResult res) {
