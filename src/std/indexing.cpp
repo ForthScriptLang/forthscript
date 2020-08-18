@@ -1,0 +1,149 @@
+#include <std/indexing.hpp>
+#include <std/operators.hpp>
+
+Value lenOp(Value val, [[maybe_unused]] Interpreter& interp) {
+    Value result;
+    result.type = ValueType::Numeric;
+    switch (val.type) {
+        case ValueType::Array:
+            result.numericValue = val.arr->values.size();
+            return result;
+        case ValueType::String:
+            result.numericValue = val.str->get().size();
+            return result;
+        default:
+            return Value();
+    }
+}
+
+Value getAtOp(Value indexable, Value index,
+              [[maybe_unused]] Interpreter& interp) {
+    if (index.type != ValueType::Numeric) {
+        return Value();
+    }
+    if (index.numericValue < 0) {
+        return Value();
+    }
+    switch (indexable.type) {
+        case ValueType::Array:
+            if (indexable.arr->values.size() <= (size_t)(index.numericValue)) {
+                return Value();
+            }
+            return indexable.arr->values[index.numericValue];
+        case ValueType::String: {
+            if (indexable.str->get().size() <= (size_t)(index.numericValue)) {
+                return Value();
+            }
+            char32_t newCStr[2] = {indexable.str->get()[index.numericValue],
+                                   '\0'};
+            String* newStr =
+                interp.heap.makeStringObject(std::u32string_view(newCStr));
+            Value result;
+            result.type = ValueType::String;
+            result.str = newStr;
+            return result;
+        }
+        default:
+            break;
+    }
+    return Value();
+}
+
+ExecutionResult getAtOp(Interpreter& interp) {
+    if (!interp.evalStack.assertDepth(2)) {
+        return EvalStackUnderflow();
+    }
+    Value index = interp.evalStack.popBack().value();
+    Value indexable = interp.evalStack.popBack().value();
+    if (index.type != ValueType::Numeric) {
+        return TypeError();
+    }
+    if (index.numericValue < 0) {
+        return ExecutionResult{ExecutionResultType::Error, U"Out of bounds"};
+    }
+    switch (indexable.type) {
+        case ValueType::Array:
+            if (indexable.arr->values.size() <= (size_t)(index.numericValue)) {
+                return ExecutionResult{ExecutionResultType::Error,
+                                       U"Out of bounds"};
+            }
+            interp.evalStack.pushBack(
+                indexable.arr->values[index.numericValue]);
+            return Success();
+        case ValueType::String: {
+            if (indexable.str->get().size() <= (size_t)(index.numericValue)) {
+                return ExecutionResult{ExecutionResultType::Error,
+                                       U"Out of bounds"};
+            }
+            char32_t newCStr[2] = {indexable.str->get()[index.numericValue],
+                                   '\0'};
+            String* newStr =
+                interp.heap.makeStringObject(std::u32string_view(newCStr));
+            Value result;
+            result.type = ValueType::String;
+            result.str = newStr;
+            interp.evalStack.pushBack(result);
+            return Success();
+        }
+        default:
+            break;
+    }
+    return ExecutionResult{ExecutionResultType::Error,
+                           U"Value is not indexable"};
+}
+
+ExecutionResult setAtOp(Interpreter& interp) {
+    if (!interp.evalStack.assertDepth(3)) {
+        return EvalStackUnderflow();
+    }
+    Value element = interp.evalStack.popBack().value();
+    Value index = interp.evalStack.popBack().value();
+    Value indexable = interp.evalStack.popBack().value();
+    if (index.type != ValueType::Numeric) {
+        return TypeError();
+    }
+    if (index.numericValue < 0) {
+        return ExecutionResult{ExecutionResultType::Error, U"Out of bounds"};
+    }
+    switch (indexable.type) {
+        case ValueType::Array:
+            if (indexable.arr->values.size() <= (size_t)(index.numericValue)) {
+                return ExecutionResult{ExecutionResultType::Error,
+                                       U"Out of bounds"};
+            }
+            indexable.arr->values[index.numericValue] = element;
+            return Success();
+        default:
+            return ExecutionResult{ExecutionResultType::Error,
+                                   U"Value is not indexable or immutable"};
+    }
+}
+
+ExecutionResult lenOp(Interpreter& interp) {
+    if (!interp.evalStack.assertDepth(1)) {
+        return EvalStackUnderflow();
+    }
+    Value indexable = interp.evalStack.popBack().value();
+    Value integerResult;
+    integerResult.type = ValueType::Numeric;
+    switch (indexable.type) {
+        case ValueType::Array:
+            integerResult.numericValue =
+                (int64_t)(indexable.arr->values.size());
+            interp.evalStack.pushBack(integerResult);
+            return Success();
+        case ValueType::String:
+            integerResult.numericValue = (int64_t)(indexable.str->get().size());
+            interp.evalStack.pushBack(integerResult);
+            return Success();
+        default:
+            break;
+    }
+    return TypeError();
+}
+
+void addIndexingNativeWords(Interpreter& interp) {
+    interp.defineNativeWord(U"len", lenOp);
+    interp.defineNativeWord(U"peek", getAtOp);
+    interp.defineNativeWord(U"poke", setAtOp);
+}

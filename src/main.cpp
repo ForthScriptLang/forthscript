@@ -9,6 +9,7 @@
 #include <std/arith.hpp>
 #include <std/comparisons.hpp>
 #include <std/controlflow.hpp>
+#include <std/indexing.hpp>
 #include <std/os.hpp>
 #include <std/stack.hpp>
 #include <std/strings.hpp>
@@ -20,6 +21,7 @@ void initStd(Interpreter& interp) {
     addControlFlowNativeWords(interp);
     addOSModuleNativeWords(interp);
     addStringManipulationNativeWords(interp);
+    addIndexingNativeWords(interp);
 }
 
 void reportSyntaxError(ParseResult res) {
