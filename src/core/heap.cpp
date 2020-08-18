@@ -82,6 +82,7 @@ void Heap::collectGarbage() {
             delete str;
         }
     }
+    prevCount = objectCount;
 }
 
 String *Heap::makeStringObject(const std::u32string &val) {
@@ -171,6 +172,5 @@ Array *Heap::deepCopy(Array *other) {
 void Heap::runGCIfOverThreshold() {
     if (objectCount > 2 * prevCount && objectCount > 256) {
         collectGarbage();
-        prevCount = objectCount;
     }
 }

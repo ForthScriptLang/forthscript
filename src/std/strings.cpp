@@ -11,8 +11,25 @@ Value toStringOp(Value val, Interpreter& interp) {
     return result;
 }
 
+Value fromStringOp(Value val, Interpreter& interp) {
+    if (val.type != ValueType::String) {
+        return Value();
+    }
+    ParseResult result = parse(val.str->get(), interp.heap);
+    if (result.isError()) {
+        interp.heap.collectGarbage();
+        return Value();
+    }
+    Value valueResult;
+    valueResult.arr = result.code;
+    valueResult.type = ValueType::Array;
+    return valueResult;
+}
+
 MAKE_FROM_UNARY_OPERATOR(toStringNativeWord, toStringOp)
+MAKE_FROM_UNARY_OPERATOR(fromStringNativeWord, fromStringOp)
 
 void addStringManipulationNativeWords(Interpreter& interp) {
     interp.defineNativeWord(U"to_string", toStringNativeWord);
+    interp.defineNativeWord(U"from_string", fromStringNativeWord);
 }
