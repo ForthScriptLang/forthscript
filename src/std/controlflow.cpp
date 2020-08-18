@@ -37,7 +37,7 @@ ExecutionResult ifOp(Interpreter& interp) {
     Value condition = interp.evalStack.popBack().value();
     if_unlikely(ifCodeVal.type != ValueType::Array ||
                 condition.type != ValueType::Boolean) {
-        return EvalStackUnderflow();
+        return TypeError();
     }
     if (condition.booleanValue) {
         ExecutionResult res = interp.callInterpreter(ifCodeVal.arr, true);

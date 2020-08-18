@@ -12,8 +12,8 @@
 enum class ExecutionResultType { Error, Success, Return, Break };
 
 struct ExecutionResult {
-    ExecutionResultType result;
-    const char32_t* error;
+    ExecutionResultType result = ExecutionResultType::Success;
+    const char32_t* error = U"";
 };
 
 struct Success : public ExecutionResult {

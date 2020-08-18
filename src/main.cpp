@@ -65,6 +65,7 @@ void hostRepl() {
         ParseResult result = parse(s, interp.heap);
         if (result.isError()) {
             reportSyntaxError(result);
+            interp.evalStack.clear();
             interp.heap.collectGarbage();
             continue;
         }
