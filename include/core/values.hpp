@@ -53,6 +53,7 @@ struct String : Object {
     inline String(const std::u32string &str) { this->str = str; }
     inline String(std::u32string &&str) { this->str = str; }
     inline String(std::u32string_view sv) { str = sv; }
+    inline String(const char32_t *s) { str = std::u32string(s); }
 
     // this is used for symbol table
     // as strings are interned

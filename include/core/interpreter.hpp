@@ -9,7 +9,7 @@
 #include <string>
 #include <unordered_map>
 
-enum class ExecutionResultType { Error, Success, Return, Break };
+enum class ExecutionResultType { Error, Success, Return, Break, Continue };
 
 struct ExecutionResult {
     ExecutionResultType result = ExecutionResultType::Success;
@@ -43,4 +43,7 @@ struct Interpreter {
     Interpreter(size_t maxRecursionDepth);
     void defineNativeWord(const std::u32string& str, NativeWord word);
     ExecutionResult callInterpreter(Array* code, bool newScope);
+
+    // returns true if there was a native frame in the stack
+    bool cleanFramesToLastNative();
 };

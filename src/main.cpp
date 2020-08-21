@@ -15,6 +15,7 @@
 #include <std/stack.hpp>
 #include <std/strings.hpp>
 #include <std/templates.hpp>
+#include <std/typing.hpp>
 
 void initStd(Interpreter& interp) {
     addArithNativeWords(interp);
@@ -26,6 +27,7 @@ void initStd(Interpreter& interp) {
     addIndexingNativeWords(interp);
     addTemplatesNativeWords(interp);
     addArrayManipulationNativeWords(interp);
+    addTypingNativeWords(interp);
 }
 
 void reportSyntaxError(ParseResult res) {

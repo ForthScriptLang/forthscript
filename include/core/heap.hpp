@@ -27,6 +27,7 @@ struct Heap {
     String *makeStringObject(const std::u32string &val);
     String *makeStringObject(std::u32string &&val);
     String *makeStringObject(const std::u32string_view &val);
+    String *makeStringObject(const char32_t *val);
 
     size_t objectCount;
     size_t prevCount;

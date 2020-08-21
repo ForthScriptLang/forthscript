@@ -89,6 +89,10 @@ String *Heap::makeStringObject(const std::u32string &val) {
     return makeStringObject(std::u32string_view(val));
 }
 
+String *Heap::makeStringObject(const char32_t *val) {
+    return makeStringObject(std::u32string_view(val));
+}
+
 String *Heap::makeStringObject(const std::u32string_view &val) {
     String *obj = new String(val);
     obj->marked = false;

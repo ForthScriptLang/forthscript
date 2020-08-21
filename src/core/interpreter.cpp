@@ -27,6 +27,16 @@ Interpreter::Interpreter(size_t maxRecursionDepth)
     evalStack.registerRootMarker(heap);
 }
 
+bool Interpreter::cleanFramesToLastNative() {
+    while (!callStack.frames.empty()) {
+        if (callStack.frames.back().native) {
+            return true;
+        }
+        callStack.frames.pop_back();
+    }
+    return false;
+}
+
 void Interpreter::defineNativeWord(const std::u32string& name,
                                    NativeWord word) {
     String* str = heap.makeStringObject(name);
@@ -43,11 +53,6 @@ void Interpreter::defineNativeWord(const std::u32string& name,
 }
 
 ExecutionResult Interpreter::callInterpreter(Array* code, bool newScope) {
-    enum class InterpreterState {
-        Interpreting,
-        Breaking,
-        Returning
-    } state = InterpreterState::Interpreting;
     callStack.addArrayCallFrame(code, newScope);
     if (newScope) {
         symTable.createScope();
@@ -55,56 +60,6 @@ ExecutionResult Interpreter::callInterpreter(Array* code, bool newScope) {
     while (true) {
         // check for garbage collection
         heap.runGCIfOverThreshold();
-        // handling break and return
-        if_unlikely(state != InterpreterState::Interpreting) {
-            // waiting for "for" or "while"
-            while (true) {
-                if_unlikely(callStack.frames.empty()) {
-                    return ExecutionResult{ExecutionResultType::Error,
-                                           U"Nowhere to break"};
-                }
-                StackFrame& topFrame = callStack.frames.back();
-                if (topFrame.native) {
-                    return ExecutionResult{state == InterpreterState::Breaking
-                                               ? ExecutionResultType::Break
-                                               : ExecutionResultType::Return,
-                                           U""};
-                }
-                if (topFrame.ip == 0) {
-                    if (callStack.removeTopCallFrame()) {
-                        symTable.leaveScope();
-                    }
-                    continue;
-                }
-                if (topFrame.code->values.size() == 0) {
-                    if (callStack.removeTopCallFrame()) {
-                        symTable.leaveScope();
-                    }
-                    continue;
-                }
-                const Value& val = topFrame.code->values[topFrame.ip - 1];
-                if (val.type != ValueType::Word) {
-                    if (callStack.removeTopCallFrame()) {
-                        symTable.leaveScope();
-                    }
-                    continue;
-                }
-                if (state == InterpreterState::Breaking) {
-                    if (val.str == whileString || val.str == forString) {
-                        state = InterpreterState::Interpreting;
-                        break;
-                    }
-                } else if (state == InterpreterState::Returning) {
-                    if (val.str == callString || val.str == commaString) {
-                        state = InterpreterState::Interpreting;
-                        break;
-                    }
-                }
-                if (callStack.removeTopCallFrame()) {
-                    symTable.leaveScope();
-                }
-            }
-        }
         // nothing on the call stack => interpreter can be exited
         if (callStack.frames.empty()) {
             return Success();
@@ -155,11 +110,6 @@ ExecutionResult Interpreter::callInterpreter(Array* code, bool newScope) {
                         symTable.createScope();
                     }
                     continue;
-                } else if (ins.str == returnString || ins.str == breakString) {
-                    state = ins.str == returnString
-                                ? InterpreterState::Returning
-                                : InterpreterState::Breaking;
-                    continue;
                 } else {
                     Value val = symTable.getVariable(ins.str);
                     topFrame.ip++;
@@ -171,19 +121,8 @@ ExecutionResult Interpreter::callInterpreter(Array* code, bool newScope) {
                         callStack.removeTopCallFrame();
                         if_unlikely(result.result !=
                                     ExecutionResultType::Success) {
-                            if_likely(result.result ==
-                                      ExecutionResultType::Break) {
-                                state = InterpreterState::Breaking;
-                                continue;
-                            }
-                            else if_likely(result.result ==
-                                           ExecutionResultType::Return) {
-                                state = InterpreterState::Returning;
-                                continue;
-                            }
-                            else {
-                                return result;
-                            }
+                            cleanFramesToLastNative();
+                            return result;
                         }
                     } else {
                         evalStack.pushBack(val);

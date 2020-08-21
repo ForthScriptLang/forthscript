@@ -70,7 +70,14 @@ ExecutionResult whileOp(Interpreter& interp) {
             break;
         }
         res = interp.callInterpreter(loopCode.arr, true);
-        if_unlikely(res.result != ExecutionResultType::Success) { return res; }
+        if (res.result != ExecutionResultType::Success) {
+            if (res.result == ExecutionResultType::Break) {
+                return Success();
+            } else if (res.result == ExecutionResultType::Continue) {
+                continue;
+            }
+            return res;
+        }
     }
     return Success();
 }
@@ -98,11 +105,30 @@ ExecutionResult forOp(Interpreter& interp) {
             break;
         }
         res = interp.callInterpreter(loopCode.arr, true);
-        if_unlikely(res.result != ExecutionResultType::Success) { return res; }
+        if (res.result != ExecutionResultType::Success) {
+            if (res.result == ExecutionResultType::Break) {
+                return Success();
+            } else if (res.result != ExecutionResultType::Continue) {
+                return res;
+            }
+        }
         res = interp.callInterpreter(iterCode.arr, true);
         if_unlikely(res.result != ExecutionResultType::Success) { return res; }
     }
     return Success();
+}
+
+ExecutionResult breakOp(Interpreter&) {
+    return ExecutionResult{ExecutionResultType::Break, U"Nowhere to break"};
+}
+
+ExecutionResult returnOp(Interpreter&) {
+    return ExecutionResult{ExecutionResultType::Return, U"Nowhere to return"};
+}
+
+ExecutionResult continueOp(Interpreter&) {
+    return ExecutionResult{ExecutionResultType::Continue,
+                           U"Nowhere to continue"};
 }
 
 void addControlFlowNativeWords(Interpreter& interp) {
@@ -110,4 +136,7 @@ void addControlFlowNativeWords(Interpreter& interp) {
     interp.defineNativeWord(U"if_else", ifElseOp);
     interp.defineNativeWord(U"if", ifOp);
     interp.defineNativeWord(U"for", forOp);
+    interp.defineNativeWord(U"break", breakOp);
+    interp.defineNativeWord(U"return", returnOp);
+    interp.defineNativeWord(U"continue", continueOp);
 }
