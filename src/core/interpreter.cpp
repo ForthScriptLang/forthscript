@@ -22,9 +22,12 @@ TypeError::TypeError() {
 }
 
 Interpreter::Interpreter(size_t maxRecursionDepth)
-    : callStack(maxRecursionDepth) {
+    : callStack(maxRecursionDepth), symTable(maxRecursionDepth) {
     callStack.registerRootMarker(heap);
     evalStack.registerRootMarker(heap);
+
+    callString = heap.makeStringObject(std::u32string(U"!"));
+    commaString = heap.makeStringObject(std::u32string(U","));
 }
 
 bool Interpreter::cleanFramesToLastNative() {
@@ -44,12 +47,15 @@ void Interpreter::defineNativeWord(const std::u32string& name,
     val.word = word;
     val.type = ValueType::NativeWord;
     symTable.declareVariable(str, val);
-    forString = heap.makeStringObject(std::u32string(U"for"));
-    whileString = heap.makeStringObject(std::u32string(U"while"));
-    breakString = heap.makeStringObject(std::u32string(U"break"));
-    returnString = heap.makeStringObject(std::u32string(U"return"));
-    callString = heap.makeStringObject(std::u32string(U"!"));
-    commaString = heap.makeStringObject(std::u32string(U","));
+    symbols[word] = str;
+}
+
+NativeWord Interpreter::queryNativeWord(String* str) {
+    Value val = symTable.getVariable(str);
+    if (val.type != ValueType::NativeWord) {
+        return nullptr;
+    }
+    return val.word;
 }
 
 ExecutionResult Interpreter::callInterpreter(Array* code, bool newScope) {
@@ -58,8 +64,6 @@ ExecutionResult Interpreter::callInterpreter(Array* code, bool newScope) {
         symTable.createScope();
     }
     while (true) {
-        // check for garbage collection
-        heap.runGCIfOverThreshold();
         // nothing on the call stack => interpreter can be exited
         if (callStack.frames.empty()) {
             return Success();
@@ -78,7 +82,7 @@ ExecutionResult Interpreter::callInterpreter(Array* code, bool newScope) {
             continue;
         }
         // fetch current instruction
-        Value ins = topFrame.code->values[topFrame.ip];
+        Value ins = topFrame.code->values[topFrame.ip++];
         // execute instruction depending on its type
         switch (ins.type) {
             case ValueType::Nil:
@@ -87,50 +91,14 @@ ExecutionResult Interpreter::callInterpreter(Array* code, bool newScope) {
             case ValueType::String:
             case ValueType::Placeholder:
             case ValueType::Array:
-            case ValueType::NativeWord:
                 evalStack.pushBack(ins);
-                topFrame.ip++;
                 break;
-            case ValueType::Word:
-                if (ins.str == callString || ins.str == commaString) {
-                    std::optional<Value> newTraceOptional = evalStack.popBack();
-                    if_unlikely(!newTraceOptional) {
-                        return EvalStackUnderflow();
-                    }
-                    Value newTrace = newTraceOptional.value();
-                    if_unlikely(newTrace.type != ValueType::Array) {
-                        return TypeError();
-                    }
-                    topFrame.ip++;
-                    if_unlikely(!callStack.addArrayCallFrame(
-                        newTrace.arr, ins.str == callString)) {
-                        return CallStackOverflow();
-                    }
-                    if (ins.str == callString) {
-                        symTable.createScope();
-                    }
-                    continue;
-                } else {
-                    Value val = symTable.getVariable(ins.str);
-                    topFrame.ip++;
-                    if (val.type == ValueType::NativeWord) {
-                        if_unlikely(!callStack.addNativeCallFrame()) {
-                            return CallStackOverflow();
-                        }
-                        ExecutionResult result = val.word(*this);
-                        callStack.removeTopCallFrame();
-                        if_unlikely(result.result !=
-                                    ExecutionResultType::Success) {
-                            cleanFramesToLastNative();
-                            return result;
-                        }
-                    } else {
-                        evalStack.pushBack(val);
-                    }
-                }
-                break;
+            case ValueType::Word: {
+                Value val = symTable.getVariable(ins.str);
+                evalStack.pushBack(val);
+            } break;
             case ValueType::WordAssign:
-            case ValueType::WordDeclare:
+            case ValueType::WordDeclare: {
                 std::optional<Value> valOptional = evalStack.popBack();
                 if_unlikely(!valOptional) { return EvalStackUnderflow(); }
                 Value val = valOptional.value();
@@ -139,8 +107,22 @@ ExecutionResult Interpreter::callInterpreter(Array* code, bool newScope) {
                 } else {
                     symTable.declareVariable(ins.str, val);
                 }
-                topFrame.ip++;
-                break;
+            } break;
+            case ValueType::NativeWord: {
+                if_unlikely(!callStack.addNativeCallFrame()) {
+                    return CallStackOverflow();
+                }
+                ExecutionResult result = ins.word(*this);
+                if (callStack.frames.back().native) {
+                    callStack.removeTopCallFrame();
+                }
+                if (result.result != ExecutionResultType::Success) {
+                    cleanFramesToLastNative();
+                    return result;
+                }
+                // check for garbage collection
+                heap.runGCIfOverThreshold();
+            } break;
         }
     }
 }

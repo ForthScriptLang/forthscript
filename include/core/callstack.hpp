@@ -3,6 +3,7 @@
 #include <core/heap.hpp>
 #include <core/values.hpp>
 #include <deque>
+#include <vector>
 
 struct StackFrame {
     bool native;
@@ -12,7 +13,7 @@ struct StackFrame {
 };
 
 struct CallStack {
-    std::deque<StackFrame> frames;
+    std::vector<StackFrame> frames;
     size_t recursionLimit;
 
     CallStack(size_t recLimit);

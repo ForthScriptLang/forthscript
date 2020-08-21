@@ -1,6 +1,9 @@
 #include <core/callstack.hpp>
 
-CallStack::CallStack(size_t recLimit) { recursionLimit = recLimit; }
+CallStack::CallStack(size_t recLimit) {
+    recursionLimit = recLimit;
+    frames.reserve(recLimit);
+}
 
 void CallStack::registerRootMarker(Heap &heap) {
     heap.insertRootMarker([this](Heap &heap) {
@@ -12,8 +15,7 @@ void CallStack::registerRootMarker(Heap &heap) {
     });
 }
 
-bool CallStack::addArrayCallFrame(Array *code,
-                                  bool newScope) {
+bool CallStack::addArrayCallFrame(Array *code, bool newScope) {
     if (frames.size() == recursionLimit) {
         return false;
     }

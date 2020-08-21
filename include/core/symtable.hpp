@@ -12,6 +12,7 @@ class SymbolTable {
     std::vector<size_t> numDefined;
 
    public:
+    SymbolTable(size_t recLimit) { numDefined.reserve(recLimit); }
     void createScope();
     void leaveScope();
     void declareVariable(String *name, Value val);

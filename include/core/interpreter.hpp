@@ -39,10 +39,12 @@ struct Interpreter {
     SymbolTable symTable;
     String *breakString, *returnString, *callString, *commaString, *forString,
         *whileString;
+    std::unordered_map<NativeWord, String*> symbols;
 
     Interpreter(size_t maxRecursionDepth);
     void defineNativeWord(const std::u32string& str, NativeWord word);
     ExecutionResult callInterpreter(Array* code, bool newScope);
+    NativeWord queryNativeWord(String* str);
 
     // returns true if there was a native frame in the stack
     bool cleanFramesToLastNative();

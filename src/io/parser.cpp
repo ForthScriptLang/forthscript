@@ -3,7 +3,7 @@
 #include <io/strings.hpp>
 #include <stack>
 
-ParseResult parse(const std::u32string &str, Heap &h) {
+ParseResult parse(const std::u32string &str, Interpreter &interp) {
     ParseResult result;
     result.status = ParseResult::Status::Success;
 
@@ -19,7 +19,7 @@ ParseResult parse(const std::u32string &str, Heap &h) {
     using ParserTask = std::pair<ValueType, Array *>;
     std::stack<ParserTask> tasks;
 
-    result.code = h.makeArrayObject(Value(), 0);
+    result.code = interp.heap.makeArrayObject(Value(), 0);
     tasks.push(ParserTask(ValueType::Array, result.code));
 
     for (size_t i = 0; i < lexResult.lexems.size(); ++i) {
@@ -28,7 +28,7 @@ ParseResult parse(const std::u32string &str, Heap &h) {
         switch (current.type) {
             case LexemeType::OpenSquareBrace:
             case LexemeType::OpenCurlyBrace: {
-                Array *newScope = h.makeArrayObject(Value(), 0);
+                Array *newScope = interp.heap.makeArrayObject(Value(), 0);
                 ValueType correspondingType =
                     (current.type == LexemeType::OpenSquareBrace)
                         ? ValueType::Array
@@ -77,7 +77,8 @@ ParseResult parse(const std::u32string &str, Heap &h) {
             case LexemeType::String: {
                 Value stringLiteral;
                 stringLiteral.type = ValueType::String;
-                String *strObject = convertFromBackslashed(current.val, h);
+                String *strObject =
+                    convertFromBackslashed(current.val, interp.heap);
                 if (strObject == nullptr) {
                     result.status = ParseResult::Status::ParserError;
                     result.description = U"Invalid string literal";
@@ -97,8 +98,16 @@ ParseResult parse(const std::u32string &str, Heap &h) {
                     topTask.second->values.push_back(boolLiteral);
                 } else {
                     Value wordLiteral;
-                    wordLiteral.type = ValueType::Word;
-                    wordLiteral.str = h.makeStringObject(current.val);
+                    String *name = interp.heap.makeStringObject(current.val);
+                    NativeWord nativeWord =
+                        interp.queryNativeWord(name);
+                    if (nativeWord != nullptr) {
+                        wordLiteral.type = ValueType::NativeWord;
+                        wordLiteral.word = nativeWord;
+                    } else {
+                        wordLiteral.type = ValueType::Word;
+                        wordLiteral.str = name;
+                    }
                     topTask.second->values.push_back(wordLiteral);
                 }
                 break;
@@ -106,14 +115,14 @@ ParseResult parse(const std::u32string &str, Heap &h) {
             case LexemeType::WordAssignment: {
                 Value wordLiteral;
                 wordLiteral.type = ValueType::WordAssign;
-                wordLiteral.str = h.makeStringObject(current.val);
+                wordLiteral.str = interp.heap.makeStringObject(current.val);
                 topTask.second->values.push_back(wordLiteral);
                 break;
             }
             case LexemeType::WordDeclare: {
                 Value wordLiteral;
                 wordLiteral.type = ValueType::WordDeclare;
-                wordLiteral.str = h.makeStringObject(current.val);
+                wordLiteral.str = interp.heap.makeStringObject(current.val);
                 topTask.second->values.push_back(wordLiteral);
                 break;
             }

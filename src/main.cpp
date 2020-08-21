@@ -59,14 +59,14 @@ void hostRepl() {
         std::u32string prompt;
         prompt.append(U"[");
         for (size_t i = 0; i < interp.evalStack.getStack().size(); ++i) {
-            prompt.append(prettyprint(interp.evalStack.getStack()[i]));
+            prompt.append(prettyprint(interp.evalStack.getStack()[i], interp));
             if (i != interp.evalStack.getStack().size() - 1) {
                 prompt.append(U" ");
             }
         }
         prompt.append(U"]# ");
         std::u32string s = readLine(prompt);
-        ParseResult result = parse(s, interp.heap);
+        ParseResult result = parse(s, interp);
         if (result.isError()) {
             reportSyntaxError(result);
             interp.evalStack.clear();
@@ -94,7 +94,7 @@ int main(int argc, char** argv) {
     interp.symTable.createScope();
     initStd(interp);
     std::u32string source = readFile(filename);
-    ParseResult result = parse(source, interp.heap);
+    ParseResult result = parse(source, interp);
     if (result.isError()) {
         reportSyntaxError(result);
         interp.heap.collectGarbage();

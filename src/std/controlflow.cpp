@@ -131,6 +131,29 @@ ExecutionResult continueOp(Interpreter&) {
                            U"Nowhere to continue"};
 }
 
+ExecutionResult scopeCall(Interpreter& interp) {
+    std::optional<Value> newTraceOptional = interp.evalStack.popBack();
+    if_unlikely(!newTraceOptional) { return EvalStackUnderflow(); }
+    Value newTrace = newTraceOptional.value();
+    if_unlikely(newTrace.type != ValueType::Array) { return TypeError(); }
+    if_unlikely(!interp.callStack.addArrayCallFrame(newTrace.arr, true)) {
+        return CallStackOverflow();
+    }
+    interp.symTable.createScope();
+    return Success();
+}
+
+ExecutionResult noScopeCall(Interpreter& interp) {
+    std::optional<Value> newTraceOptional = interp.evalStack.popBack();
+    if_unlikely(!newTraceOptional) { return EvalStackUnderflow(); }
+    Value newTrace = newTraceOptional.value();
+    if_unlikely(newTrace.type != ValueType::Array) { return TypeError(); }
+    if_unlikely(!interp.callStack.addArrayCallFrame(newTrace.arr, false)) {
+        return CallStackOverflow();
+    }
+    return Success();
+}
+
 void addControlFlowNativeWords(Interpreter& interp) {
     interp.defineNativeWord(U"while", whileOp);
     interp.defineNativeWord(U"if_else", ifElseOp);
@@ -139,4 +162,6 @@ void addControlFlowNativeWords(Interpreter& interp) {
     interp.defineNativeWord(U"break", breakOp);
     interp.defineNativeWord(U"return", returnOp);
     interp.defineNativeWord(U"continue", continueOp);
+    interp.defineNativeWord(U"!", scopeCall);
+    interp.defineNativeWord(U",", noScopeCall);
 }

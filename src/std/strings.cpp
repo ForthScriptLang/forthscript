@@ -4,7 +4,7 @@
 #include <std/strings.hpp>
 
 Value toStringOp(Value val, Interpreter& interp) {
-    std::u32string resultCppStr = prettyprint(val);
+    std::u32string resultCppStr = prettyprint(val, interp);
     Value result;
     result.type = ValueType::String;
     result.str = interp.heap.makeStringObject(std::move(resultCppStr));
@@ -15,7 +15,7 @@ Value fromStringOp(Value val, Interpreter& interp) {
     if (val.type != ValueType::String) {
         return Value();
     }
-    ParseResult result = parse(val.str->get(), interp.heap);
+    ParseResult result = parse(val.str->get(), interp);
     if (result.isError()) {
         interp.heap.collectGarbage();
         return Value();

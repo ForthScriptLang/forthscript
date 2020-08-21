@@ -1,6 +1,6 @@
 #pragma once
 
-#include <core/values.hpp>
+#include <core/interpreter.hpp>
 #include <string>
 
-std::u32string prettyprint(Value val);
+std::u32string prettyprint(Value val, Interpreter& interp);
