@@ -1,3 +1,5 @@
+#include <stdint.h>
+
 #include <std/operators.hpp>
 #include <std/typing.hpp>
 
@@ -48,7 +50,7 @@ ExecutionResult intToCharOp(Interpreter& interp) {
         return TypeError();
     }
     char32_t arr[2];
-    if (val.numericValue > __UINT32_MAX__ || val.numericValue < 0) {
+    if (val.numericValue > UINT32_MAX || val.numericValue < 0) {
         return ExecutionResult{ExecutionResultType::Error,
                                U"Unable to cast to char"};
     }
