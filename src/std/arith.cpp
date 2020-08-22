@@ -4,19 +4,26 @@
 #include <std/arith.hpp>
 #include <std/operators.hpp>
 
-Value addOperator(Value val1, Value val2, Interpreter& interp) {
+ExecutionResult addOp(Interpreter& interp) {
+    if (!interp.evalStack.assertDepth(2)) {
+        return EvalStackUnderflow();
+    }
+    Value val2 = interp.evalStack.popBack().value();
+    Value val1 = interp.evalStack.popBack().value();
     if (val1.type == ValueType::Numeric && val2.type == ValueType::Numeric) {
         Value intResult;
         intResult.type = ValueType::Numeric;
         intResult.numericValue = val1.numericValue + val2.numericValue;
-        return intResult;
+        interp.evalStack.pushBack(intResult);
+        return Success();
     } else if (val1.type == ValueType::String &&
                val2.type == ValueType::String) {
         Value stringResult;
         stringResult.type = ValueType::String;
         std::u32string result = val1.str->get() + val2.str->get();
         stringResult.str = interp.heap.makeStringObject(std::move(result));
-        return stringResult;
+        interp.evalStack.pushBack(stringResult);
+        return Success();
     } else if (val1.type == ValueType::Array && val2.type == ValueType::Array) {
         Value arrayResult;
         arrayResult.type = ValueType::Array;
@@ -29,21 +36,30 @@ Value addOperator(Value val1, Value val2, Interpreter& interp) {
         for (const Value& val : val2.arr->values) {
             arrayResult.arr->values.push_back(val);
         }
-        return arrayResult;
+        interp.evalStack.pushBack(arrayResult);
+        return Success();
     }
-    return Value();
+    return TypeError();
 }
 
-Value mulOperator(Value val1, Value val2, Interpreter& interp) {
+ExecutionResult mulOp(Interpreter& interp) {
+    if (!interp.evalStack.assertDepth(2)) {
+        return EvalStackUnderflow();
+    }
+    Value val2 = interp.evalStack.popBack().value();
+    Value val1 = interp.evalStack.popBack().value();
     if (val1.type == ValueType::Numeric && val2.type == ValueType::Numeric) {
         Value intResult;
         intResult.type = ValueType::Numeric;
         intResult.numericValue = val1.numericValue * val2.numericValue;
-        return intResult;
+        interp.evalStack.pushBack(intResult);
+        return Success();
     } else if (val1.type == ValueType::String &&
                val2.type == ValueType::Numeric) {
         if (val2.numericValue < 0) {
-            return Value();
+            return ExecutionResult{
+                ExecutionResultType::Error,
+                U"Multiplication of a string by a negative number"};
         }
         Value stringResult;
         stringResult.type = ValueType::String;
@@ -53,11 +69,14 @@ Value mulOperator(Value val1, Value val2, Interpreter& interp) {
             copy.append(val1.str->get());
         }
         stringResult.str = interp.heap.makeStringObject(std::move(copy));
-        return stringResult;
+        interp.evalStack.pushBack(stringResult);
+        return Success();
     } else if (val1.type == ValueType::Array &&
                val2.type == ValueType::Numeric) {
         if (val2.numericValue < 0) {
-            return Value();
+            return ExecutionResult{
+                ExecutionResultType::Error,
+                U"Multiplication of an array by a negative number"};
         }
         Value arrayResult;
         arrayResult.type = ValueType::Array;
@@ -69,60 +88,70 @@ Value mulOperator(Value val1, Value val2, Interpreter& interp) {
                 arrayResult.arr->values.push_back(val);
             }
         }
-        return arrayResult;
+        interp.evalStack.pushBack(arrayResult);
+        return Success();
     }
-    return Value();
+    return TypeError();
 }
 
-Value divOperator(Value val1, Value val2, [[maybe_unused]] Interpreter&) {
-    if_unlikely(val1.type != ValueType::Numeric ||
-                val2.type != ValueType::Numeric) {
-        return Value();
+ExecutionResult divOp(Interpreter& interp) {
+    if (!interp.evalStack.assertDepth(2)) {
+        return EvalStackUnderflow();
     }
-    Value intResult;
-    intResult.type = ValueType::Numeric;
+    Value val2 = interp.evalStack.popBack().value();
+    Value val1 = interp.evalStack.popBack().value();
+    if (val1.type != ValueType::Numeric || val2.type != ValueType::Numeric) {
+        return TypeError();
+    }
+    Value result;
+    result.type = ValueType::Numeric;
     if (val2.numericValue == 0) {
-        return Value();
+        return ExecutionResult{ExecutionResultType::Error, U"Division by zero"};
     }
-    intResult.numericValue = val1.numericValue / val2.numericValue;
-    return intResult;
+    result.numericValue = val1.numericValue / val2.numericValue;
+    interp.evalStack.pushBack(result);
+    return Success();
 }
 
-Value modOperator(Value val1, Value val2, [[maybe_unused]] Interpreter&) {
-    if_unlikely(val1.type != ValueType::Numeric ||
-                val2.type != ValueType::Numeric) {
-        return Value();
+ExecutionResult modOp(Interpreter& interp) {
+    if (!interp.evalStack.assertDepth(2)) {
+        return EvalStackUnderflow();
     }
-    Value intResult;
-    intResult.type = ValueType::Numeric;
+    Value val2 = interp.evalStack.popBack().value();
+    Value val1 = interp.evalStack.popBack().value();
+    if (val1.type != ValueType::Numeric || val2.type != ValueType::Numeric) {
+        return TypeError();
+    }
+    Value result;
+    result.type = ValueType::Numeric;
     if (val2.numericValue == 0) {
-        return Value();
+        return ExecutionResult{ExecutionResultType::Error, U"Division by zero"};
     }
-    intResult.numericValue = val1.numericValue % val2.numericValue;
-    return intResult;
+    result.numericValue = val1.numericValue % val2.numericValue;
+    interp.evalStack.pushBack(result);
+    return Success();
 }
 
-Value subOperator(Value val1, Value val2, [[maybe_unused]] Interpreter&) {
-    if_unlikely(val1.type != ValueType::Numeric ||
-                val2.type != ValueType::Numeric) {
-        return Value();
+ExecutionResult subOp(Interpreter& interp) {
+    if (!interp.evalStack.assertDepth(2)) {
+        return EvalStackUnderflow();
     }
-    Value intResult;
-    intResult.type = ValueType::Numeric;
-    intResult.numericValue = val1.numericValue - val2.numericValue;
-    return intResult;
+    Value val2 = interp.evalStack.popBack().value();
+    Value val1 = interp.evalStack.popBack().value();
+    if (val1.type != ValueType::Numeric || val2.type != ValueType::Numeric) {
+        return TypeError();
+    }
+    Value result;
+    result.type = ValueType::Numeric;
+    result.numericValue = val1.numericValue - val2.numericValue;
+    interp.evalStack.pushBack(result);
+    return Success();
 }
-
-MAKE_FROM_BINARY_OPERATOR(addNativeWord, addOperator)
-MAKE_FROM_BINARY_OPERATOR(mulNativeWord, mulOperator)
-MAKE_FROM_BINARY_OPERATOR(divNativeWord, divOperator)
-MAKE_FROM_BINARY_OPERATOR(modNativeWord, modOperator)
-MAKE_FROM_BINARY_OPERATOR(subNativeWord, subOperator)
 
 void addArithNativeWords(Interpreter& interpreter) {
-    interpreter.defineNativeWord(U"+", addNativeWord);
-    interpreter.defineNativeWord(U"-", subNativeWord);
-    interpreter.defineNativeWord(U"*", mulNativeWord);
-    interpreter.defineNativeWord(U"/", divNativeWord);
-    interpreter.defineNativeWord(U"%", modNativeWord);
+    interpreter.defineNativeWord(U"+", addOp);
+    interpreter.defineNativeWord(U"-", subOp);
+    interpreter.defineNativeWord(U"*", mulOp);
+    interpreter.defineNativeWord(U"/", divOp);
+    interpreter.defineNativeWord(U"%", modOp);
 }
