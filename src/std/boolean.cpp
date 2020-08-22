@@ -33,7 +33,7 @@ ExecutionResult orOp(Interpreter& interp) {
 }
 
 ExecutionResult notOp(Interpreter& interp) {
-    if (!interp.evalStack.assertDepth(2)) {
+    if (!interp.evalStack.assertDepth(1)) {
         return EvalStackUnderflow();
     }
     Value val = interp.evalStack.popBack().value();
