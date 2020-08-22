@@ -9,20 +9,16 @@ import unittest
 import tempfile
 from helper import create_tests
 
-interpreterPath = "../build/overstacked.exe"
+interpreterPath = "../build/overstacked"
 
 @create_tests('test_operators', 'simpleCases.json')
 class Test(unittest.TestCase):
     def test_operators(self, input, expectedOutput):
         f = tempfile.NamedTemporaryFile(delete=False)
         f.write(input.encode("utf-8"))
-        #print("inputEncoded: ", input.encode("utf-8"))
-        #print("input: ", input)
         f.close()
         inputFilePath = f.name
-        #print("inputFilePath: ", inputFilePath)
-        command = f"{interpreterPath} {inputFilePath}"
-        proc = sp.Popen(command, stdout=sp.PIPE)
+        proc = sp.Popen([interpreterPath, inputFilePath], stdout=sp.PIPE)
         (output, err) = proc.communicate()
         proc.wait()
         print(f"[ {input} ] => {expectedOutput} ?")
