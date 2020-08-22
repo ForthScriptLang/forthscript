@@ -22,7 +22,7 @@
     },
     {
       "input": "34 0 / to_string print_str",
-      "expectedOutput": "Nil"
+      "expectedOutput": "Runtime error: Division by zero\n"
     },
     {
       "input": "4 3 / to_string print_str",
@@ -34,7 +34,7 @@
     },
     {
       "input": "7 0 % to_string print_str",
-      "expectedOutput": "Nil"
+      "expectedOutput": "Runtime error: Division by zero\n"
     },
     {
       "input": "7 12 % to_string print_str",
