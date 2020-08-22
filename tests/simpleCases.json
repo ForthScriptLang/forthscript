@@ -67,6 +67,38 @@
     {
       "input": "1 7 >= to_string print_str",
       "expectedOutput": "False"
+    },
+    {
+      "input": "[2 3 4] len to_string print_str",
+      "expectedOutput": "3"
+    },
+    {
+      "input": "[2 3 4] 0 peek to_string print_str",
+      "expectedOutput": "2"
+    },
+    {
+      "input": "[2 3 4] 4 peek to_string print_str",
+      "expectedOutput": "Runtime error: Out of bounds\n"
+    },
+    {
+      "input": "\"abacaba\" len to_string print_str",
+      "expectedOutput": "7"
+    },
+    {
+      "input": "\"abacaba\" 3 peek print_str",
+      "expectedOutput": "c"
+    },
+    {
+      "input": "\"abacaba\" 10 peek",
+      "expectedOutput": "Runtime error: Out of bounds\n"
+    },
+    {
+      "input": "[2 3 4] $arr arr 0 3 poke arr to_string print_str",
+      "expectedOutput": "[3 3 4]"
+    },
+    {
+      "input": "[dup 0 != [swap over % gcd!] [drop] if_else] $gcd 6 9 gcd! to_string print_str",
+      "expectedOutput": "3"
     }
   ]
 }
