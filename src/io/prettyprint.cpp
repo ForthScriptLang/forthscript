@@ -55,7 +55,7 @@ void prettyprintPrimitive(const Value& val, std::u32string& str,
             str.append(val.str->get());
             break;
         case ValueType::NativeWord: {
-            str.append(interp.symbols[val.word]->get());
+            str.append(interp.symbolsToStrings[val.word]->get());
         } break;
         default:
             break;

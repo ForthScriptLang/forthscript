@@ -77,7 +77,6 @@ void hostRepl() {
         if (res.result != ExecutionResultType::Success) {
             reportRuntimeError(res, interp);
             interp.evalStack.clear();
-            interp.callStack.frames.clear();
             interp.heap.collectGarbage();
         }
     }
@@ -104,7 +103,6 @@ int main(int argc, char** argv) {
     if (res.result != ExecutionResultType::Success) {
         reportRuntimeError(res, interp);
         interp.evalStack.clear();
-        interp.callStack.frames.clear();
         interp.heap.collectGarbage();
         return -1;
     }

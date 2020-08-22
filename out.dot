@@ -1,0 +1,26 @@
+digraph {
+	graph [fontname=Arial, nodesep=0.125, ranksep=0.25];
+	node [fontcolor=white, fontname=Arial, height=0, shape=box, style=filled, width=0];
+	edge [fontname=Arial];
+	"(below main)" [color="#fe0400", fontcolor="#ffffff", fontsize="10.00", label="libc-2.31.so\n(below main)\n99.57%\n(0.00%)\n1×"];
+	"(below main)" -> main [arrowsize="1.00", color="#fe0500", fontcolor="#fe0500", fontsize="10.00", label="99.53%\n1×", labeldistance="3.98", penwidth="3.98"];
+	"0x0000000000001100" [color="#ff0000", fontcolor="#ffffff", fontsize="10.00", label="ld-2.31.so\n0x0000000000001100\n99.97%\n(0.00%)\n0×"];
+	"0x0000000000001100" -> "_start" [arrowsize="1.00", color="#fe0400", fontcolor="#fe0400", fontsize="10.00", label="99.57%\n1×", labeldistance="3.98", penwidth="3.98"];
+	"Interpreter::callInterpreter(Array*, bool)" [color="#f63d01", fontcolor="#ffffff", fontsize="10.00", label="overstacked\nInterpreter::callInterpreter(Array*, bool)\n93.96%\n(59.43%)\n3000001×"];
+	"Interpreter::callInterpreter(Array*, bool)" -> "SymbolTable::createScope()" [arrowsize="0.37", color="#0d4d84", fontcolor="#0d4d84", fontsize="10.00", label="13.51%\n3000001×", labeldistance="0.54", penwidth="0.54"];
+	"Interpreter::callInterpreter(Array*, bool)" -> "addNativeWord(Interpreter&)" [arrowsize="0.35", color="#0d4081", fontcolor="#0d4081", fontsize="10.00", label="11.12%\n1000000×", labeldistance="0.50", penwidth="0.50"];
+	"Interpreter::callInterpreter(Array*, bool)" -> "leNativeWord(Interpreter&)" [arrowsize="0.35", color="#0d3a80", fontcolor="#0d3a80", fontsize="10.00", label="9.90%\n1000001×", labeldistance="0.50", penwidth="0.50"];
+	"Interpreter::callInterpreter(Array*, bool) [clone .constprop.0]" [color="#fe0500", fontcolor="#ffffff", fontsize="10.00", label="overstacked\nInterpreter::callInterpreter(Array*, bool) [clone .constprop.0]\n99.52%\n(0.00%)\n1×"];
+	"Interpreter::callInterpreter(Array*, bool) [clone .constprop.0]" -> "forOp(Interpreter&)" [arrowsize="1.00", color="#fe0500", fontcolor="#fe0500", fontsize="10.00", label="99.52%\n1×", labeldistance="3.98", penwidth="3.98"];
+	"SymbolTable::createScope()" [color="#0d4d84", fontcolor="#ffffff", fontsize="10.00", label="overstacked\nSymbolTable::createScope()\n13.51%\n(11.47%)\n3000002×"];
+	"SymbolTable::createScope()" -> "__memcpy_avx_unaligned_erms" [arrowsize="0.35", color="#0d1575", fontcolor="#0d1575", fontsize="10.00", label="2.04%\n12×", labeldistance="0.50", penwidth="0.50"];
+	"__memcpy_avx_unaligned_erms" [color="#0d1575", fontcolor="#ffffff", fontsize="10.00", label="libc-2.31.so\n__memcpy_avx_unaligned_erms\n2.04%\n(2.04%)\n61×"];
+	"_start" [color="#fe0400", fontcolor="#ffffff", fontsize="10.00", label="overstacked\n_start\n99.57%\n(0.00%)\n1×"];
+	"_start" -> "(below main)" [arrowsize="1.00", color="#fe0400", fontcolor="#fe0400", fontsize="10.00", label="99.57%\n1×", labeldistance="3.98", penwidth="3.98"];
+	"addNativeWord(Interpreter&)" [color="#0d4081", fontcolor="#ffffff", fontsize="10.00", label="overstacked\naddNativeWord(Interpreter&)\n11.12%\n(11.12%)\n1000000×"];
+	"forOp(Interpreter&)" [color="#fe0500", fontcolor="#ffffff", fontsize="10.00", label="overstacked\nforOp(Interpreter&)\n99.52%\n(5.56%)\n1×"];
+	"forOp(Interpreter&)" -> "Interpreter::callInterpreter(Array*, bool)" [arrowsize="0.97", color="#f63d01", fontcolor="#f63d01", fontsize="10.00", label="93.96%\n3000001×", labeldistance="3.76", penwidth="3.76"];
+	"leNativeWord(Interpreter&)" [color="#0d3a80", fontcolor="#ffffff", fontsize="10.00", label="overstacked\nleNativeWord(Interpreter&)\n9.90%\n(9.90%)\n1000001×"];
+	main [color="#fe0500", fontcolor="#ffffff", fontsize="10.00", label="overstacked\nmain\n99.53%\n(0.00%)\n1×"];
+	main -> "Interpreter::callInterpreter(Array*, bool) [clone .constprop.0]" [arrowsize="1.00", color="#fe0500", fontcolor="#fe0500", fontsize="10.00", label="99.52%\n1×", labeldistance="3.98", penwidth="3.98"];
+}

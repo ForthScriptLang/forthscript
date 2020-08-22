@@ -136,11 +136,11 @@ ExecutionResult scopeCall(Interpreter& interp) {
     if_unlikely(!newTraceOptional) { return EvalStackUnderflow(); }
     Value newTrace = newTraceOptional.value();
     if_unlikely(newTrace.type != ValueType::Array) { return TypeError(); }
-    if_unlikely(!interp.callStack.addArrayCallFrame(newTrace.arr, true)) {
-        return CallStackOverflow();
+    ExecutionResult callResult = interp.callInterpreter(newTrace.arr, true);
+    if (callResult.result == ExecutionResultType::Return) {
+        return Success();
     }
-    interp.symTable.createScope();
-    return Success();
+    return callResult;
 }
 
 ExecutionResult noScopeCall(Interpreter& interp) {
@@ -148,10 +148,11 @@ ExecutionResult noScopeCall(Interpreter& interp) {
     if_unlikely(!newTraceOptional) { return EvalStackUnderflow(); }
     Value newTrace = newTraceOptional.value();
     if_unlikely(newTrace.type != ValueType::Array) { return TypeError(); }
-    if_unlikely(!interp.callStack.addArrayCallFrame(newTrace.arr, false)) {
-        return CallStackOverflow();
+    ExecutionResult callResult = interp.callInterpreter(newTrace.arr, false);
+    if (callResult.result == ExecutionResultType::Return) {
+        return Success();
     }
-    return Success();
+    return callResult;
 }
 
 void addControlFlowNativeWords(Interpreter& interp) {
