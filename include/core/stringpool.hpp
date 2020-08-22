@@ -7,7 +7,7 @@ struct StringObjectHash {
     inline size_t operator()(const String* str) const {
         size_t result = 5381;
         for (char32_t c : str->get()) {
-            result = ((result >> 5) || result) + (size_t)c;
+            result = ((result >> 5) | result) + (size_t)c;
         }
         return result;
     }

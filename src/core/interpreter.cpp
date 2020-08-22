@@ -24,9 +24,11 @@ TypeError::TypeError() {
 Interpreter::Interpreter(size_t maxRecursionDepth)
     : symTable(maxRecursionDepth) {
     evalStack.registerRootMarker(heap);
-
-    callString = heap.makeStringObject(std::u32string(U"!"));
-    commaString = heap.makeStringObject(std::u32string(U","));
+    heap.insertRootMarker([this](Heap& h) {
+        for (const auto& symbol : stringsToSymbols) {
+            h.markObject(symbol.first);
+        }
+    });
 }
 
 void Interpreter::defineNativeWord(const std::u32string& name,
