@@ -123,7 +123,9 @@ LexResult lex(const std::u32string& str) {
                 }
                 break;
             case LexerState::Undefined:
-                if (isNumericChar(current)) {
+                if (isNumericChar(current) ||
+                    (current == U'-' && i != (len - 1) &&
+                     isNumericChar(str[i + 1]))) {
                     state = LexerState::Number;
                     bufStart = i;
                 } else if (isValidIdentStart(current)) {
