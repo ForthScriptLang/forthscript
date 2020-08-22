@@ -41,9 +41,15 @@ ExecutionResult overOp(Interpreter& interp) {
     return Success();
 }
 
+ExecutionResult clearOp(Interpreter& interp) {
+    interp.evalStack.clear();
+    return Success();
+}
+
 void addStackManipNativeWords(Interpreter& interp) {
     interp.defineNativeWord(U"drop", dropOp);
     interp.defineNativeWord(U"swap", swapOp);
     interp.defineNativeWord(U"over", overOp);
     interp.defineNativeWord(U"dup", dupOp);
+    interp.defineNativeWord(U"clear", clearOp);
 }
