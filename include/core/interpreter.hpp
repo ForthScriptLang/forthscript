@@ -39,6 +39,8 @@ struct Interpreter {
         *whileString;
     std::unordered_map<NativeWord, String*> symbolsToStrings;
     std::unordered_map<String*, NativeWord> stringsToSymbols;
+    size_t recursionDepth;
+    size_t maxRecursionDepth;
 
     Interpreter(size_t maxRecursionDepth);
     void defineNativeWord(const std::u32string& str, NativeWord word);
