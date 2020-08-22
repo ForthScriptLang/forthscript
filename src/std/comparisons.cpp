@@ -2,19 +2,23 @@
 #include <std/comparisons.hpp>
 #include <std/operators.hpp>
 
-#define MAKE_COMP_OPERATOR(name, op)                                       \
-    Value name##_comp(Value val1, Value val2,                              \
-                      [[maybe_unused]] Interpreter& interp) {              \
-        if_unlikely(val1.type != ValueType::Numeric ||                     \
-                    val2.type != ValueType::Numeric) {                     \
-            return Value();                                                \
-        }                                                                  \
-        Value intResult;                                                   \
-        intResult.type = ValueType::Boolean;                               \
-        intResult.numericValue = op(val1.numericValue, val2.numericValue); \
-        return intResult;                                                  \
-    }                                                                      \
-    MAKE_FROM_BINARY_OPERATOR(name, name##_comp)
+#define MAKE_COMP_OPERATOR(name, op)                                    \
+    ExecutionResult name(Interpreter& interp) {                         \
+        if_unlikely(!interp.evalStack.assertDepth(2)) {                 \
+            return EvalStackUnderflow();                                \
+        }                                                               \
+        Value val2 = interp.evalStack.popBack().value();                \
+        Value val1 = interp.evalStack.popBack().value();                \
+        if (val1.type != ValueType::Numeric ||                          \
+            val2.type != ValueType::Numeric) {                          \
+            return TypeError();                                         \
+        }                                                               \
+        Value result;                                                   \
+        result.type = ValueType::Boolean;                               \
+        result.booleanValue = op(val1.booleanValue, val2.booleanValue); \
+        interp.evalStack.pushBack(result);                              \
+        return Success();                                               \
+    }
 
 Value eqOperator(Value val1, Value val2, [[maybe_unused]] Interpreter& interp) {
     Value result;
