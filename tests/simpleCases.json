@@ -51,6 +51,22 @@
     {
       "input": "9 109 - 10 * to_string print_str",
       "expectedOutput": "-1000"
+    },
+    {
+      "input": "True 3 5 > or not to_string print_str",
+      "expectedOutput": "False"
+    },
+    {
+      "input": "True 3 5 < and to_string print_str",
+      "expectedOutput": "True"
+    },
+    {
+      "input": "3 5 < to_string print_str",
+      "expectedOutput": "True"
+    },
+    {
+      "input": "1 7 >= to_string print_str",
+      "expectedOutput": "False"
     }
   ]
 }
