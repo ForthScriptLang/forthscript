@@ -136,8 +136,11 @@ ExecutionResult scopeCall(Interpreter& interp) {
     if_unlikely(!newTraceOptional) { return EvalStackUnderflow(); }
     Value newTrace = newTraceOptional.value();
     if_unlikely(newTrace.type != ValueType::Array) { return TypeError(); }
-    interp.callInterpreter(newTrace.arr, true);
-    return Success();
+    ExecutionResult callResult = interp.callInterpreter(newTrace.arr, true);
+    if (callResult.result == ExecutionResultType::Return) {
+        return Success();
+    }
+    return callResult;
 }
 
 ExecutionResult noScopeCall(Interpreter& interp) {
@@ -145,8 +148,11 @@ ExecutionResult noScopeCall(Interpreter& interp) {
     if_unlikely(!newTraceOptional) { return EvalStackUnderflow(); }
     Value newTrace = newTraceOptional.value();
     if_unlikely(newTrace.type != ValueType::Array) { return TypeError(); }
-    interp.callInterpreter(newTrace.arr, true);
-    return Success();
+    ExecutionResult callResult = interp.callInterpreter(newTrace.arr, false);
+    if (callResult.result == ExecutionResultType::Return) {
+        return Success();
+    }
+    return callResult;
 }
 
 void addControlFlowNativeWords(Interpreter& interp) {

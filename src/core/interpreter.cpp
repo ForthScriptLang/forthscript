@@ -77,12 +77,18 @@ ExecutionResult Interpreter::callInterpreter(Array* code, bool newScope) {
             case ValueType::NativeWord: {
                 ExecutionResult result = ins.word(*this);
                 if (result.result != ExecutionResultType::Success) {
+                    if (newScope) {
+                        symTable.leaveScope();
+                    }
                     return result;
                 }
                 // check for garbage collection
                 heap.runGCIfOverThreshold();
             } break;
         }
+    }
+    if (newScope) {
+        symTable.leaveScope();
     }
     return Success();
 }
