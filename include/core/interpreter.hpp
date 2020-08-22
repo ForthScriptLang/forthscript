@@ -1,6 +1,5 @@
 #pragma once
 
-#include <core/callstack.hpp>
 #include <core/evalstack.hpp>
 #include <core/heap.hpp>
 #include <core/symtable.hpp>
@@ -33,19 +32,16 @@ struct TypeError : public ExecutionResult {
 };
 
 struct Interpreter {
-    CallStack callStack;
     EvaluationStack evalStack;
     Heap heap;
     SymbolTable symTable;
     String *breakString, *returnString, *callString, *commaString, *forString,
         *whileString;
-    std::unordered_map<NativeWord, String*> symbols;
+    std::unordered_map<NativeWord, String*> symbolsToStrings;
+    std::unordered_map<String*, NativeWord> stringsToSymbols;
 
     Interpreter(size_t maxRecursionDepth);
     void defineNativeWord(const std::u32string& str, NativeWord word);
     ExecutionResult callInterpreter(Array* code, bool newScope);
     NativeWord queryNativeWord(String* str);
-
-    // returns true if there was a native frame in the stack
-    bool cleanFramesToLastNative();
 };

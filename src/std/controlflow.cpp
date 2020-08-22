@@ -136,10 +136,7 @@ ExecutionResult scopeCall(Interpreter& interp) {
     if_unlikely(!newTraceOptional) { return EvalStackUnderflow(); }
     Value newTrace = newTraceOptional.value();
     if_unlikely(newTrace.type != ValueType::Array) { return TypeError(); }
-    if_unlikely(!interp.callStack.addArrayCallFrame(newTrace.arr, true)) {
-        return CallStackOverflow();
-    }
-    interp.symTable.createScope();
+    interp.callInterpreter(newTrace.arr, true);
     return Success();
 }
 
@@ -148,9 +145,7 @@ ExecutionResult noScopeCall(Interpreter& interp) {
     if_unlikely(!newTraceOptional) { return EvalStackUnderflow(); }
     Value newTrace = newTraceOptional.value();
     if_unlikely(newTrace.type != ValueType::Array) { return TypeError(); }
-    if_unlikely(!interp.callStack.addArrayCallFrame(newTrace.arr, false)) {
-        return CallStackOverflow();
-    }
+    interp.callInterpreter(newTrace.arr, true);
     return Success();
 }
 
