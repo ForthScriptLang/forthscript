@@ -35,8 +35,6 @@ struct Interpreter {
     EvaluationStack evalStack;
     Heap heap;
     SymbolTable symTable;
-    String *breakString, *returnString, *callString, *commaString, *forString,
-        *whileString;
     std::unordered_map<NativeWord, String*> symbolsToStrings;
     std::unordered_map<String*, NativeWord> stringsToSymbols;
     size_t recursionDepth;
