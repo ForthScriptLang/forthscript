@@ -1,6 +1,9 @@
 #pragma once
 
+#include <core/interpreter.hpp>
 #include <string>
 
-std::u32string readLine();
-void print(const std::u32string &str);
+void initREPL(Interpreter& interpreter);
+std::u32string readLine(const std::u32string& prompt,
+                        bool disableAutocomplete = false);
+void print(const std::u32string& str);

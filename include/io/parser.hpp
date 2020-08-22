@@ -1,6 +1,6 @@
 #pragma once
 
-#include <core/heap.hpp>
+#include <core/interpreter.hpp>
 #include <core/values.hpp>
 #include <string>
 
@@ -12,4 +12,4 @@ struct ParseResult {
     Array *code;
 };
 
-ParseResult parse(const std::u32string &str, Heap &h);
+ParseResult parse(const std::u32string &str, Interpreter &h);

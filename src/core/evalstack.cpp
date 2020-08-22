@@ -1,5 +1,7 @@
 #include <core/evalstack.hpp>
 
+EvaluationStack::EvaluationStack() { stack.reserve(1024); }
+
 void EvaluationStack::registerRootMarker(Heap &heap) {
     heap.insertRootMarker([this](Heap &heap) {
         for (const auto &val : stack) {
@@ -8,4 +10,24 @@ void EvaluationStack::registerRootMarker(Heap &heap) {
             }
         }
     });
+}
+
+std::optional<Value> EvaluationStack::popBack() {
+    if (stack.empty()) {
+        return std::optional<Value>();
+    }
+    Value result = stack.back();
+    stack.pop_back();
+    return result;
+}
+
+void EvaluationStack::pushBack(Value val) { stack.push_back(val); }
+
+void EvaluationStack::clear() {
+    stack.clear();
+    stack.shrink_to_fit();
+}
+
+bool EvaluationStack::assertDepth(size_t count) const {
+    return stack.size() >= count;
 }

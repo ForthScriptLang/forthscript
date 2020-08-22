@@ -7,11 +7,15 @@
 #include <iostream>
 #include <locale>
 #include <std/arith.hpp>
+#include <std/arrays.hpp>
 #include <std/comparisons.hpp>
 #include <std/controlflow.hpp>
+#include <std/indexing.hpp>
 #include <std/os.hpp>
 #include <std/stack.hpp>
 #include <std/strings.hpp>
+#include <std/templates.hpp>
+#include <std/typing.hpp>
 
 void initStd(Interpreter& interp) {
     addArithNativeWords(interp);
@@ -20,6 +24,10 @@ void initStd(Interpreter& interp) {
     addControlFlowNativeWords(interp);
     addOSModuleNativeWords(interp);
     addStringManipulationNativeWords(interp);
+    addIndexingNativeWords(interp);
+    addTemplatesNativeWords(interp);
+    addArrayManipulationNativeWords(interp);
+    addTypingNativeWords(interp);
 }
 
 void reportSyntaxError(ParseResult res) {
@@ -34,42 +42,41 @@ void reportSyntaxError(ParseResult res) {
     print(U"\n");
 }
 
-void reportRuntimeError(ExecutionResult res, Interpreter& interp) {
-    for (size_t i = 0; i < interp.callStack.frames.size(); ++i) {
-        print(U"at <");
-        print(interp.callStack.frames[i].name);
-        print(U">\n");
-    }
+void reportRuntimeError(ExecutionResult res,
+                        [[maybe_unused]] Interpreter& interp) {
     print(U"Runtime error: ");
-    print(res.error);
+    print(std::u32string(res.error));
     print(U"\n");
 }
 
 void hostRepl() {
     Interpreter interp(1024);
-    initStd(interp);
+    // initStd requires scope for adding native words
     interp.symTable.createScope();
+    initStd(interp);
+    initREPL(interp);
     while (true) {
-        print(U"[");
-        for (size_t i = 0; i < interp.evalStack.stack.size(); ++i) {
-            print(prettyprint(interp.evalStack.stack[i]));
-            if (i != interp.evalStack.stack.size() - 1) {
-                print(U" ");
+        std::u32string prompt;
+        prompt.append(U"[");
+        for (size_t i = 0; i < interp.evalStack.getStack().size(); ++i) {
+            prompt.append(prettyprint(interp.evalStack.getStack()[i], interp));
+            if (i != interp.evalStack.getStack().size() - 1) {
+                prompt.append(U" ");
             }
         }
-        print(U"]# ");
-        std::u32string s = readLine();
-        ParseResult result = parse(s, interp.heap);
+        prompt.append(U"]# ");
+        std::u32string s = readLine(prompt);
+        ParseResult result = parse(s, interp);
         if (result.isError()) {
             reportSyntaxError(result);
+            interp.evalStack.clear();
             interp.heap.collectGarbage();
             continue;
         }
-        ExecutionResult res =
-            interp.callInterpreter(result.code, U"repl_start", false);
+        ExecutionResult res = interp.callInterpreter(result.code, false);
         if (res.result != ExecutionResultType::Success) {
             reportRuntimeError(res, interp);
-            interp.evalStack.stack.clear();
+            interp.evalStack.clear();
             interp.heap.collectGarbage();
         }
     }
@@ -82,18 +89,20 @@ int main(int argc, char** argv) {
     }
     char* filename = argv[1];
     Interpreter interp(1024);
+    // initStd requires scope for adding native words
+    interp.symTable.createScope();
     initStd(interp);
     std::u32string source = readFile(filename);
-    ParseResult result = parse(source, interp.heap);
+    ParseResult result = parse(source, interp);
     if (result.isError()) {
         reportSyntaxError(result);
         interp.heap.collectGarbage();
         return -1;
     }
-    ExecutionResult res = interp.callInterpreter(result.code, U"main", true);
+    ExecutionResult res = interp.callInterpreter(result.code, false);
     if (res.result != ExecutionResultType::Success) {
         reportRuntimeError(res, interp);
-        interp.evalStack.stack.clear();
+        interp.evalStack.clear();
         interp.heap.collectGarbage();
         return -1;
     }

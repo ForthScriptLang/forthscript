@@ -1,8 +1,7 @@
 #include <io/strings.hpp>
 
 String *convertFromBackslashed(const std::u32string_view &view, Heap &h) {
-    std::u32string_view dummy;
-    String *result = h.makeStringObject(dummy);
+    std::u32string resultStr;
     size_t len = view.size();
     for (size_t i = 0; i < len; ++i) {
         if (view[i] == U'\\') {
@@ -13,25 +12,25 @@ String *convertFromBackslashed(const std::u32string_view &view, Heap &h) {
             char sym = view[i];
             switch (sym) {
                 case U'n':
-                    result->str.push_back(U'\n');
+                    resultStr.push_back(U'\n');
                     break;
                 case U'b':
-                    result->str.push_back(U'\b');
+                    resultStr.push_back(U'\b');
                     break;
                 case U'r':
-                    result->str.push_back(U'\r');
+                    resultStr.push_back(U'\r');
                     break;
                 case U'a':
-                    result->str.push_back(U'\a');
+                    resultStr.push_back(U'\a');
                     break;
                 case U't':
-                    result->str.push_back(U'\t');
+                    resultStr.push_back(U'\t');
                     break;
                 case U'\"':
-                    result->str.push_back(U'\"');
+                    resultStr.push_back(U'\"');
                     break;
                 case U'\'':
-                    result->str.push_back(U'\'');
+                    resultStr.push_back(U'\'');
                     break;
                 default:
                     return nullptr;
@@ -40,9 +39,10 @@ String *convertFromBackslashed(const std::u32string_view &view, Heap &h) {
             if (view[i] == U'\'') {
                 return nullptr;
             }
-            result->str.push_back(view[i]);
+            resultStr.push_back(view[i]);
         }
     }
+    String *result = h.makeStringObject(resultStr);
     return result;
 }
 

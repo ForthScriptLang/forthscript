@@ -1,6 +1,5 @@
 #pragma once
 
-#include <core/callstack.hpp>
 #include <core/evalstack.hpp>
 #include <core/heap.hpp>
 #include <core/symtable.hpp>
@@ -9,24 +8,40 @@
 #include <string>
 #include <unordered_map>
 
-enum class ExecutionResultType { Error, Success, Return, Break };
+enum class ExecutionResultType { Error, Success, Return, Break, Continue };
 
 struct ExecutionResult {
-    ExecutionResultType result;
-    std::u32string error;
+    ExecutionResultType result = ExecutionResultType::Success;
+    const char32_t* error = U"";
 };
 
-using NativeWord = std::function<ExecutionResult(struct Interpreter&)>;
+struct Success : public ExecutionResult {
+    Success();
+};
+
+struct EvalStackUnderflow : public ExecutionResult {
+    EvalStackUnderflow();
+};
+
+struct CallStackOverflow : public ExecutionResult {
+    CallStackOverflow();
+};
+
+struct TypeError : public ExecutionResult {
+    TypeError();
+};
 
 struct Interpreter {
-    CallStack callStack;
     EvaluationStack evalStack;
     Heap heap;
     SymbolTable symTable;
-    std::unordered_map<std::u32string, NativeWord> nativeWords;
+    String *breakString, *returnString, *callString, *commaString, *forString,
+        *whileString;
+    std::unordered_map<NativeWord, String*> symbolsToStrings;
+    std::unordered_map<String*, NativeWord> stringsToSymbols;
 
     Interpreter(size_t maxRecursionDepth);
-    void defineNativeWord(const std::u32string& name, NativeWord word);
-    ExecutionResult callInterpreter(Array* code, const std::u32string& name,
-                                    bool newScope);
+    void defineNativeWord(const std::u32string& str, NativeWord word);
+    ExecutionResult callInterpreter(Array* code, bool newScope);
+    NativeWord queryNativeWord(String* str);
 };

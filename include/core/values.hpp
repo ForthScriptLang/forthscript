@@ -3,6 +3,7 @@
 #include <stdint.h>
 
 #include <functional>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -16,7 +17,8 @@ struct Object {
 };
 
 enum class ValueType {
-    Nil = 1,
+    Nil = 0,
+    NativeWord = 1,
     Numeric = 2,
     Boolean = 3,
     Word = 128,
@@ -30,22 +32,41 @@ enum class ValueType {
 inline bool isHeapType(ValueType type) { return (((int)(type)) & 128) != 0; }
 inline bool isArrayType(ValueType type) { return (((int)(type)) & 256) != 0; }
 
+typedef struct ExecutionResult (*NativeWord)(struct Interpreter &);
+
 struct Value {
-    ValueType type;
+    ValueType type = ValueType::Nil;
     union {
         bool booleanValue;
         int64_t numericValue;
         Object *object;
         struct String *str;
         struct Array *arr;
+        NativeWord word;
     };
-    inline Value() { type = ValueType::Nil; }
 };
 
 struct String : Object {
-    std::u32string str;
     virtual ~String();
     virtual Object *addPointedToQueue(struct Object *head);
+    inline const std::u32string &get() const { return str; }
+    inline String(const std::u32string &str) { this->str = str; }
+    inline String(std::u32string &&str) { this->str = str; }
+    inline String(std::u32string_view sv) { str = sv; }
+    inline String(const char32_t *s) { str = std::u32string(s); }
+
+    // this is used for symbol table
+    // as strings are interned
+    // there is only one object representing a given string
+    // symbol table can just find this vector directly
+    // instead of doing costly lookup in hash map
+    std::vector<std::pair<Value, size_t>> *values = nullptr;
+    void pushValue(Value val, size_t scope);
+    Value &getLastValue();
+    void popValue();
+
+   private:
+    std::u32string str;
 };
 
 struct Array : Object {
