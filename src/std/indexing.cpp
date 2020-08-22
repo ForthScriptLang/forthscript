@@ -1,54 +1,6 @@
 #include <std/indexing.hpp>
 #include <std/operators.hpp>
 
-Value lenOp(Value val, [[maybe_unused]] Interpreter& interp) {
-    Value result;
-    result.type = ValueType::Numeric;
-    switch (val.type) {
-        case ValueType::Array:
-            result.numericValue = val.arr->values.size();
-            return result;
-        case ValueType::String:
-            result.numericValue = val.str->get().size();
-            return result;
-        default:
-            return Value();
-    }
-}
-
-Value getAtOp(Value indexable, Value index,
-              [[maybe_unused]] Interpreter& interp) {
-    if (index.type != ValueType::Numeric) {
-        return Value();
-    }
-    if (index.numericValue < 0) {
-        return Value();
-    }
-    switch (indexable.type) {
-        case ValueType::Array:
-            if (indexable.arr->values.size() <= (size_t)(index.numericValue)) {
-                return Value();
-            }
-            return indexable.arr->values[index.numericValue];
-        case ValueType::String: {
-            if (indexable.str->get().size() <= (size_t)(index.numericValue)) {
-                return Value();
-            }
-            char32_t newCStr[2] = {indexable.str->get()[index.numericValue],
-                                   '\0'};
-            String* newStr =
-                interp.heap.makeStringObject(std::u32string_view(newCStr));
-            Value result;
-            result.type = ValueType::String;
-            result.str = newStr;
-            return result;
-        }
-        default:
-            break;
-    }
-    return Value();
-}
-
 ExecutionResult getAtOp(Interpreter& interp) {
     if (!interp.evalStack.assertDepth(2)) {
         return EvalStackUnderflow();
