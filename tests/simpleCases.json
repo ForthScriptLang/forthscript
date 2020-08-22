@@ -1,110 +1,137 @@
 {
   "data": [
     {
+      "name": "0",
       "input": "1 1 + to_string print_str",
       "expectedOutput": "2"
     },
     {
+      "name": "1",
       "input": "1 1 - to_string print_str",
       "expectedOutput": "0"
     },
     {
+      "name": "2",
       "input": "99999999 99999999 + to_string print_str",
       "expectedOutput": "199999998"
     },
     {
+      "name": "3",
       "input": "4 8 * to_string print_str",
       "expectedOutput": "32"
     },
     {
+      "name": "4",
       "input": "34 2 / to_string print_str",
       "expectedOutput": "17"
     },
     {
+      "name": "5",
       "input": "34 0 / to_string print_str",
       "expectedOutput": "Runtime error: Division by zero\n"
     },
     {
+      "name": "6",
       "input": "4 3 / to_string print_str",
       "expectedOutput": "1"
     },
     {
+      "name": "7",
       "input": "7 3 % to_string print_str",
       "expectedOutput": "1"
     },
     {
+      "name": "8",
       "input": "7 0 % to_string print_str",
       "expectedOutput": "Runtime error: Division by zero\n"
     },
     {
+      "name": "9",
       "input": "7 12 % to_string print_str",
       "expectedOutput": "7"
     },
     {
+      "name": "10",
       "input": "100 10 % to_string print_str",
       "expectedOutput": "0"
     },
     {
+      "name": "11",
       "input": "9 109 - to_string print_str",
       "expectedOutput": "-100"
     },
     {
+      "name": "12",
       "input": "9 109 - 10 * to_string print_str",
       "expectedOutput": "-1000"
     },
     {
+      "name": "13",
       "input": "True 3 5 > or not to_string print_str",
       "expectedOutput": "False"
     },
     {
+      "name": "14",
       "input": "True 3 5 < and to_string print_str",
       "expectedOutput": "True"
     },
     {
+      "name": "15",
       "input": "3 5 < to_string print_str",
       "expectedOutput": "True"
     },
     {
+      "name": "16",
       "input": "1 7 >= to_string print_str",
       "expectedOutput": "False"
     },
     {
+      "name": "17",
       "input": "[2 3 4] len to_string print_str",
       "expectedOutput": "3"
     },
     {
+      "name": "18",
       "input": "[2 3 4] 0 peek to_string print_str",
       "expectedOutput": "2"
     },
     {
+      "name": "19",
       "input": "[2 3 4] 4 peek to_string print_str",
       "expectedOutput": "Runtime error: Out of bounds\n"
     },
     {
+      "name": "20",
       "input": "\"abacaba\" len to_string print_str",
       "expectedOutput": "7"
     },
     {
+      "name": "21",
       "input": "\"abacaba\" 3 peek print_str",
       "expectedOutput": "c"
     },
     {
+      "name": "22",
       "input": "\"abacaba\" 10 peek",
       "expectedOutput": "Runtime error: Out of bounds\n"
     },
     {
+      "name": "23",
       "input": "[2 3 4] $arr arr 0 3 poke arr to_string print_str",
       "expectedOutput": "[3 3 4]"
     },
     {
+      "name": "24",
       "input": "[dup 0 != [swap over % gcd!] [drop] if_else] $gcd 6 9 gcd! to_string print_str",
       "expectedOutput": "3"
     },
     {
+      "name": "25",
       "input": "3 $a [5 $a]! a to_string print_str",
       "expectedOutput": "3"
     },
     {
+      "name": "26",
       "input": "3 $a [5 $a], a to_string print_str",
       "expectedOutput": "5"
     }

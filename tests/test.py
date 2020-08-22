@@ -15,7 +15,7 @@ outputCasePath = "/output.txt"
 
 @create_tests('test_operators', 'simpleCases.json')
 class SimpleTests(unittest.TestCase):
-    def test_operators(self, input, expectedOutput):
+    def test_operators(self, name, input, expectedOutput):
         f = tempfile.NamedTemporaryFile(delete=False)
         f.write(input.encode("utf-8"))
         f.close()
@@ -23,8 +23,9 @@ class SimpleTests(unittest.TestCase):
         proc = sp.Popen([interpreterPath, inputFilePath], stdout=sp.PIPE)
         (output, err) = proc.communicate()
         proc.wait()
+        actualOutput = output.decode("utf-8").replace('\r','')
         #print(f"[ {input} ] => {expectedOutput} ?")
-        assert output.decode("utf-8") == expectedOutput, f"{output.decode('utf-8')} != {expectedOutput}"
+        assert repr(actualOutput) == repr(expectedOutput), f"{repr(actualOutput)} != {repr(expectedOutput)}"
         os.unlink(f.name)
 
 @cases_from_files('test_files')
