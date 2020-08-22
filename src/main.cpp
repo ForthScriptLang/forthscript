@@ -8,6 +8,7 @@
 #include <locale>
 #include <std/arith.hpp>
 #include <std/arrays.hpp>
+#include <std/boolean.hpp>
 #include <std/comparisons.hpp>
 #include <std/controlflow.hpp>
 #include <std/indexing.hpp>
@@ -28,6 +29,7 @@ void initStd(Interpreter& interp) {
     addTemplatesNativeWords(interp);
     addArrayManipulationNativeWords(interp);
     addTypingNativeWords(interp);
+    addBooleanNativeWords(interp);
 }
 
 void reportSyntaxError(ParseResult res) {
