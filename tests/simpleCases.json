@@ -99,6 +99,14 @@
     {
       "input": "[dup 0 != [swap over % gcd!] [drop] if_else] $gcd 6 9 gcd! to_string print_str",
       "expectedOutput": "3"
+    },
+    {
+      "input": "3 $a [5 $a]! a to_string print_str",
+      "expectedOutput": "3"
+    },
+    {
+      "input": "3 $a [5 $a], a to_string print_str",
+      "expectedOutput": "5"
     }
   ]
 }
