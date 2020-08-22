@@ -12,7 +12,7 @@ def create_tests(func_name, file):
                     def wrapper(self, *args, **kwargs):
                         return func(self, **params)
                     return wrapper
-                setattr(cls, func_name + '_' + str(i), tmp())
+                setattr(cls, func_name + '_' + params["name"], tmp())
         # Remove func from class:
         setattr(cls, func_name, None)
         return cls
