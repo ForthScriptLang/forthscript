@@ -22,7 +22,7 @@
     },
     {
       "input": "34 0 / to_string print_str",
-      "expectedOutput": "Nil"
+      "expectedOutput": "Runtime error: Division by zero\n"
     },
     {
       "input": "4 3 / to_string print_str",
@@ -34,7 +34,7 @@
     },
     {
       "input": "7 0 % to_string print_str",
-      "expectedOutput": "Nil"
+      "expectedOutput": "Runtime error: Division by zero\n"
     },
     {
       "input": "7 12 % to_string print_str",
@@ -51,6 +51,62 @@
     {
       "input": "9 109 - 10 * to_string print_str",
       "expectedOutput": "-1000"
+    },
+    {
+      "input": "True 3 5 > or not to_string print_str",
+      "expectedOutput": "False"
+    },
+    {
+      "input": "True 3 5 < and to_string print_str",
+      "expectedOutput": "True"
+    },
+    {
+      "input": "3 5 < to_string print_str",
+      "expectedOutput": "True"
+    },
+    {
+      "input": "1 7 >= to_string print_str",
+      "expectedOutput": "False"
+    },
+    {
+      "input": "[2 3 4] len to_string print_str",
+      "expectedOutput": "3"
+    },
+    {
+      "input": "[2 3 4] 0 peek to_string print_str",
+      "expectedOutput": "2"
+    },
+    {
+      "input": "[2 3 4] 4 peek to_string print_str",
+      "expectedOutput": "Runtime error: Out of bounds\n"
+    },
+    {
+      "input": "\"abacaba\" len to_string print_str",
+      "expectedOutput": "7"
+    },
+    {
+      "input": "\"abacaba\" 3 peek print_str",
+      "expectedOutput": "c"
+    },
+    {
+      "input": "\"abacaba\" 10 peek",
+      "expectedOutput": "Runtime error: Out of bounds\n"
+    },
+    {
+      "input": "[2 3 4] $arr arr 0 3 poke arr to_string print_str",
+      "expectedOutput": "[3 3 4]"
+    },
+    {
+      "input": "[dup 0 != [swap over % gcd!] [drop] if_else] $gcd 6 9 gcd! to_string print_str",
+      "expectedOutput": "3"
+    },
+    {
+      "input": "3 $a [5 $a]! a to_string print_str",
+      "expectedOutput": "3"
+    },
+    {
+      "input": "3 $a [5 $a], a to_string print_str",
+      "expectedOutput": "5"
     }
   ]
 }
