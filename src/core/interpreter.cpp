@@ -23,6 +23,8 @@ TypeError::TypeError() {
 
 Interpreter::Interpreter(size_t maxRecursionDepth)
     : symTable(maxRecursionDepth) {
+    this->maxRecursionDepth = maxRecursionDepth;
+    recursionDepth = 0;
     evalStack.registerRootMarker(heap);
     heap.insertRootMarker([this](Heap& h) {
         for (const auto& symbol : stringsToSymbols) {
@@ -46,6 +48,9 @@ NativeWord Interpreter::queryNativeWord(String* str) {
 }
 
 ExecutionResult Interpreter::callInterpreter(Array* code, bool newScope) {
+    if_unlikely(++recursionDepth >= maxRecursionDepth) {
+        return CallStackOverflow();
+    }
     if (newScope) {
         symTable.createScope();
     }
@@ -82,6 +87,7 @@ ExecutionResult Interpreter::callInterpreter(Array* code, bool newScope) {
                     if (newScope) {
                         symTable.leaveScope();
                     }
+                    --recursionDepth;
                     return result;
                 }
                 // check for garbage collection
@@ -92,5 +98,6 @@ ExecutionResult Interpreter::callInterpreter(Array* code, bool newScope) {
     if (newScope) {
         symTable.leaveScope();
     }
+    --recursionDepth;
     return Success();
 }
