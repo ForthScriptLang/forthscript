@@ -18,7 +18,10 @@ std::u32string readLine(const std::u32string &prompt,
     return toUTF32(result);
 }
 
-void print(const std::u32string &str) { std::cout << fromUTF32(str); }
+void print(const std::u32string &str) {
+    std::cout << fromUTF32(str);
+    std::flush(std::cout);
+}
 
 void initREPL([[maybe_unused]] Interpreter &interpreter) {
     linenoise::SetHistoryMaxLen(1024);
