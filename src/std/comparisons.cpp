@@ -50,6 +50,9 @@ Value eqOperator(Value val1, Value val2, [[maybe_unused]] Interpreter& interp) {
         case ValueType::Nil:
             result.booleanValue = true;
             break;
+        case ValueType::NativeHandle:
+            result.booleanValue = val1.handle == val2.handle;
+            break;
     }
     return result;
 }

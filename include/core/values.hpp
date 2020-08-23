@@ -25,6 +25,7 @@ enum class ValueType {
     WordAssign = 129,
     WordDeclare = 130,
     String = 131,
+    NativeHandle = 132,
     Array = 388,
     Placeholder = 389
 };
@@ -42,6 +43,7 @@ struct Value {
         Object *object;
         struct String *str;
         struct Array *arr;
+        struct NativeHandle *handle;
         NativeWord word;
     };
 };
@@ -73,4 +75,14 @@ struct Array : Object {
     std::vector<Value> values;
     virtual ~Array();
     virtual Object *addPointedToQueue(struct Object *head);
+};
+
+struct NativeHandle : Object {
+    virtual ~NativeHandle() final;
+    virtual std::u32string toString();
+    virtual void destruct();
+    virtual Object *addPointedToQueue(struct Object *head);
+
+   protected:
+    bool alive = true;
 };

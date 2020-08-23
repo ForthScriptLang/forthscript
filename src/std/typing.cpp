@@ -37,6 +37,9 @@ Value getTypeOp(Value arg, Interpreter& interp) {
         case ValueType::WordDeclare:
             result.str = interp.heap.makeStringObject(U"WordDeclare");
             break;
+        case ValueType::NativeHandle:
+            result.str = interp.heap.makeStringObject(U"NativeHandle");
+            break;
     }
     return result;
 }

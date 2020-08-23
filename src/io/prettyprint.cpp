@@ -54,9 +54,11 @@ void prettyprintPrimitive(const Value& val, std::u32string& str,
             str.push_back(U'$');
             str.append(val.str->get());
             break;
-        case ValueType::NativeWord: {
+        case ValueType::NativeWord:
             str.append(interp.symbolsToStrings[val.word]->get());
-        } break;
+            break;
+        case ValueType::NativeHandle:
+            str.append(val.handle->toString());
         default:
             break;
     }

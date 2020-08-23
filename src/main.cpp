@@ -94,8 +94,11 @@ int main(int argc, char** argv) {
     // initStd requires scope for adding native words
     interp.symTable.createScope();
     initStd(interp);
-    std::u32string source = readFile(filename);
-    ParseResult result = parse(source, interp);
+    std::optional<std::u32string> source = readFile(filename);
+    if (!source.has_value()) {
+        std::cout << "Can't open file " << filename << std::endl;
+    }
+    ParseResult result = parse(source.value(), interp);
     if (result.isError()) {
         reportSyntaxError(result);
         interp.heap.collectGarbage();

@@ -46,3 +46,15 @@ void String::popValue() {
         values = nullptr;
     }
 }
+
+NativeHandle::~NativeHandle() {
+    if (alive) {
+        destruct();
+    }
+}
+
+std::u32string NativeHandle::toString() { return U"<NativeHandle>"; }
+
+void NativeHandle::destruct() {}
+
+Object *NativeHandle::addPointedToQueue(struct Object *head) { return head; }
