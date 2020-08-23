@@ -5,48 +5,23 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
-
+      
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: cmake
-      run: cmake CMAKE_BUILD_TYPE=Release CMakeLists.txt
-    - name: make
-      run: make
-    - name: Upload math result for job 1
-      uses: actions/upload-artifact@v2
-      with:
-        name: build
-        path: build
-    
-  test:
-    needs: [build]
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.8]
-    steps:
-    - uses: actions/checkout@v2
-    - name: Download build
-      uses: actions/download-artifact@v2
-      with:
-        name: build
-        path: build
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Display Python version
-      run: python -c "import sys; print(sys.version)"
-    - name: sleep
-      run: sleep 20
-    - name: ls
-      run: ls
-    - name: ls build
-      run: ls build
-    - name: sudo chmod +x
-      run: sudo chmod +x build/overstacked
-    - name: Run tests
-      run: cd ./tests; python3 test.py; cd ./..
+  cross-test:
+      name: '${{ matrix.os }}: build and test'
+      runs-on: '${{ matrix.os }}'
+      strategy:
+        fail-fast: false
+        matrix:
+          os: [ubuntu-latest, macos-latest, windows-latest]
+          python-version: [3.8]
+      
+      steps:
+        - uses: actions/checkout@v2
+        - uses: actions/setup-python@v2
+          with:
+            python-version: ${{ matrix.python-version }}
+        - name: Building interpreter
+          run: cmake CMAKE_BUILD_TYPE=Release CMakeLists.txt; cmake --build ./
+        - name: Running tests
+          run: cd ./tests; python test.py; cd ./..
