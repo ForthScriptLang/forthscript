@@ -46,5 +46,7 @@ jobs:
       run: ls
     - name: ls build
       run: ls build
+    - name: sudo chmod +x
+      run: sudo chmod +x build/overstacked
     - name: Run tests
       run: cd ./tests; python3 test.py; cd ./..
