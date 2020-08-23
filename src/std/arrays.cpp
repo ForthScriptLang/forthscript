@@ -54,8 +54,41 @@ ExecutionResult deepCopyOp(Interpreter& interp) {
     return Success();
 }
 
+ExecutionResult appendOp(Interpreter& interp) {
+    if (!interp.evalStack.assertDepth(2)) {
+        return EvalStackUnderflow();
+    }
+    Value val = interp.evalStack.popBack().value();
+    Value array = interp.evalStack.popBack().value();
+    if (array.type != ValueType::Array) {
+        return TypeError();
+    }
+    array.arr->values.push_back(val);
+    return Success();
+}
+
+ExecutionResult resizeOp(Interpreter& interp) {
+    if (!interp.evalStack.assertDepth(3)) {
+        return EvalStackUnderflow();
+    }
+    Value val = interp.evalStack.popBack().value();
+    Value count = interp.evalStack.popBack().value();
+    Value array = interp.evalStack.popBack().value();
+    if (array.type != ValueType::Array && count.type != ValueType::Numeric) {
+        return TypeError();
+    }
+    if (count.numericValue < 0) {
+        return ExecutionResult{ExecutionResultType::Error,
+                               U"Resize for negative sizes is not permitted"};
+    }
+    array.arr->values.resize((size_t)count.numericValue, val);
+    return Success();
+}
+
 void addArrayManipulationNativeWords(Interpreter& interp) {
     interp.defineNativeWord(U"alloc", allocOp);
     interp.defineNativeWord(U"shallow_copy", copyOp);
     interp.defineNativeWord(U"deep_copy", deepCopyOp);
+    interp.defineNativeWord(U"append", appendOp);
+    interp.defineNativeWord(U"resize", resizeOp);
 }
