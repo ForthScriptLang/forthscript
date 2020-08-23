@@ -6,6 +6,7 @@ project(overstacked)
 
 set(CMAKE_CXX_STANDARD 17)
 
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/build)
 set(RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build)
 
 # Setting NDEBUG variable
