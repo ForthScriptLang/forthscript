@@ -41,8 +41,9 @@ FormatStatus formatArray(Array *format, Interpreter &interp) {
             case ValueType::Array: {
                 if (encountered.find(val.arr) != encountered.end()) {
                     return FormatStatus{
-                        nullptr, ExecutionResult{ExecutionResultType::Error,
-                                                 U"Recursive template"}};
+                        nullptr,
+                        ExecutionResult{ExecutionResultType::Error,
+                                        U"Recursive template", Value()}};
                 }
                 encountered.insert(val.arr);
                 Array *copy = interp.heap.makeArrayObject(

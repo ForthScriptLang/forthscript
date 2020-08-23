@@ -119,16 +119,18 @@ ExecutionResult forOp(Interpreter& interp) {
 }
 
 ExecutionResult breakOp(Interpreter&) {
-    return ExecutionResult{ExecutionResultType::Break, U"Nowhere to break"};
+    return ExecutionResult{ExecutionResultType::Break, U"Nowhere to break",
+                           Value()};
 }
 
 ExecutionResult returnOp(Interpreter&) {
-    return ExecutionResult{ExecutionResultType::Return, U"Nowhere to return"};
+    return ExecutionResult{ExecutionResultType::Return, U"Nowhere to return",
+                           Value()};
 }
 
 ExecutionResult continueOp(Interpreter&) {
     return ExecutionResult{ExecutionResultType::Continue,
-                           U"Nowhere to continue"};
+                           U"Nowhere to continue", Value()};
 }
 
 ExecutionResult scopeCall(Interpreter& interp) {
@@ -175,6 +177,10 @@ ExecutionResult tryOp(Interpreter& interp) {
     interp.evalStack.setBarrier(oldBarrier);
     if (callResult.result == ExecutionResultType::Success) {
         val.booleanValue = true;
+    } else if (callResult.result == ExecutionResultType::Custom) {
+        interp.evalStack.resize(cleanSize);
+        interp.evalStack.pushBack(callResult.val);
+        val.booleanValue = false;
     } else {
         interp.evalStack.resize(cleanSize);
         Value errorMessage;
@@ -187,8 +193,15 @@ ExecutionResult tryOp(Interpreter& interp) {
     return Success();
 }
 
+ExecutionResult throwOp(Interpreter& interp) {
+    if_unlikely(!interp.evalStack.assertDepth(1)) {
+        return EvalStackUnderflow();
+    }
+    Value val = interp.evalStack.popBack().value();
+    return ExecutionResult{ExecutionResultType::Custom, U"", val};
+}
+
 void addControlFlowNativeWords(Interpreter& interp) {
-    interp.defineNativeWord(U"try", tryOp);
     interp.defineNativeWord(U"while", whileOp);
     interp.defineNativeWord(U"if_else", ifElseOp);
     interp.defineNativeWord(U"if", ifOp);
@@ -198,4 +211,6 @@ void addControlFlowNativeWords(Interpreter& interp) {
     interp.defineNativeWord(U"continue", continueOp);
     interp.defineNativeWord(U"!", scopeCall);
     interp.defineNativeWord(U",", noScopeCall);
+    interp.defineNativeWord(U"try", tryOp);
+    interp.defineNativeWord(U"throw", throwOp);
 }

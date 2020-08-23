@@ -59,7 +59,7 @@ ExecutionResult mulOp(Interpreter& interp) {
         if (val2.numericValue < 0) {
             return ExecutionResult{
                 ExecutionResultType::Error,
-                U"Multiplication of a string by a negative number"};
+                U"Multiplication of a string by a negative number", Value()};
         }
         Value stringResult;
         stringResult.type = ValueType::String;
@@ -76,7 +76,7 @@ ExecutionResult mulOp(Interpreter& interp) {
         if (val2.numericValue < 0) {
             return ExecutionResult{
                 ExecutionResultType::Error,
-                U"Multiplication of an array by a negative number"};
+                U"Multiplication of an array by a negative number", Value()};
         }
         Value arrayResult;
         arrayResult.type = ValueType::Array;
@@ -106,7 +106,8 @@ ExecutionResult divOp(Interpreter& interp) {
     Value result;
     result.type = ValueType::Numeric;
     if (val2.numericValue == 0) {
-        return ExecutionResult{ExecutionResultType::Error, U"Division by zero"};
+        return ExecutionResult{ExecutionResultType::Error, U"Division by zero",
+                               Value()};
     }
     result.numericValue = val1.numericValue / val2.numericValue;
     interp.evalStack.pushBack(result);
@@ -125,7 +126,8 @@ ExecutionResult modOp(Interpreter& interp) {
     Value result;
     result.type = ValueType::Numeric;
     if (val2.numericValue == 0) {
-        return ExecutionResult{ExecutionResultType::Error, U"Division by zero"};
+        return ExecutionResult{ExecutionResultType::Error, U"Division by zero",
+                               Value()};
     }
     result.numericValue = val1.numericValue % val2.numericValue;
     interp.evalStack.pushBack(result);

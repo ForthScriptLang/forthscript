@@ -44,10 +44,13 @@ void reportSyntaxError(ParseResult res) {
     print(U"\n");
 }
 
-void reportRuntimeError(ExecutionResult res,
-                        [[maybe_unused]] Interpreter& interp) {
+void reportRuntimeError(ExecutionResult res, Interpreter& interp) {
     print(U"Runtime error: ");
-    print(std::u32string(res.error));
+    if (res.result == ExecutionResultType::Custom) {
+        print(prettyprint(res.val, interp));
+    } else {
+        print(std::u32string(res.error));
+    }
     print(U"\n");
 }
 

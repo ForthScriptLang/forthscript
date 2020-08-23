@@ -11,7 +11,7 @@ ExecutionResult allocOp(Interpreter& interp) {
     }
     if (size.numericValue < 0) {
         return ExecutionResult{ExecutionResultType::Error,
-                               U"Array allocation with negative size"};
+                               U"Array allocation with negative size", Value()};
     }
     Array* result =
         interp.heap.makeArrayObject(elem, (size_t)(size.numericValue));
@@ -79,7 +79,8 @@ ExecutionResult resizeOp(Interpreter& interp) {
     }
     if (count.numericValue < 0) {
         return ExecutionResult{ExecutionResultType::Error,
-                               U"Resize for negative sizes is not permitted"};
+                               U"Resize for negative sizes is not permitted",
+                               Value()};
     }
     array.arr->values.resize((size_t)count.numericValue, val);
     return Success();
