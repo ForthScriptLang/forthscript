@@ -21,8 +21,7 @@ class SimpleTestsOld(unittest.TestCase):
         f.write(input.encode("utf-8"))
         f.close()
         inputFilePath = f.name
-        proc = sp.Popen(f'{interpreterPath} {inputFilePath}',
-                        stdout=sp.PIPE, shell=True)
+        proc = sp.Popen([interpreterPath, inputFilePath], stdout=sp.PIPE)
         (output, err) = proc.communicate()
         proc.wait()
         actualOutput = output.decode("utf-8").replace('\r', '')

@@ -23,7 +23,5 @@ jobs:
             python-version: ${{ matrix.python-version }}
         - name: Building interpreter
           run: cmake CMAKE_BUILD_TYPE=Release CMakeLists.txt; cmake --build ./
-        - name: cd tests
-          run: cd tests
         - name: Run tests
-          run: python test.py
+          run: cd tests; python test.py; cd ".."
