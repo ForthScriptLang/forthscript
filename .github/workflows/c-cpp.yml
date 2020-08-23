@@ -66,6 +66,6 @@ jobs:
           with:
             python-version: ${{ matrix.python-version }}
         - name: Building interpreter
-          run: cmake CMAKE_BUILD_TYPE=Release CMakeLists.txt
+          run: cmake CMAKE_BUILD_TYPE=Release CMakeLists.txt; cmake --build ./
         - name: Running tests
           run: cd ./tests; python3 test.py; cd ./..
