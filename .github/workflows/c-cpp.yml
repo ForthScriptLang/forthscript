@@ -18,7 +18,7 @@ jobs:
     - name: Upload math result for job 1
       uses: actions/upload-artifact@v2
       with:
-        name: overstacked
+        name: build
         path: build
     
   test:
@@ -29,10 +29,10 @@ jobs:
         python-version: [3.8]
     steps:
     - uses: actions/checkout@v2
-    - name: Download math result for job 1
+    - name: Download build
       uses: actions/download-artifact@v2
       with:
-        name: overstacked
+        name: build
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
