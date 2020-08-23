@@ -26,4 +26,4 @@ jobs:
         - name: cd tests
           run: cd tests
         - name: Run tests
-          run: python3 test.py
+          run: python test.py
