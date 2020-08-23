@@ -1,0 +1,18 @@
+"test" $str
+
+[
+	$n $str
+	"" $result
+	0 $i [i str len <] [i 1 + =i] [
+		str i peek $char
+		char ord "a" ord - $ind
+		ind n + 26 % =ind
+		ind "a" ord + chr $char
+		result char + =result
+	] for
+	result
+] $rot_n
+
+[13 rot_n!] $rot_13
+
+str rot_13! rot_13! print_str
