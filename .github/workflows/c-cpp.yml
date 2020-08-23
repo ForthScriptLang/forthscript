@@ -13,7 +13,7 @@ jobs:
       strategy:
         fail-fast: false
         matrix:
-          os: [ubuntu-latest, macos-latest, windows-latest]
+          os: [windows-latest]
           python-version: [3.8]
       
       steps:
@@ -23,5 +23,7 @@ jobs:
             python-version: ${{ matrix.python-version }}
         - name: Building interpreter
           run: cmake CMAKE_BUILD_TYPE=Release CMakeLists.txt; cmake --build ./
-        - name: Running tests
-          run: cd ./tests; python test.py; cd ./..
+        - name: cd tests
+          run: cd tests
+        - name: Run tests
+          run: python3 test.py
