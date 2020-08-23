@@ -1,0 +1,29 @@
+{
+  "cases": [
+    {
+      "name": "0",
+      "input": "True 3 5 > or not to_string print_str",
+      "expectedOutput": "False"
+    },
+    {
+      "name": "1",
+      "input": "True 3 5 < and to_string print_str",
+      "expectedOutput": "True"
+    },
+    {
+      "name": "2",
+      "input": "3 5 < to_string print_str",
+      "expectedOutput": "True"
+    },
+    {
+      "name": "3",
+      "input": "1 7 >= to_string print_str",
+      "expectedOutput": "False"
+    },
+    {
+      "name": "4",
+      "input": "-3 4 < to_string print_str",
+      "expectedOutput": "True"
+    }
+  ]
+}
