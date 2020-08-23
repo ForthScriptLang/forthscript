@@ -13,6 +13,7 @@ interpreterPath = "../build/overstacked"
 inputCasePath = "/input.txt"
 outputCasePath = "/output.txt"
 
+# remove this with simpleCases.json and create_tests
 @create_tests('test_old', 'simpleCases.json')
 class SimpleTestsOld(unittest.TestCase):
     def test_old(self, name, input, expectedOutput):

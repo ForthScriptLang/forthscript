@@ -114,6 +114,36 @@
       "name": "22",
       "input": "-3 4 + to_string print_str",
       "expectedOutput": "1"
+    },
+    {
+      "name": "23",
+      "input": "-48 48 + to_string print_str",
+      "expectedOutput": "0"
+    },
+    {
+      "name": "24",
+      "input": "-48 48 + to_string print_str",
+      "expectedOutput": "0"
+    },
+    {
+      "name": "25",
+      "input": "-48 48 % to_string print_str",
+      "expectedOutput": "0"
+    },
+    {
+      "name": "26",
+      "input": "-48 23 % to_string print_str",
+      "expectedOutput": "-2"
+    },
+    {
+      "name": "27",
+      "input": "-48 -0 + to_string print_str",
+      "expectedOutput": "-48"
+    },
+    {
+      "name": "27",
+      "input": "-48 -0 / to_string print_str",
+      "expectedOutput": "Runtime error: Division by zero\n"
     }
   ]
 }
