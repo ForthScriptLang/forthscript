@@ -1,0 +1,102 @@
+# data tape
+30000 0 alloc $DM
+"+[-[<<[+[--->]-[<<<]]]>>>-]>-.---.>..>.<<<<-.<+.>>>>>.>.<<.<-." $CM
+
+# data pointer
+0 $DP
+# code pointer
+0 $CP
+
+# increment/decrement helpers
+[ 1 + dup {} == [drop 0] if] $increment_template
+[ 1 - dup 0 1 - == [drop {} 1 -] if] $decrement_template
+
+# increment/decrement functions for tape values
+256 increment_template@ $val_increment
+256 decrement_template@ $val_decrement
+
+# increment/decrement functions for memory register
+30000 increment_template@ $mem_increment
+30000 decrement_template@ $mem_decrement
+
+# caching len
+CM len $CL
+
+# memory helpers
+[DM DP peek] $mem_load
+[$val DM DP val poke] $mem_store
+
+# action handlers
+256 Nil alloc $handlers
+
+# handling +
+handlers "+" ord [
+	mem_load! val_increment! mem_store!
+] poke
+
+# handling -
+handlers "-" ord [
+	mem_load! val_decrement! mem_store!
+] poke
+
+# handling >
+handlers ">" ord [
+	DP 1 + =DP
+] poke
+
+# handling <
+handlers "<" ord [
+	DP 1 - =DP
+] poke
+
+# handling .
+handlers "." ord [
+    mem_load! chr print_str
+] poke
+
+# handling [
+handlers "[" ord [
+	mem_load! 0 == [
+		1 $brc
+		[brc 0 !=] [
+			CP 1 + =CP
+			CM CP peek "[" == [
+				brc 1 + =brc
+			] if
+			CM CP peek "]" == [
+				brc 1 - =brc
+			] if
+		] while 
+	] if
+] poke
+
+# handling [
+handlers "]" ord [
+	mem_load! 0 != [
+        1 $brc
+		[brc 0 !=] [
+		    CP 1 - =CP
+			CM CP peek "[" == [
+			    brc 1 - =brc
+			] if
+			CM CP peek "]" == [
+			    brc 1 + =brc
+			] if
+	    ] while 
+	    CP 1 - =CP
+	] if
+] poke
+
+# while in bounds
+[CP CL <] [
+
+	# fetch current opcode
+	CM CP peek $opcode
+	
+	# get and execute handler
+	handlers opcode ord peek !
+	
+	# move to the next instruction
+	CP 1 + =CP
+
+] while

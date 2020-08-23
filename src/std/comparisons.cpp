@@ -15,7 +15,7 @@
         }                                                               \
         Value result;                                                   \
         result.type = ValueType::Boolean;                               \
-        result.booleanValue = op(val1.booleanValue, val2.booleanValue); \
+        result.booleanValue = op(val1.numericValue, val2.numericValue); \
         interp.evalStack.pushBack(result);                              \
         return Success();                                               \
     }
