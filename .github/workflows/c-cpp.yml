@@ -15,6 +15,11 @@ jobs:
       run: cmake CMAKE_BUILD_TYPE=Release CMakeLists.txt
     - name: make
       run: make
+    - name: Upload math result for job 1
+      uses: actions/upload-artifact@v2
+      with:
+        name: overstacked
+        path: build
     
   test:
     needs: [build]
@@ -24,6 +29,10 @@ jobs:
         python-version: [3.8]
     steps:
     - uses: actions/checkout@v2
+    - name: Download math result for job 1
+      uses: actions/download-artifact@v2
+      with:
+        name: overstacked
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
