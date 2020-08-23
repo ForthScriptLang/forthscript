@@ -155,7 +155,34 @@ ExecutionResult noScopeCall(Interpreter& interp) {
     return callResult;
 }
 
+ExecutionResult tryOp(Interpreter& interp) {
+    std::optional<Value> newTraceOptional = interp.evalStack.popBack();
+    if_unlikely(!newTraceOptional) { return EvalStackUnderflow(); }
+    Value newTrace = newTraceOptional.value();
+    if_unlikely(newTrace.type != ValueType::Array) { return TypeError(); }
+    size_t oldSize = interp.evalStack.getStackSize();
+    size_t barrier = interp.evalStack.makeBarrier();
+    ExecutionResult callResult = interp.callInterpreter(newTrace.arr, true);
+    Value val;
+    val.type = ValueType::Boolean;
+    if (callResult.result == ExecutionResultType::Success) {
+        interp.evalStack.restoreBarrier(barrier);
+        val.booleanValue = true;
+    } else {
+        interp.evalStack.restoreBarrier(barrier);
+        interp.evalStack.resize(oldSize);
+        Value errorMessage;
+        errorMessage.type = ValueType::String;
+        errorMessage.str = interp.heap.makeStringObject(callResult.error);
+        interp.evalStack.pushBack(errorMessage);
+        val.booleanValue = false;
+    }
+    interp.evalStack.pushBack(val);
+    return Success();
+}
+
 void addControlFlowNativeWords(Interpreter& interp) {
+    interp.defineNativeWord(U"try", tryOp);
     interp.defineNativeWord(U"while", whileOp);
     interp.defineNativeWord(U"if_else", ifElseOp);
     interp.defineNativeWord(U"if", ifOp);

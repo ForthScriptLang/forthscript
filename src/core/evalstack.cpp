@@ -13,7 +13,7 @@ void EvaluationStack::registerRootMarker(Heap &heap) {
 }
 
 std::optional<Value> EvaluationStack::popBack() {
-    if (stack.empty()) {
+    if (stack.size() <= barrier) {
         return std::optional<Value>();
     }
     Value result = stack.back();
@@ -29,5 +29,17 @@ void EvaluationStack::clear() {
 }
 
 bool EvaluationStack::assertDepth(size_t count) const {
-    return stack.size() >= count;
+    return stack.size() - barrier >= count;
 }
+
+size_t EvaluationStack::makeBarrier() {
+    size_t result = barrier;
+    barrier = stack.size();
+    return result;
+}
+
+void EvaluationStack::restoreBarrier(size_t size) { barrier = size; }
+
+size_t EvaluationStack::getStackSize() { return stack.size(); }
+
+void EvaluationStack::resize(size_t new_size) { stack.resize(new_size); }
