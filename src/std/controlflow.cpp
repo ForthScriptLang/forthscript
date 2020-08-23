@@ -119,16 +119,18 @@ ExecutionResult forOp(Interpreter& interp) {
 }
 
 ExecutionResult breakOp(Interpreter&) {
-    return ExecutionResult{ExecutionResultType::Break, U"Nowhere to break"};
+    return ExecutionResult{ExecutionResultType::Break, U"Nowhere to break",
+                           Value()};
 }
 
 ExecutionResult returnOp(Interpreter&) {
-    return ExecutionResult{ExecutionResultType::Return, U"Nowhere to return"};
+    return ExecutionResult{ExecutionResultType::Return, U"Nowhere to return",
+                           Value()};
 }
 
 ExecutionResult continueOp(Interpreter&) {
     return ExecutionResult{ExecutionResultType::Continue,
-                           U"Nowhere to continue"};
+                           U"Nowhere to continue", Value()};
 }
 
 ExecutionResult scopeCall(Interpreter& interp) {
@@ -155,6 +157,50 @@ ExecutionResult noScopeCall(Interpreter& interp) {
     return callResult;
 }
 
+ExecutionResult tryOp(Interpreter& interp) {
+    if_unlikely(!interp.evalStack.assertDepth(2)) {
+        return EvalStackUnderflow();
+    }
+    Value argsCount = interp.evalStack.popBack().value();
+    Value newTrace = interp.evalStack.popBack().value();
+    if_unlikely(newTrace.type != ValueType::Array) { return TypeError(); }
+    if_unlikely(argsCount.type != ValueType::Numeric) { return TypeError(); }
+    if_unlikely(!interp.evalStack.assertDepth(argsCount.numericValue)) {
+        return EvalStackUnderflow();
+    }
+    size_t cleanSize = interp.evalStack.getStackSize() - argsCount.numericValue;
+    size_t oldBarrier = interp.evalStack.getBarrier();
+    interp.evalStack.setBarrier(cleanSize);
+    ExecutionResult callResult = interp.callInterpreter(newTrace.arr, true);
+    Value val;
+    val.type = ValueType::Boolean;
+    interp.evalStack.setBarrier(oldBarrier);
+    if (callResult.result == ExecutionResultType::Success) {
+        val.booleanValue = true;
+    } else if (callResult.result == ExecutionResultType::Custom) {
+        interp.evalStack.resize(cleanSize);
+        interp.evalStack.pushBack(callResult.val);
+        val.booleanValue = false;
+    } else {
+        interp.evalStack.resize(cleanSize);
+        Value errorMessage;
+        errorMessage.type = ValueType::String;
+        errorMessage.str = interp.heap.makeStringObject(callResult.error);
+        interp.evalStack.pushBack(errorMessage);
+        val.booleanValue = false;
+    }
+    interp.evalStack.pushBack(val);
+    return Success();
+}
+
+ExecutionResult throwOp(Interpreter& interp) {
+    if_unlikely(!interp.evalStack.assertDepth(1)) {
+        return EvalStackUnderflow();
+    }
+    Value val = interp.evalStack.popBack().value();
+    return ExecutionResult{ExecutionResultType::Custom, U"", val};
+}
+
 void addControlFlowNativeWords(Interpreter& interp) {
     interp.defineNativeWord(U"while", whileOp);
     interp.defineNativeWord(U"if_else", ifElseOp);
@@ -165,4 +211,6 @@ void addControlFlowNativeWords(Interpreter& interp) {
     interp.defineNativeWord(U"continue", continueOp);
     interp.defineNativeWord(U"!", scopeCall);
     interp.defineNativeWord(U",", noScopeCall);
+    interp.defineNativeWord(U"try", tryOp);
+    interp.defineNativeWord(U"throw", throwOp);
 }

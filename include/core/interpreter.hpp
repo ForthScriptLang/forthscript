@@ -8,11 +8,19 @@
 #include <string>
 #include <unordered_map>
 
-enum class ExecutionResultType { Error, Success, Return, Break, Continue };
+enum class ExecutionResultType {
+    Error,
+    Success,
+    Return,
+    Break,
+    Continue,
+    Custom
+};
 
 struct ExecutionResult {
     ExecutionResultType result = ExecutionResultType::Success;
     const char32_t* error = U"";
+    Value val;
 };
 
 struct Success : public ExecutionResult {

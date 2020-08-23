@@ -11,13 +11,14 @@ ExecutionResult getAtOp(Interpreter& interp) {
         return TypeError();
     }
     if (index.numericValue < 0) {
-        return ExecutionResult{ExecutionResultType::Error, U"Out of bounds"};
+        return ExecutionResult{ExecutionResultType::Error, U"Out of bounds",
+                               Value()};
     }
     switch (indexable.type) {
         case ValueType::Array:
             if (indexable.arr->values.size() <= (size_t)(index.numericValue)) {
                 return ExecutionResult{ExecutionResultType::Error,
-                                       U"Out of bounds"};
+                                       U"Out of bounds", Value()};
             }
             interp.evalStack.pushBack(
                 indexable.arr->values[index.numericValue]);
@@ -25,7 +26,7 @@ ExecutionResult getAtOp(Interpreter& interp) {
         case ValueType::String: {
             if (indexable.str->get().size() <= (size_t)(index.numericValue)) {
                 return ExecutionResult{ExecutionResultType::Error,
-                                       U"Out of bounds"};
+                                       U"Out of bounds", Value()};
             }
             char32_t newCStr[2] = {indexable.str->get()[index.numericValue],
                                    '\0'};
@@ -41,7 +42,7 @@ ExecutionResult getAtOp(Interpreter& interp) {
             break;
     }
     return ExecutionResult{ExecutionResultType::Error,
-                           U"Value is not indexable"};
+                           U"Value is not indexable", Value()};
 }
 
 ExecutionResult setAtOp(Interpreter& interp) {
@@ -55,19 +56,21 @@ ExecutionResult setAtOp(Interpreter& interp) {
         return TypeError();
     }
     if (index.numericValue < 0) {
-        return ExecutionResult{ExecutionResultType::Error, U"Out of bounds"};
+        return ExecutionResult{ExecutionResultType::Error, U"Out of bounds",
+                               Value()};
     }
     switch (indexable.type) {
         case ValueType::Array:
             if (indexable.arr->values.size() <= (size_t)(index.numericValue)) {
                 return ExecutionResult{ExecutionResultType::Error,
-                                       U"Out of bounds"};
+                                       U"Out of bounds", Value()};
             }
             indexable.arr->values[index.numericValue] = element;
             return Success();
         default:
             return ExecutionResult{ExecutionResultType::Error,
-                                   U"Value is not indexable or immutable"};
+                                   U"Value is not indexable or immutable",
+                                   Value()};
     }
 }
 

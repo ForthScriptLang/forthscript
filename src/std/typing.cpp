@@ -55,7 +55,7 @@ ExecutionResult intToCharOp(Interpreter& interp) {
     char32_t arr[2];
     if (val.numericValue > UINT32_MAX || val.numericValue < 0) {
         return ExecutionResult{ExecutionResultType::Error,
-                               U"Unable to cast to char"};
+                               U"Unable to cast to char", Value()};
     }
     arr[0] = (char32_t)(val.numericValue);
     arr[1] = U'\0';
@@ -78,7 +78,7 @@ ExecutionResult charToIntOp(Interpreter& interp) {
     if (val.str->get().length() != 1) {
         return ExecutionResult{
             ExecutionResultType::Error,
-            U"Can't convert not one character string to char"};
+            U"Can't convert not one character string to char", Value()};
     }
     char32_t character = val.str->get()[0];
     Value result;
