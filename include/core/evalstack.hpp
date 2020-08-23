@@ -16,8 +16,8 @@ class EvaluationStack {
     void pushBack(Value val);
     bool assertDepth(size_t count) const;
     void clear();
-    size_t makeBarrier();
-    void restoreBarrier(size_t size);
+    void setBarrier(size_t size);
+    size_t getBarrier();
     size_t getStackSize();
     void resize(size_t new_size);
 

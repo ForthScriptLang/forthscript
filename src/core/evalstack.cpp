@@ -32,13 +32,9 @@ bool EvaluationStack::assertDepth(size_t count) const {
     return stack.size() - barrier >= count;
 }
 
-size_t EvaluationStack::makeBarrier() {
-    size_t result = barrier;
-    barrier = stack.size();
-    return result;
-}
+size_t EvaluationStack::getBarrier() { return barrier; }
 
-void EvaluationStack::restoreBarrier(size_t size) { barrier = size; }
+void EvaluationStack::setBarrier(size_t size) { barrier = size; }
 
 size_t EvaluationStack::getStackSize() { return stack.size(); }
 

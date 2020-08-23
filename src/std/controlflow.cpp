@@ -156,21 +156,27 @@ ExecutionResult noScopeCall(Interpreter& interp) {
 }
 
 ExecutionResult tryOp(Interpreter& interp) {
-    std::optional<Value> newTraceOptional = interp.evalStack.popBack();
-    if_unlikely(!newTraceOptional) { return EvalStackUnderflow(); }
-    Value newTrace = newTraceOptional.value();
+    if_unlikely(!interp.evalStack.assertDepth(2)) {
+        return EvalStackUnderflow();
+    }
+    Value argsCount = interp.evalStack.popBack().value();
+    Value newTrace = interp.evalStack.popBack().value();
     if_unlikely(newTrace.type != ValueType::Array) { return TypeError(); }
-    size_t oldSize = interp.evalStack.getStackSize();
-    size_t barrier = interp.evalStack.makeBarrier();
+    if_unlikely(argsCount.type != ValueType::Numeric) { return TypeError(); }
+    if_unlikely(!interp.evalStack.assertDepth(argsCount.numericValue)) {
+        return EvalStackUnderflow();
+    }
+    size_t cleanSize = interp.evalStack.getStackSize() - argsCount.numericValue;
+    size_t oldBarrier = interp.evalStack.getBarrier();
+    interp.evalStack.setBarrier(cleanSize);
     ExecutionResult callResult = interp.callInterpreter(newTrace.arr, true);
     Value val;
     val.type = ValueType::Boolean;
+    interp.evalStack.setBarrier(oldBarrier);
     if (callResult.result == ExecutionResultType::Success) {
-        interp.evalStack.restoreBarrier(barrier);
         val.booleanValue = true;
     } else {
-        interp.evalStack.restoreBarrier(barrier);
-        interp.evalStack.resize(oldSize);
+        interp.evalStack.resize(cleanSize);
         Value errorMessage;
         errorMessage.type = ValueType::String;
         errorMessage.str = interp.heap.makeStringObject(callResult.error);
