@@ -35,10 +35,11 @@ class TestsFromFiles(unittest.TestCase):
         proc = sp.Popen([interpreterPath, inputFilePath], stdout=sp.PIPE)
         (output, err) = proc.communicate()
         proc.wait()
+        actualOutput = output.decode("utf-8").replace('\r', '')
         expectedOutputFile = open(case_folder + outputCasePath, 'r')
         expectedOutput = expectedOutputFile.read()
         expectedOutputFile.close()
-        assert output.decode("utf-8") == expectedOutput, f"{output.decode('utf-8')} != {expectedOutput}"
+        assert repr(actualOutput) == repr(expectedOutput), f"{repr(actualOutput)} != {repr(expectedOutput)}"
 
 @create_simple_cases('test')
 class SimpleTests(unittest.TestCase):
