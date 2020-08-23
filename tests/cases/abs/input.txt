@@ -1,0 +1,9 @@
+#function to calculate absolute value
+[$n
+  n 0 < [
+    0 n - return
+  ] [
+    n return    
+  ] if_else
+] $abs
+-5 abs! to_string print_str
