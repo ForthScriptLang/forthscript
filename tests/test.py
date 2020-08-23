@@ -21,13 +21,16 @@ class SimpleTestsOld(unittest.TestCase):
         f.write(input.encode("utf-8"))
         f.close()
         inputFilePath = f.name
-        proc = sp.Popen([interpreterPath, inputFilePath], stdout=sp.PIPE)
+        proc = sp.Popen(f'{interpreterPath} {inputFilePath}',
+                        stdout=sp.PIPE, shell=True)
         (output, err) = proc.communicate()
         proc.wait()
-        actualOutput = output.decode("utf-8").replace('\r','')
+        actualOutput = output.decode("utf-8").replace('\r', '')
         #print(f"[ {input} ] => {expectedOutput} ?")
-        assert repr(actualOutput) == repr(expectedOutput), f"{repr(actualOutput)} != {repr(expectedOutput)}"
+        assert repr(actualOutput) == repr(
+            expectedOutput), f"{repr(actualOutput)} != {repr(expectedOutput)}"
         os.unlink(f.name)
+
 
 @cases_from_files('test_files')
 class TestsFromFiles(unittest.TestCase):
@@ -40,7 +43,9 @@ class TestsFromFiles(unittest.TestCase):
         expectedOutputFile = open(case_folder + outputCasePath, 'r')
         expectedOutput = expectedOutputFile.read()
         expectedOutputFile.close()
-        assert repr(actualOutput) == repr(expectedOutput), f"{repr(actualOutput)} != {repr(expectedOutput)}"
+        assert repr(actualOutput) == repr(
+            expectedOutput), f"{repr(actualOutput)} != {repr(expectedOutput)}"
+
 
 @create_simple_cases('test')
 class SimpleTests(unittest.TestCase):
@@ -52,9 +57,10 @@ class SimpleTests(unittest.TestCase):
         proc = sp.Popen([interpreterPath, inputFilePath], stdout=sp.PIPE)
         (output, err) = proc.communicate()
         proc.wait()
-        actualOutput = output.decode("utf-8").replace('\r','')
+        actualOutput = output.decode("utf-8").replace('\r', '')
         #print(f"[ {input} ] => {expectedOutput} ?")
-        assert repr(actualOutput) == repr(expectedOutput), f"{repr(actualOutput)} != {repr(expectedOutput)}"
+        assert repr(actualOutput) == repr(
+            expectedOutput), f"{repr(actualOutput)} != {repr(expectedOutput)}"
         os.unlink(f.name)
 
 
