@@ -83,19 +83,24 @@ ExecutionResult whileOp(Interpreter& interp) {
 }
 
 ExecutionResult forOp(Interpreter& interp) {
-    if (!interp.evalStack.assertDepth(3)) {
+    if (!interp.evalStack.assertDepth(4)) {
         return EvalStackUnderflow();
     }
     Value loopCode = interp.evalStack.popBack().value();
     Value iterCode = interp.evalStack.popBack().value();
     Value condCode = interp.evalStack.popBack().value();
-    if (condCode.type != ValueType::Array ||
+    Value initCode = interp.evalStack.popBack().value();
+    if (initCode.type != ValueType::Array ||
+        condCode.type != ValueType::Array ||
         iterCode.type != ValueType::Array ||
         loopCode.type != ValueType::Array) {
         return TypeError();
     }
+    interp.symTable.createScope();
+    ExecutionResult res = interp.callInterpreter(initCode.arr, false);
+    if_unlikely(res.result != ExecutionResultType::Success) { return res; }
     while (true) {
-        ExecutionResult res = interp.callInterpreter(condCode.arr, true);
+        ExecutionResult res = interp.callInterpreter(condCode.arr, false);
         if_unlikely(res.result != ExecutionResultType::Success) { return res; }
         std::optional<Value> testResult = interp.evalStack.popBack();
         if_unlikely(testResult.value().type != ValueType::Boolean) {
@@ -107,14 +112,17 @@ ExecutionResult forOp(Interpreter& interp) {
         res = interp.callInterpreter(loopCode.arr, true);
         if (res.result != ExecutionResultType::Success) {
             if (res.result == ExecutionResultType::Break) {
+                interp.symTable.leaveScope();
                 return Success();
             } else if (res.result != ExecutionResultType::Continue) {
+                interp.symTable.leaveScope();
                 return res;
             }
         }
-        res = interp.callInterpreter(iterCode.arr, true);
+        res = interp.callInterpreter(iterCode.arr, false);
         if_unlikely(res.result != ExecutionResultType::Success) { return res; }
     }
+    interp.symTable.leaveScope();
     return Success();
 }
 
