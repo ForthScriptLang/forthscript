@@ -7,15 +7,16 @@ import os
 import threading
 import unittest
 import tempfile
-from helper import create_tests, cases_from_files
+from helper import create_tests, cases_from_files, create_simple_cases
 
 interpreterPath = "../build/overstacked"
 inputCasePath = "/input.txt"
 outputCasePath = "/output.txt"
 
-@create_tests('test_operators', 'simpleCases.json')
-class SimpleTests(unittest.TestCase):
-    def test_operators(self, name, input, expectedOutput):
+# remove this with simpleCases.json and create_tests
+@create_tests('test_old', 'simpleCases.json')
+class SimpleTestsOld(unittest.TestCase):
+    def test_old(self, name, input, expectedOutput):
         f = tempfile.NamedTemporaryFile(delete=False)
         f.write(input.encode("utf-8"))
         f.close()
@@ -35,10 +36,26 @@ class TestsFromFiles(unittest.TestCase):
         proc = sp.Popen([interpreterPath, inputFilePath], stdout=sp.PIPE)
         (output, err) = proc.communicate()
         proc.wait()
+        actualOutput = output.decode("utf-8").replace('\r', '')
         expectedOutputFile = open(case_folder + outputCasePath, 'r')
         expectedOutput = expectedOutputFile.read()
         expectedOutputFile.close()
-        assert output.decode("utf-8") == expectedOutput, f"{output.decode('utf-8')} != {expectedOutput}"
+        assert repr(actualOutput) == repr(expectedOutput), f"{repr(actualOutput)} != {repr(expectedOutput)}"
+
+@create_simple_cases('test')
+class SimpleTests(unittest.TestCase):
+    def test(self, name, input, expectedOutput):
+        f = tempfile.NamedTemporaryFile(delete=False)
+        f.write(input.encode("utf-8"))
+        f.close()
+        inputFilePath = f.name
+        proc = sp.Popen([interpreterPath, inputFilePath], stdout=sp.PIPE)
+        (output, err) = proc.communicate()
+        proc.wait()
+        actualOutput = output.decode("utf-8").replace('\r','')
+        #print(f"[ {input} ] => {expectedOutput} ?")
+        assert repr(actualOutput) == repr(expectedOutput), f"{repr(actualOutput)} != {repr(expectedOutput)}"
+        os.unlink(f.name)
 
 
 if __name__ == "__main__":
