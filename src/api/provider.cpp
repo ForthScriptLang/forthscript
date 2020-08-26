@@ -67,7 +67,7 @@ struct overstacked_array* apiMakeArray(struct overstacked_value* val,
                                        size_t size, void* ctx) {
     Interpreter* interp = (Interpreter*)ctx;
     Value nativeVal = *(Value*)(val);
-    return (struct overstacked_array*)interp->heap.makeArrayObject(*(Value*)val,
+    return (struct overstacked_array*)interp->heap.makeArrayObject(nativeVal,
                                                                    size);
 }
 }

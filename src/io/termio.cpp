@@ -1,13 +1,11 @@
 #include <algorithm>
 #include <codecvt>
+#include <io/encodings.hpp>
 #include <io/termio.hpp>
 #include <iostream>
 #include <linenoise.hpp>
 #include <locale>
 #include <unordered_set>
-
-std::string fromUTF32(const std::u32string &s);
-std::u32string toUTF32(const std::string &s);
 
 std::u32string readLine(const std::u32string &prompt,
                         [[maybe_unused]] bool disableAutocomplete) {

@@ -1,8 +1,7 @@
 #include <fstream>
+#include <io/encodings.hpp>
 #include <io/fileio.hpp>
 #include <sstream>
-
-std::u32string toUTF32(const std::string &s);
 
 std::optional<std::u32string> readFile(const char *filename) {
     std::ifstream input(filename);
