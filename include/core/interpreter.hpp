@@ -9,12 +9,12 @@
 #include <unordered_map>
 
 enum class ExecutionResultType {
-    Error,
-    Success,
-    Return,
-    Break,
-    Continue,
-    Custom
+    Error = 0,
+    Success = 1,
+    Return = 2,
+    Break = 3,
+    Continue = 4,
+    Custom = 5
 };
 
 struct ExecutionResult {

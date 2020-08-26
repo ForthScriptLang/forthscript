@@ -22,7 +22,7 @@ else()
     add_compile_options(-Wall -Wextra -pedantic -Werror)
 endif()
 
-include_directories(include)
+include_directories(include api)
 
 file(GLOB_RECURSE SOURCES src/*.cpp)
 
