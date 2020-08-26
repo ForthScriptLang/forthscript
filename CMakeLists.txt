@@ -28,6 +28,9 @@ file(GLOB_RECURSE SOURCES src/*.cpp)
 
 add_executable(overstacked ${SOURCES})
 
+# Load required libs for dynamic loading
+target_link_libraries(overstacked ${CMAKE_DL_LIBS})
+
 # Enable lto on release
 if (CMAKE_BUILD_TYPE MATCHES Release)
     check_ipo_supported(RESULT supported OUTPUT error)

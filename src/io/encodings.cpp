@@ -1,7 +1,9 @@
 #include <codecvt>
+#include <io/encodings.hpp>
 #include <locale>
 
 #ifdef __WIN32
+// windows, just shut up
 #define _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
 #endif
 
