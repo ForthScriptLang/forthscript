@@ -1,5 +1,4 @@
-[
-    $n
+[ $n
     n 2 < [
         False return
     ] if

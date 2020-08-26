@@ -1,7 +1,6 @@
 "test" $str
 
-[
-	$n $str
+[ $n $str
 	"" $result
 	[0 $i] [i str len <] [i 1 + =i] [
 		str i peek $char
