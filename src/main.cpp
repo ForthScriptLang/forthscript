@@ -100,6 +100,7 @@ int main(int argc, char** argv) {
     std::optional<std::u32string> source = readFile(filename);
     if (!source.has_value()) {
         std::cout << "Can't open file " << filename << std::endl;
+        return 0;
     }
     ParseResult result = parse(source.value(), interp);
     if (result.isError()) {
