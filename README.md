@@ -495,7 +495,7 @@ Current goals from highest to lowest prioriy
 
 * Objects/tables. object/table is a hash map from string to pila values, that can be used to do some data & code encapsulation.
 
-These ones is the lowest priority imaginable
+These ones are the lowest priority imaginable
 
 * Package manager. For interpreter executable, there should be an option to install packages both with Pila and native code. There also should be some way to handle versions
 
