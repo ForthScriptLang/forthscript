@@ -1,5 +1,4 @@
 # pila
-[![Run on Repl.it](https://repl.it/badge/github/PilaLang/pila)](https://repl.it/github/PilaLang/pila)
 ![C/C++ CI](https://github.com/PilaLang/pila/workflows/C/C++%20CI/badge.svg?branch=master)
 
 This is a repository with code for Pila language interpreter.
