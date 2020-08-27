@@ -1,21 +1,21 @@
-# overstacked
-[![Run on Repl.it](https://repl.it/badge/github/OverstackedLang/overstacked)](https://repl.it/github/OverstackedLang/overstacked)
-![C/C++ CI](https://github.com/OverstackedLang/overstacked/workflows/C/C++%20CI/badge.svg?branch=master)
+# pila
+[![Run on Repl.it](https://repl.it/badge/github/PilaLang/pila)](https://repl.it/github/PilaLang/pila)
+![C/C++ CI](https://github.com/PilaLang/pila/workflows/C/C++%20CI/badge.svg?branch=master)
 
-This is a repository with code for Overstacked language interpreter.
+This is a repository with code for Pila language interpreter.
 
-Overstacked is a stack-based programming language with automatic memory management, heavily inspired by forth and lisp. 
+Pila is a stack-based programming language with automatic memory management, heavily inspired by forth and lisp. 
 
-The main paradigm of the language is code as data. Every program in Overstacked can be represented in Overstacked types, and every value in Overstacked can be interpreted as instructions to Overstacked interpreter.
+The main paradigm of the language is code as data. Every program in Pila can be represented in Pila types, and every value in Pila can be interpreted as instructions to Pila interpreter.
 
-The Overstacked is dynamically typed, but because of strict typing, operations like adding strings and integers are prohibited
+The Pila is dynamically typed, but because of strict typing, operations like adding strings and integers are prohibited
 ### How to use the interpreter?
 Running interpreter with no command line arguments will open REPL with line editing. Otherwise, interpreter will take the first argument as a path to file that should be executed
 ```
 # Run repl
-overstacked
+pila
 # Run file.ost
-overstacked file.ost
+pila file.ost
 ``` 
 All examples here are run in REPL. It can be exited by typing ```quit```.
 ```
@@ -48,7 +48,7 @@ With this knowledge, we can finally add two numbers.
 [2 3]# + # When '+' is interpreted, it will add up 2 and 3
 [5]#
 ```
-Here are all arithmetic operations in overstacked.
+Here are all arithmetic operations in pila.
 ##### Addition
 ```
 []# 2 3 +
@@ -80,7 +80,7 @@ More complex expressions can be calculated by chaining these operations. This ca
 [6]#
 ```
 ### Booleans
-Boolean is another Overstacked type with only two values: ```True``` and ```False```. Like number, the value of this type is pushed on the stack when interpreted as instruction.
+Boolean is another Pila type with only two values: ```True``` and ```False```. Like number, the value of this type is pushed on the stack when interpreted as instruction.
 ```
 []# True
 [True]# False
@@ -110,9 +110,9 @@ Logical operations such as ```not```, ```and``` and ```or``` are defined
 [False]#
 ```
 ### Strings
-Like in python, Java, C#, etc the strings in Overstacked are immutable. All values of String Type just point to string pool, where all strings are interned. Like numbers and booleans, when interpreted as an instruction, the reference to the stirngs will be pushed on the evaluation stack.
+Like in python, Java, C#, etc the strings in Pila are immutable. All values of String Type just point to string pool, where all strings are interned. Like numbers and booleans, when interpreted as an instruction, the reference to the stirngs will be pushed on the evaluation stack.
 
-Unlike many other programming languages, strings in Overstacked are represented as 4 byte char arrays (UTF-32). There may be some issues with encodings, especially on Windows, where UTF-8 is not a default encoding, but it should be fixed with good encoding library soon. Stay tuned.
+Unlike many other programming languages, strings in Pila are represented as 4 byte char arrays (UTF-32). There may be some issues with encodings, especially on Windows, where UTF-8 is not a default encoding, but it should be fixed with good encoding library soon. Stay tuned.
 ```
 []# "Hello, world"
 ["Hello, world"]#
@@ -123,13 +123,13 @@ Strings can be concatenated using ```+```native word, and multiplied using ```*`
 ["I will do backups, I swear!\n"]# 2 *
 ["I will do backups, I swear!\nI will do backups, I swear!\n"]#
 ```
-Length of the string can be obtained using ```len``` native word. To get nth character in the string, word ```peek``` can be used (the return type is also string, as there is no character type in overstacked). ```peek``` takes index (which is at the top of the stack) and reference to string (which is right below the top). 
+Length of the string can be obtained using ```len``` native word. To get nth character in the string, word ```peek``` can be used (the return type is also string, as there is no character type in pila). ```peek``` takes index (which is at the top of the stack) and reference to string (which is right below the top). 
 ```
 []# "abacaba" len
 [7]# "what is a string" 2 peek
 [7 "a"]# 
 ```
-Unlike many other programming languages, strings in Overstacked are represented as 4 byte char arrays (UTF-32). There may be some issues with encodings, especially on Windows, where UTF-8 is not a default encoding, but it should be fixed with good encoding library soon. Stay tuned.
+Unlike many other programming languages, strings in Pila are represented as 4 byte char arrays (UTF-32). There may be some issues with encodings, especially on Windows, where UTF-8 is not a default encoding, but it should be fixed with good encoding library soon. Stay tuned.
 ```
 []# "λ" len
 [1]#
@@ -144,9 +144,9 @@ There are also two different operations on strings, called ```split``` and ```jo
 ### Arrays
 Array is a type equivalent to ```list``` in python or ```std::vector<any>``` in c++. It is a resizable indexable collection, that may conatin elements of different types.
 
-Arrays literals is a list of any overstacked values separated by spaces and enclosed by ```[]```. For instance, ```[2 3 [1 2 3 "Hello, there"] ["How was your day?" True not] False +]``` is indeed a valid array literal with numbers, strings, booleans, arrays and native words in it. 
+Arrays literals is a list of any pila values separated by spaces and enclosed by ```[]```. For instance, ```[2 3 [1 2 3 "Hello, there"] ["How was your day?" True not] False +]``` is indeed a valid array literal with numbers, strings, booleans, arrays and native words in it. 
 
-Expression ```[1 2 3]``` won't instantiate a new array every time it is encountered. Instead, it is just referenced by code (which is also in fact overstacked array). Like numbers, strings and booleans, when interpreter as instruction, it will push reference to this array on the stack.
+Expression ```[1 2 3]``` won't instantiate a new array every time it is encountered. Instead, it is just referenced by code (which is also in fact pila array). Like numbers, strings and booleans, when interpreter as instruction, it will push reference to this array on the stack.
 ```
 []# [1 2 3]
 [[1 2 3]]#
@@ -213,7 +213,7 @@ Word literal can be written by writing any valid identifier name (that is combin
 [9]#
 ```
 ### Functions
-There is no notion of function in overstacked language, however there is ```!``` operator to execute an array of code
+There is no notion of function in pila language, however there is ```!``` operator to execute an array of code
 
 ```
 []# [100 +] =add_100
@@ -252,7 +252,7 @@ Previously the value of a was 5, but now it is equal to 3, as it was modified in
 ```
 Here, a is redeclared inside sqr call scope, so on return the old value of a is returned.
 
-Unlike many other programming languages, where child function can access variables that could be accessed in a scope where function was actually defined, in overstacked callee can access all variables from caller, meaning that this code is perfectly valid
+Unlike many other programming languages, where child function can access variables that could be accessed in a scope where function was actually defined, in pila callee can access all variables from caller, meaning that this code is perfectly valid
 ```
 []# [a a *] $func2 # accesses variable 'a' defined in func1
 []# [$a func2!] $func1
@@ -288,7 +288,7 @@ Nil can be also obtained by retrieving a variable that was not defined
 ```
 ### Control flow
 
-To be turing-complete, Overstacked needs some control flow constructs. They are implemented as native words, that take code and conditions from the top of the stack and implement logic of corresponding control flow operator. For example, this is how if looks like
+To be turing-complete, Pila needs some control flow constructs. They are implemented as native words, that take code and conditions from the top of the stack and implement logic of corresponding control flow operator. For example, this is how if looks like
 ```
 []# True [42] if
 [42]# drop False [42] if
@@ -301,7 +301,7 @@ To be turing-complete, Overstacked needs some control flow constructs. They are 
 [42]# False [42] [19] if_else
 [42 19]#
 ```
-This is enough for turing-complete language, but there are also loop native words in Overstacked.
+This is enough for turing-complete language, but there are also loop native words in Pila.
 ```while``` takes clause used to calculate condition and body of the loop itself (both represented as array of code) from the stack.
 
 ```
@@ -365,14 +365,14 @@ exited with code 0
 []# -1 exit
 exited with code -1
 ```
-### Serializing and deserializing overstacked values
-```to_string``` converts any overstacked value to string
+### Serializing and deserializing pila values
+```to_string``` converts any pila value to string
 ```
 []# [1 2 ["inner array" $a a a + Nil] "wow" that [[is]] cool] $arr
 []# arr to_string
 ["[1 2 [\"inner array\" $a a a + Nil] \"wow\" that [[is]] cool]"]#
 ```
-```from_string``` parses overstacked values from string. It always returns an array, even if there is only one element in it
+```from_string``` parses pila values from string. It always returns an array, even if there is only one element in it
 ```
 []# "1 2 3" from_string
 [[1 2 3]]#

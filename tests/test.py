@@ -9,7 +9,7 @@ import unittest
 import tempfile
 from helper import create_tests, cases_from_files, create_simple_cases
 
-interpreterPath = "../build/overstacked"
+interpreterPath = "../build/pila"
 inputCasePath = "/input.txt"
 outputCasePath = "/output.txt"
 
