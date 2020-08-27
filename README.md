@@ -232,7 +232,7 @@ WordAssign literal can be written as ```$id```, where id is any valid identifier
 For instance, here is an example where the attempt is done to write a function to square a number.
 
 ```
-[]# [=a a a *] =sq r
+[]# [=a a a *] =sqr
 []# 3 sqr!
 [9]#
 ```
@@ -477,3 +477,5 @@ Function to calculate GCD of two numbers
 ```
 [dup 0 != [swap over % gcd!] [drop] if_else] $gcd
 ```
+
+Look at folder ```tests/cases``` for more interesing examples.
