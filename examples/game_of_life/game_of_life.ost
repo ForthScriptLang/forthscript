@@ -1,0 +1,94 @@
+15 $w 20 $h
+
+w h * False alloc $field
+
+field len False alloc $copy
+
+
+# offset: (x y -- w)
+[ $y $x
+	y h + h % =y
+	x w + w % =x
+	y w * x +
+] $offset
+
+# get: (x y -- e)
+[ $y $x field x y offset! peek ] $get
+
+# set: (x y val -- )
+[ $val $y $x copy x y offset! val poke ] $set
+
+# flush changes to field array
+[
+	[0 $i] [i field len <] [i 1 + =i] [
+		field i copy i peek poke 
+	] for
+] $flush
+
+# get alive neighbours count
+# alive_neighbours: (x y -- num)
+[ $y $x
+	0 $num
+	[num 1 + =num] $body
+	x 1 - y 1 - get! body if
+	x 1 + y 1 - get! body if
+	x 1 - y 1 + get! body if
+	x 1 + y 1 + get! body if
+	x y 1 + get! body if
+	x y 1 - get! body if
+	x 1 + y get! body if
+	x 1 - y get! body if
+	num
+] $alive_neighbours
+
+# determine new status of the cell
+[ $y $x
+	x y alive_neighbours! $num
+	x y get! [
+		# cell is alive
+		num 2 != num 3 != and [
+			x y False set!
+		] if
+	] [
+		# cell is dead
+		num 3 == [
+			x y True set!
+		] if
+	] if_else
+] $recalc_at
+
+# recalculate the whole board
+[
+	[0 $x] [x w <] [x 1 + =x] [
+		[0 $y] [y h <] [y 1 + =y] [
+			x y recalc_at!
+		] for
+	] for
+] $recalc
+
+# redraw the board
+[
+	27 chr "[2J" + 27 chr "[H" + + print_str
+	[0 $y] [y h <] [y 1 + =y] [
+		[0 $x] [x w <] [x 1 + =x] [
+			x y get! [" ▤ "] [" ◻ "] if_else print_str
+		] for
+		"\n" print_str
+	] for
+] $redraw
+
+#draw glider
+0 2 True set!
+1 2 True set!
+2 2 True set!
+2 1 True set!
+1 0 True set!
+flush!
+
+# game loop
+[True] [
+	redraw!
+	read_line "quit" == [quit] if
+	recalc!
+	flush!
+] while
