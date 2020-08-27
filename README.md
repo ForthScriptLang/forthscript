@@ -1,5 +1,5 @@
 # pila
-![C/C++ CI](https://github.com/PilaLang/pila/workflows/C/C++%20CI/badge.svg?branch=master)
+[![Run on Repl.it](https://repl.it/badge/github/PilaLang/pila)](https://repl.it/github/PilaLang/pila) ![C/C++ CI](https://github.com/PilaLang/pila/workflows/C/C++%20CI/badge.svg?branch=master)
 
 This is a repository with code for Pila language interpreter (previously known as overstacked).
 
@@ -500,3 +500,4 @@ These ones is the lowest priority imaginable
 * Package manager. For interpreter executable, there should be an option to install packages both with Pila and native code. There also should be some way to handle versions
 
 * Making Pila compiled & interpreted (with optional jit) language. There are many performance issues in the current interpreter, so there is a plan to rewrite the whole thing both in C (for runtime that is absolutely neccessary like GC and variables lookup) and Pila (for the compiler and linker). This doesn't mean that anything from Pila is taken away, all reflective issues should be present all the way to bare metal.
+Look at folder ```tests/cases``` for more interesing examples.
