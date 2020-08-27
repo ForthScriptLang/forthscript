@@ -1,7 +1,7 @@
 # pila
 ![C/C++ CI](https://github.com/PilaLang/pila/workflows/C/C++%20CI/badge.svg?branch=master)
 
-This is a repository with code for Pila language interpreter.
+This is a repository with code for Pila language interpreter (previously known as overstacked).
 
 Pila is a stack-based programming language with automatic memory management, heavily inspired by forth and lisp. 
 
@@ -398,8 +398,6 @@ In this case, ```try``` caught evaluation stack underflow exception: there is no
 []# [5 throw] 0 try
 [5 False]# 
 ```
-
-
 ## Code examples
 Checking if a given number is a prime number.
 ```
@@ -477,4 +475,28 @@ Function to calculate GCD of two numbers
 [dup 0 != [swap over % gcd!] [drop] if_else] $gcd
 ```
 
-Look at folder ```tests/cases``` for more interesing examples.
+Look at folder ```tests/cases``` or ```examples``` for more interesing examples.
+
+## Roadmap
+
+Current goals from highest to lowest prioriy
+
+* Input. The input library I currently use has many issues. One of them is freezes when stack pretty print is large. Also, we are not sure about encodings: this works on linux, as everything is UTF-8 by default, but there is no guarantee ot strings and io working on windows for example.
+
+* NativeHandles. NativeHandle is a type exposed to native functions, that need some containers to store data. For instance, file descriptor, net socket or string builder object can be stored inside a NativeHandle, and some native functions will take this naitve handles as parametres to do things on them (read from file, load image from url, append string, ...).
+
+* Floating/Bigint types. I am personally leaned to something floating types, as they don't need one more dependency (and I totally don't want to reinvent the wheel).
+
+* Change string representation to ```const char32_t*; size_t``` from ```std::u32string```. The first option should be more performant as instantiating/memory overhead of mutability is avoided.
+
+* Distributing as Static/Dynamic library. Pila is mostly suited to be used as scripting language, so there should be a way to easilly use Pila inside C/C++ application (C support is crucial, as it also allows to use interpreter from anything having valid C ffi).There will also be executable Pila interpreter, that will have way more rich standard library than embedded options.
+
+* Loading Dynamic libraries in runtime. There is some work on this already in ```api``` branch, but it may be to early to do something like that stable
+
+* Objects/tables. object/table is a hash map from string to pila values, that can be used to do some data & code encapsulation.
+
+These ones is the lowest priority imaginable
+
+* Package manager. For interpreter executable, there should be an option to install packages both with Pila and native code. There also should be some way to handle versions
+
+* Making Pila compiled & interpreted (with optional jit) language. There are many performance issues in the current interpreter, so there is a plan to rewrite the whole thing both in C (for runtime that is absolutely neccessary like GC and variables lookup) and Pila (for the compiler and linker). This doesn't mean that anything from Pila is taken away, all reflective issues should be present all the way to bare metal.
