@@ -3,7 +3,7 @@
 #include <string>
 
 struct ProcessInvokationRequest {
-    std::u32string name, in;
+    std::u32string name;
 };
 
 struct ProcessInvokationResponce {

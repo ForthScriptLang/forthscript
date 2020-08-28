@@ -25,3 +25,5 @@ jobs:
           run: cmake CMAKE_BUILD_TYPE=Release CMakeLists.txt; cmake --build ./
         - name: Run tests
           run: cd tests; python test.py; cd ".."
+        - name: Run tests (test driver in pila)
+          run: ./build/pila examples/test_driver/test_driver.ost

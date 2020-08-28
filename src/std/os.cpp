@@ -100,17 +100,15 @@ ExecutionResult writeFileOp(Interpreter& interp) {
 }
 
 ExecutionResult execOp(Interpreter& interp) {
-    if (!interp.evalStack.assertDepth(2)) {
+    if (!interp.evalStack.assertDepth(1)) {
         return EvalStackUnderflow();
     }
     Value cmd = interp.evalStack.popBack().value();
-    Value in = interp.evalStack.popBack().value();
-    if (cmd.type != ValueType::String || in.type != ValueType::String) {
+    if (cmd.type != ValueType::String) {
         return TypeError();
     }
     ProcessInvokationRequest request;
     request.name = cmd.str->get();
-    request.in = in.str->get();
     ProcessInvokationResponce response = executeProcess(request);
     Value booleanResult, outResult, codeResult;
     booleanResult.type = ValueType::Boolean;

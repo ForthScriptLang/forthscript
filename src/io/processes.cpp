@@ -16,24 +16,13 @@ ProcessInvokationResponce executeProcess(
     const ProcessInvokationRequest &command) {
     ProcessInvokationResponce result;
 
-    FILE *file = POPEN(fromUTF32(command.name).c_str(), "w");
+    FILE *file = POPEN(fromUTF32(command.name).c_str(), "r");
     if (file == NULL) {
-        if (!command.in.empty()) {
-            result.error = true;
-            return result;
-        }
-        file = POPEN(fromUTF32(command.name).c_str(), "r");
-        if (file == NULL) {
-            result.error = true;
-            return result;
-        }
+        result.error = true;
+        return result;
     }
     char buffer[128];
     std::string out;
-    if (!command.in.empty()) {
-        std::string in = fromUTF32(command.in);
-        fwrite(in.c_str(), 1, in.size(), file);
-    }
     while (fgets(buffer, sizeof(buffer), file) != NULL) {
         out += buffer;
     }
