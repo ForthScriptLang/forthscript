@@ -16,7 +16,7 @@ ProcessInvokationResponce executeProcess(
     const ProcessInvokationRequest &command) {
     ProcessInvokationResponce result;
 
-    FILE *file = POPEN(fromUTF32(command.name).c_str(), "rw");
+    FILE *file = POPEN(fromUTF32(command.name).c_str(), "w");
     if (file == NULL) {
         if (!command.in.empty()) {
             result.error = true;

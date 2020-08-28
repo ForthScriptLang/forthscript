@@ -1,0 +1,59 @@
+# get list of cases
+"tests/cases/" $cases_path
+cases_path "*" + $cases_pattern 
+cases_pattern glob $cases_list
+
+# path to interpreter
+"./build/pila" $interpreter_path
+
+[] $successes
+[] $failures
+
+[0 $i] [i cases_list len <] [i 1 + =i] [
+	# get path to test folder
+	cases_path cases_list i peek + $folder_path
+	# get path to file with source code
+	folder_path "/input.txt" + $input_path
+	# get path to file with expected output
+	folder_path "/output.txt" + $output_path
+	# get path to log file in case of error
+	folder_path "/errorlog.txt" + $log_output_path
+	# get expected output
+	output_path readfile $expected_output
+	# get command to interpreter
+	interpreter_path " " + input_path + $command
+	# run interpreter
+	"" command exec [
+		# collect result from the stack
+		$return_code $actual_output
+		# check the output
+		actual_output expected_output == [
+			# test was a success
+			successes [{i} {input_path} {command}]@ append
+		] [
+			# test was a failure
+			failures [{i} {input_path} {command}]@ append
+			actual_output log_output_path writefile
+		] if_else
+	] [
+		"Failed to run interpreter. Command:" writeln
+		cmd writeln
+		-1 exit
+	] if_else
+] for
+
+[ $array
+	[0 $i] [i array len <] [i 1 + =i] [
+		array i peek $data
+		data 0 peek $index
+		data 1 peen $input_path
+		data 2 peek $command
+		index to_string ") " + cases_list index peek + 
+		" (\"" + command + "\")" + writeln
+	] for
+] $report_results
+
+"Successes: " writeln
+successes report_results!
+"Failures: " writeln
+failures report_results!
