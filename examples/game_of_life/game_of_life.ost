@@ -88,7 +88,7 @@ flush!
 # game loop
 [True] [
 	redraw!
-	read_line "quit" == [quit] if
+	readln "quit" == [quit] if
 	recalc!
 	flush!
 ] while

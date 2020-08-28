@@ -343,15 +343,21 @@ The code above can be also rewritten with for loop, that takes code for initial 
 Hello, world
 []# 
 ```
-```read_line``` can be used to get a string from standard input
+```writeln``` is equivalent to ```write```, but also outputs ```\n``` in the end.
 ```
-[]# read_line
+[]# "Hello, world" writeln
+Hello, world
+[]# 
+```
+```readln``` can be used to get a string from standard input
+```
+[]# readln
 I am writing something
 ["I am writing something"]# 
 ```
-```read_file``` can be used to read a file in current working directory
+```readfile``` can be used to read a file in current working directory
 ```
-[]# "file.txt" read_file
+[]# "file.txt" readfile
 ["<contents of file.txt escaped>"]# 
 ```
 

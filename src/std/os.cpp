@@ -16,6 +16,19 @@ ExecutionResult printStrOp(Interpreter& interp) {
     return Success();
 }
 
+ExecutionResult printlnStrOp(Interpreter& interp) {
+    std::optional<Value> top = interp.evalStack.popBack();
+    if (!top) {
+        return EvalStackUnderflow();
+    }
+    if (top.value().type != ValueType::String) {
+        return TypeError();
+    }
+    print(top.value().str->get());
+    print(U"\n");
+    return Success();
+}
+
 ExecutionResult quitOp([[maybe_unused]] Interpreter& interp) {
     exit(0);
     // not sure what we are doing here
@@ -65,9 +78,29 @@ ExecutionResult readLineOp(Interpreter& interp) {
     return Success();
 }
 
+ExecutionResult writeFileOp(Interpreter& interp) {
+    if (!interp.evalStack.assertDepth(2)) {
+        return EvalStackUnderflow();
+    }
+    Value filename = interp.evalStack.popBack().value();
+    Value contents = interp.evalStack.popBack().value();
+    if (filename.type != ValueType::String ||
+        contents.type != ValueType::String) {
+        return TypeError();
+    }
+    bool result = writeFile(filename.str->get(), contents.str->get());
+    Value valResult;
+    valResult.type = ValueType::Boolean;
+    valResult.booleanValue = result;
+    interp.evalStack.pushBack(valResult);
+    return Success();
+}
+
 void addOSModuleNativeWords(Interpreter& interp) {
-    interp.defineNativeWord(U"read_line", readLineOp);
-    interp.defineNativeWord(U"read_file", readFileOp);
+    interp.defineNativeWord(U"readln", readLineOp);
+    interp.defineNativeWord(U"readfile", readFileOp);
+    interp.defineNativeWord(U"writefile", writeFileOp);
+    interp.defineNativeWord(U"writeln", printlnStrOp);
     interp.defineNativeWord(U"write", printStrOp);
     interp.defineNativeWord(U"exit", exitOp);
     interp.defineNativeWord(U"quit", quitOp);
