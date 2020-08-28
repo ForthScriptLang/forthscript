@@ -380,6 +380,11 @@ On success, it pushes stdout&err contents, return code, and boolean ```True```. 
 []# "" "./build/pila tests/cases/brainfuck/input.txt" exec
 ["hello world" 0 True]# 
 ```
+```glob``` can be used to glob files. TOS is a pattern, and list with filename strings are pushed on the stack
+```
+[[]]# "tests/cases/*" glob
+[["brainfuck" "rot13" "abs" "is_prime" "quicksort" "pow_func_gen"]]# quit
+```
 ### Serializing and deserializing pila values
 ```to_string``` converts any pila value to string
 ```
@@ -516,3 +521,7 @@ These ones are the lowest priority imaginable
 * Package manager. For interpreter executable, there should be an option to install packages both with Pila and native code. There also should be some way to handle versions
 
 * Making Pila compiled & interpreted (with optional jit) language. There are many performance issues in the current interpreter, so there is a plan to rewrite the whole thing both in C (for runtime that is absolutely neccessary like GC and variables lookup) and Pila (for the compiler and linker). This doesn't mean that anything from Pila is taken away, all reflective issues should be present all the way to bare metal.
+
+## Dependencies
+
+The project depends on https://github.com/yhirose/cpp-linenoise for line editing in REPL and on https://github.com/sryze/glob for globbing
