@@ -10,6 +10,8 @@ cases_pattern glob $cases_list
 [] $failures
 
 [0 $i] [i cases_list len <] [i 1 + =i] [
+	# remove . and .. from tests
+	cases_list i peek dup "." == swap ".." == or [ continue ] if
 	# get path to test folder
 	cases_path cases_list i peek + $folder_path
 	# get path to file with source code
@@ -49,7 +51,7 @@ cases_pattern glob $cases_list
 		data 0 peek $index
 		data 1 peen $input_path
 		data 2 peek $command
-		index 1 + to_string ". " + cases_list index peek + 
+		i 1 + to_string ". " + cases_list index peek + 
 		" (\"" + command + "\")" + writeln
 	] for
 ] $report_results
