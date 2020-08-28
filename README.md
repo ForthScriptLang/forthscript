@@ -475,7 +475,7 @@ Function to calculate GCD of two numbers
 [dup 0 != [swap over % gcd!] [drop] if_else] $gcd
 ```
 
-Look at folder ```tests/cases``` or ```examples``` for more interesing examples.
+Look at folder ```tests/cases``` or ```examples``` for more interesting examples.
 
 ## Roadmap
 
@@ -500,4 +500,3 @@ These ones are the lowest priority imaginable
 * Package manager. For interpreter executable, there should be an option to install packages both with Pila and native code. There also should be some way to handle versions
 
 * Making Pila compiled & interpreted (with optional jit) language. There are many performance issues in the current interpreter, so there is a plan to rewrite the whole thing both in C (for runtime that is absolutely neccessary like GC and variables lookup) and Pila (for the compiler and linker). This doesn't mean that anything from Pila is taken away, all reflective issues should be present all the way to bare metal.
-Look at folder ```tests/cases``` for more interesing examples.
