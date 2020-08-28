@@ -85,7 +85,7 @@ Boolean is another Pila type with only two values: ```True``` and ```False```. L
 [True]# False
 [True False]#
 ```
-You can get booleans when comparing numbers
+Boolean is a return type for comparisons
 ```
 []# 3 4 !=
 [True]# 3 4 ==
@@ -360,7 +360,11 @@ I am writing something
 []# "file.txt" readfile
 ["<contents of file.txt escaped>"]# 
 ```
-
+```writefile``` can be used to write string to a file
+```
+[]# "hey" "test.txt" writefile
+[<status of writing "hey" to "test.txt" (True/False)>]# 
+```
 ```quit``` can be used to exit interpreter with return code 0, and ```exit``` can be used to exit interpreter with user defined code
 ```
 []# quit
@@ -369,6 +373,12 @@ exited with code 0
 ```
 []# -1 exit
 exited with code -1
+```
+```exec``` can be used to run a process. The first argument (TOS) is command with arguments as a string, the second is a string that would be written to stdin.
+On success, it pushes stdout&err contents, return code, and boolean ```True```. On failure, it pushes only one boolean ```False``` 
+```
+[]# "" "./build/pila tests/cases/brainfuck/input.txt" exec
+["hello world" 0 True]# 
 ```
 ### Serializing and deserializing pila values
 ```to_string``` converts any pila value to string

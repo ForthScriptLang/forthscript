@@ -1,4 +1,5 @@
 #include <io/fileio.hpp>
+#include <io/processes.hpp>
 #include <io/termio.hpp>
 #include <std/os.hpp>
 
@@ -96,12 +97,44 @@ ExecutionResult writeFileOp(Interpreter& interp) {
     return Success();
 }
 
+ExecutionResult execOp(Interpreter& interp) {
+    if (!interp.evalStack.assertDepth(2)) {
+        return EvalStackUnderflow();
+    }
+    Value cmd = interp.evalStack.popBack().value();
+    Value in = interp.evalStack.popBack().value();
+    if (cmd.type != ValueType::String || in.type != ValueType::String) {
+        return TypeError();
+    }
+    ProcessInvokationRequest request;
+    request.name = cmd.str->get();
+    request.in = in.str->get();
+    ProcessInvokationResponce response = executeProcess(request);
+    Value booleanResult, outResult, codeResult;
+    booleanResult.type = ValueType::Boolean;
+    outResult.type = ValueType::String;
+    codeResult.type = ValueType::Numeric;
+    if (response.error) {
+        booleanResult.booleanValue = false;
+        interp.evalStack.pushBack(booleanResult);
+    } else {
+        outResult.str = interp.heap.makeStringObject(response.out);
+        booleanResult.booleanValue = true;
+        codeResult.numericValue = response.errorCode;
+        interp.evalStack.pushBack(outResult);
+        interp.evalStack.pushBack(codeResult);
+        interp.evalStack.pushBack(booleanResult);
+    }
+    return Success();
+}
+
 void addOSModuleNativeWords(Interpreter& interp) {
     interp.defineNativeWord(U"readln", readLineOp);
     interp.defineNativeWord(U"readfile", readFileOp);
     interp.defineNativeWord(U"writefile", writeFileOp);
     interp.defineNativeWord(U"writeln", printlnStrOp);
     interp.defineNativeWord(U"write", printStrOp);
+    interp.defineNativeWord(U"exec", execOp);
     interp.defineNativeWord(U"exit", exitOp);
     interp.defineNativeWord(U"quit", quitOp);
 }
