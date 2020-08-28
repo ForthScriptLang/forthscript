@@ -51,7 +51,7 @@ handlers "<" ord [
 
 # handling .
 handlers "." ord [
-    mem_load! chr print_str
+    mem_load! chr write
 ] poke
 
 # handling [

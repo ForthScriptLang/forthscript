@@ -337,9 +337,9 @@ The code above can be also rewritten with for loop, that takes code for initial 
 [False]# 
 ```
 ### IO and friends
-```print_str``` can be used to print string to standard output.
+```write``` can be used to print string to standard output.
 ```
-[]# "Hello, world\n" print_str
+[]# "Hello, world\n" write
 Hello, world
 []# 
 ```

@@ -68,7 +68,7 @@ ExecutionResult readLineOp(Interpreter& interp) {
 void addOSModuleNativeWords(Interpreter& interp) {
     interp.defineNativeWord(U"read_line", readLineOp);
     interp.defineNativeWord(U"read_file", readFileOp);
-    interp.defineNativeWord(U"print_str", printStrOp);
+    interp.defineNativeWord(U"write", printStrOp);
     interp.defineNativeWord(U"exit", exitOp);
     interp.defineNativeWord(U"quit", quitOp);
 }

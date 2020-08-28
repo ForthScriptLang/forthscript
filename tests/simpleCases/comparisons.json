@@ -2,87 +2,87 @@
   "cases": [
     {
       "name": "0",
-      "input": "33 5 > to_string print_str",
+      "input": "33 5 > to_string write",
       "expectedOutput": "True"
     },
     {
       "name": "1",
-      "input": "33 5 < to_string print_str",
+      "input": "33 5 < to_string write",
       "expectedOutput": "False"
     },
     {
       "name": "2",
-      "input": "-33 5 < to_string print_str",
+      "input": "-33 5 < to_string write",
       "expectedOutput": "True"
     },
     {
       "name": "3",
-      "input": "-33 5 > to_string print_str",
+      "input": "-33 5 > to_string write",
       "expectedOutput": "False"
     },
     {
       "name": "4",
-      "input": "-33 -5 > to_string print_str",
+      "input": "-33 -5 > to_string write",
       "expectedOutput": "False"
     },
     {
       "name": "5",
-      "input": "-33 -5 < to_string print_str",
+      "input": "-33 -5 < to_string write",
       "expectedOutput": "True"
     },
     {
       "name": "6",
-      "input": "-33 -59 < to_string print_str",
+      "input": "-33 -59 < to_string write",
       "expectedOutput": "False"
     },
     {
       "name": "7",
-      "input": "0 0 < to_string print_str",
+      "input": "0 0 < to_string write",
       "expectedOutput": "False"
     },
     {
       "name": "8",
-      "input": "0 0 > to_string print_str",
+      "input": "0 0 > to_string write",
       "expectedOutput": "False"
     },
     {
       "name": "9",
-      "input": "0 0 == to_string print_str",
+      "input": "0 0 == to_string write",
       "expectedOutput": "True"
     },
     {
       "name": "10",
-      "input": "0 0 >= to_string print_str",
+      "input": "0 0 >= to_string write",
       "expectedOutput": "True"
     },
     {
       "name": "11",
-      "input": "0 0 <= to_string print_str",
+      "input": "0 0 <= to_string write",
       "expectedOutput": "True"
     },
     {
       "name": "12",
-      "input": "199 -15 >= to_string print_str",
+      "input": "199 -15 >= to_string write",
       "expectedOutput": "True"
     },
     {
       "name": "13",
-      "input": "-1000 999 <= to_string print_str",
+      "input": "-1000 999 <= to_string write",
       "expectedOutput": "True"
     },
     {
       "name": "14",
-      "input": "-1000 -1000 == to_string print_str",
+      "input": "-1000 -1000 == to_string write",
       "expectedOutput": "True"
     },
     {
       "name": "15",
-      "input": "-1000 31000 == to_string print_str",
+      "input": "-1000 31000 == to_string write",
       "expectedOutput": "False"
     },
     {
       "name": "16",
-      "input": "0 -0 == to_string print_str",
+      "input": "0 -0 == to_string write",
       "expectedOutput": "True"
     }
   ]

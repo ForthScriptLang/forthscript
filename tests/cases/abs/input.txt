@@ -6,4 +6,4 @@
     n return    
   ] if_else
 ] $abs
--5 abs! to_string print_str
+-5 abs! to_string write

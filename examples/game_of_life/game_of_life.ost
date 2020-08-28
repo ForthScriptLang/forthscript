@@ -68,12 +68,12 @@ field len False alloc $copy
 
 # redraw the board
 [
-	27 chr "[2J" + 27 chr "[H" + + print_str
+	27 chr "[2J" + 27 chr "[H" + + write
 	[0 $y] [y h <] [y 1 + =y] [
 		[0 $x] [x w <] [x 1 + =x] [
-			x y get! [" ▤ "] [" ◻ "] if_else print_str
+			x y get! [" ▤ "] [" ◻ "] if_else write
 		] for
-		"\n" print_str
+		"\n" write
 	] for
 ] $redraw
 

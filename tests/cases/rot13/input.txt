@@ -14,4 +14,4 @@
 
 [13 rot_n!] $rot_13
 
-str rot_13! rot_13! print_str
+str rot_13! rot_13! write

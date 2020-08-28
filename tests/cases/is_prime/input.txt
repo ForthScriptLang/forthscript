@@ -11,5 +11,5 @@
 ] $is_prime
 
 [1 $i] [i 10 <=] [i 1 + =i] [
-    i is_prime! to_string "\n" + print_str
+    i is_prime! to_string "\n" + write
 ] for
