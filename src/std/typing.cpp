@@ -40,6 +40,9 @@ Value getTypeOp(Value arg, Interpreter& interp) {
         case ValueType::NativeHandle:
             result.str = interp.heap.makeStringObject(U"NativeHandle");
             break;
+        case ValueType::SplicePlaceholder:
+            result.str = interp.heap.makeStringObject(U"SplicePlaceholder");
+            break;
     }
     return result;
 }

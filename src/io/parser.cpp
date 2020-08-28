@@ -3,6 +3,17 @@
 #include <io/strings.hpp>
 #include <stack>
 
+ValueType getBraceType(LexemeType type) {
+    if (type == LexemeType::OpenCircleBrace ||
+        type == LexemeType::CloseCircleBrace) {
+        return ValueType::SplicePlaceholder;
+    } else if (type == LexemeType::OpenCurlyBrace ||
+               type == LexemeType::CloseCurlyBrace) {
+        return ValueType::Placeholder;
+    }
+    return ValueType::Array;
+}
+
 ParseResult parse(const std::u32string &str, Interpreter &interp) {
     ParseResult result;
     result.status = ParseResult::Status::Success;
@@ -27,21 +38,17 @@ ParseResult parse(const std::u32string &str, Interpreter &interp) {
         Lexeme current = lexResult.lexems[i];
         switch (current.type) {
             case LexemeType::OpenSquareBrace:
-            case LexemeType::OpenCurlyBrace: {
+            case LexemeType::OpenCurlyBrace:
+            case LexemeType::OpenCircleBrace: {
                 Array *newScope = interp.heap.makeArrayObject(Value(), 0);
-                ValueType correspondingType =
-                    (current.type == LexemeType::OpenSquareBrace)
-                        ? ValueType::Array
-                        : ValueType::Placeholder;
+                ValueType correspondingType = getBraceType(current.type);
                 tasks.push(ParserTask(correspondingType, newScope));
                 break;
             }
+            case LexemeType::CloseCircleBrace:
             case LexemeType::CloseCurlyBrace:
             case LexemeType::CloseSquareBrace: {
-                ValueType correspondingType =
-                    (current.type == LexemeType::CloseSquareBrace)
-                        ? ValueType::Array
-                        : ValueType::Placeholder;
+                ValueType correspondingType = getBraceType(current.type);
                 if (topTask.first != correspondingType) {
                     result.status = ParseResult::Status::ParserError;
                     result.description = U"Unmatched array termination";
@@ -99,8 +106,7 @@ ParseResult parse(const std::u32string &str, Interpreter &interp) {
                 } else {
                     Value wordLiteral;
                     String *name = interp.heap.makeStringObject(current.val);
-                    NativeWord nativeWord =
-                        interp.queryNativeWord(name);
+                    NativeWord nativeWord = interp.queryNativeWord(name);
                     if (nativeWord != nullptr) {
                         wordLiteral.type = ValueType::NativeWord;
                         wordLiteral.word = nativeWord;

@@ -188,14 +188,21 @@ To run this example, another word ```dup``` is needed. It just duplicates the to
 [["ab" "a" "ca" "ba"]]# "," join
 ["ab,a,ca,ba"]# 
 ```
-```@``` operator can be used to initialize arrays from templates. Placeholder is a type used in arrays to indicate where new elements should be inserted. Placeholders can contain code that will be evaluated when elements array is constructed. When executed, placeholder just pushes reference to itself on the stack.
-
+```@``` operator can be used to initialize arrays from templates. ```Placeholder``` is a type used in arrays to indicate where new elements should be inserted. Placeholders can contain code that will be evaluated when elements array is constructed. When executed, placeholder just pushes reference to itself on the stack.
 ```
 []# 1 2 3 [{} [{} {}]] @
 [[3 [2 1]]]# clear
 []# 1 [{} [{2} {3 4 +}]] @
 [[1 [2 7]]]#
 ```
+```SplicePlaceholder``` type can be used to include array contents in templates directly when calling template evaluation operator.
+```
+[]# [2 3] $args
+[]# [(args) +]@
+[[2 3 +]]# !
+[5]
+```
+```Placeholder``` and ```SplicePlaceholder``` literals are similar to ```Array``` literals. The only difference is that they use different braces: ```{}``` in the case of placeholders and ```()``` in the case of splice placeholders.
 ### Variables
 
 In all examples above, we were just writing expressions, that operated on the stack. Only the top of the stack was accessible. This is about to change with introduction of variables and two types: Word and WordAssign.

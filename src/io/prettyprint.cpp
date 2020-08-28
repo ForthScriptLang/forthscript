@@ -80,15 +80,19 @@ std::u32string prettyprint(Value val, Interpreter& interp) {
         if (topTask.second == 0) {
             if (topTask.first.type == ValueType::Array) {
                 result.append(U"[");
-            } else {
+            } else if (topTask.first.type == ValueType::Placeholder) {
                 result.append(U"{");
+            } else {
+                result.append(U"(");
             }
         }
         if (topTask.second >= topTask.first.arr->values.size()) {
             if (topTask.first.type == ValueType::Array) {
                 result.push_back(U']');
+            } else if (topTask.first.type == ValueType::Placeholder) {
+                result.append(U"}");
             } else {
-                result.push_back(U'}');
+                result.append(U")");
             }
             tasks.pop();
             if (!tasks.empty()) {
@@ -107,10 +111,12 @@ std::u32string prettyprint(Value val, Interpreter& interp) {
             }
         } else {
             if (visited.find(toPrint.arr) != visited.end()) {
-                if (toPrint.type == ValueType::Placeholder) {
+                if (toPrint.type == ValueType::Array) {
+                    result.append(U"[...]");
+                } else if (topTask.first.type == ValueType::Placeholder) {
                     result.append(U"{...}");
                 } else {
-                    result.append(U"[...]");
+                    result.append(U"(...)");
                 }
                 if (topTask.second < topTask.first.arr->values.size()) {
                     result.push_back(U' ');

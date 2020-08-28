@@ -71,11 +71,11 @@ failures report_results!
 ] if
 
 # calculate coverage
-successes len 100 * successes len failures len + / $coverage
+successes len 100 * successes len failures len + / $percentage
 # output statistics
 successes len to_string " tests passed, " + write
 failures len to_string " tests failed, " + write
-"coverage: " coverage to_string + "%" + writeln
+"percentage: " percentage to_string + "%" + writeln
 
 # deside on exit code depending on failures count
 failures len 0 != [

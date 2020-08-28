@@ -16,7 +16,7 @@ FormatStatus formatArray(Array *format, Interpreter &interp) {
         size_t pos;
     };
     std::stack<FormatTask> tasks;
-    Array *copy = interp.heap.makeArrayObject(Value(), format->values.size());
+    Array *copy = interp.heap.makeArrayObject(Value(), 0);
     tasks.push(FormatTask{copy, format, 0});
     encountered.insert(format);
     while (!tasks.empty()) {
@@ -35,8 +35,23 @@ FormatStatus formatArray(Array *format, Interpreter &interp) {
                 if_unlikely(!interp.evalStack.assertDepth(1)) {
                     return FormatStatus{nullptr, EvalStackUnderflow()};
                 }
-                task.copy->values[task.pos] =
-                    interp.evalStack.popBack().value();
+                task.copy->values.push_back(interp.evalStack.popBack().value());
+            } break;
+            case ValueType::SplicePlaceholder: {
+                ExecutionResult result = interp.callInterpreter(val.arr, true);
+                if_unlikely(result.result != ExecutionResultType::Success) {
+                    return FormatStatus{nullptr, result};
+                }
+                if_unlikely(!interp.evalStack.assertDepth(1)) {
+                    return FormatStatus{nullptr, EvalStackUnderflow()};
+                }
+                Value val = interp.evalStack.popBack().value();
+                if (val.type != ValueType::Array) {
+                    return FormatStatus{nullptr, TypeError()};
+                }
+                for (Value elem : val.arr->values) {
+                    task.copy->values.push_back(elem);
+                }
             } break;
             case ValueType::Array: {
                 if (encountered.find(val.arr) != encountered.end()) {
@@ -46,16 +61,15 @@ FormatStatus formatArray(Array *format, Interpreter &interp) {
                                         U"Recursive template", Value()}};
                 }
                 encountered.insert(val.arr);
-                Array *copy = interp.heap.makeArrayObject(
-                    Value(), val.arr->values.size());
+                Array *copy = interp.heap.makeArrayObject(Value(), 0);
                 tasks.push(FormatTask{copy, val.arr, 0});
                 Value pointerToCopy;
                 pointerToCopy.type = ValueType::Array;
                 pointerToCopy.arr = copy;
-                task.copy->values[task.pos] = pointerToCopy;
+                task.copy->values.push_back(pointerToCopy);
             } break;
             default:
-                task.copy->values[task.pos] = val;
+                task.copy->values.push_back(val);
                 break;
         }
         task.pos++;

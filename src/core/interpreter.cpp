@@ -65,6 +65,7 @@ ExecutionResult Interpreter::callInterpreter(Array* code, bool newScope) {
             case ValueType::Placeholder:
             case ValueType::Array:
             case ValueType::NativeHandle:
+            case ValueType::SplicePlaceholder:
                 evalStack.pushBack(ins);
                 break;
             case ValueType::Word: {

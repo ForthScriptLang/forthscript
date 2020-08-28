@@ -27,7 +27,8 @@ enum class ValueType {
     String = 131,
     NativeHandle = 132,
     Array = 388,
-    Placeholder = 389
+    Placeholder = 389,
+    SplicePlaceholder = 390
 };
 
 inline bool isHeapType(ValueType type) { return (((int)(type)) & 128) != 0; }

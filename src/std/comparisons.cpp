@@ -30,6 +30,7 @@ Value eqOperator(Value val1, Value val2, [[maybe_unused]] Interpreter& interp) {
     switch (val1.type) {
         case ValueType::Array:
         case ValueType::Placeholder:
+        case ValueType::SplicePlaceholder:
             result.booleanValue = val1.arr == val2.arr;
             break;
         case ValueType::Numeric:

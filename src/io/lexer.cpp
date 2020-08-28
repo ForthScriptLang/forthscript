@@ -153,6 +153,16 @@ LexResult lex(const std::u32string& str) {
                     lexeme.pos = i;
                     lexeme.type = LexemeType::CloseSquareBrace;
                     lexems.push_back(lexeme);
+                } else if (current == U'(') {
+                    Lexeme lexeme;
+                    lexeme.pos = i;
+                    lexeme.type = LexemeType::OpenCircleBrace;
+                    lexems.push_back(lexeme);
+                } else if (current == U')') {
+                    Lexeme lexeme;
+                    lexeme.pos = i;
+                    lexeme.type = LexemeType::CloseCircleBrace;
+                    lexems.push_back(lexeme);
                 } else if (current == U'{') {
                     Lexeme lexeme;
                     lexeme.pos = i;

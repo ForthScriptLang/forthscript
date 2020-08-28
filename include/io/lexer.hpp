@@ -9,6 +9,8 @@ enum class LexemeType {
     CloseSquareBrace,
     OpenCurlyBrace,
     CloseCurlyBrace,
+    OpenCircleBrace,
+    CloseCircleBrace,
     Number,
     Word,
     WordAssignment,
