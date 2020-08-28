@@ -42,18 +42,42 @@ cases_pattern glob $cases_list
 	] if_else
 ] for
 
+# pretty-printing of tests results
 [ $array
 	[0 $i] [i array len <] [i 1 + =i] [
 		array i peek $data
 		data 0 peek $index
 		data 1 peen $input_path
 		data 2 peek $command
-		index to_string ") " + cases_list index peek + 
+		index 1 + to_string ". " + cases_list index peek + 
 		" (\"" + command + "\")" + writeln
 	] for
 ] $report_results
 
+# output successes if any
+successes len 0 != [
 "Successes: " writeln
 successes report_results!
+"" writeln
+] if
+
+# output failures if any
+failures len 0 != [
 "Failures: " writeln
 failures report_results!
+"See errorlog.txt files in folders with failed tests for more info\n" writeln
+] if
+
+# calculate coverage
+successes len 100 * successes len failures len + / $coverage
+# output statistics
+successes len to_string " tests passed, " + write
+failures len to_string " tests failed, " + write
+"coverage: " coverage to_string + "%" + writeln
+
+# deside on exit code depending on failures count
+failures len 0 != [
+	-1 exit
+] [
+	quit
+] if_else
