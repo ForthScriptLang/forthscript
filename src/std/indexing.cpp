@@ -1,3 +1,5 @@
+#include <algorithm>
+#include <iterator>
 #include <std/indexing.hpp>
 #include <std/operators.hpp>
 
