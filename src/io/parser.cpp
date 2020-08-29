@@ -77,6 +77,21 @@ ParseResult parse(const std::u32string &str, Interpreter &interp) {
             case LexemeType::Number: {
                 Value integerLiteral;
                 integerLiteral.type = ValueType::Numeric;
+                if (current.val.size() >= 2 && current.val != U"-0" &&
+                    current.val.substr(0, 2) == U"-0") {
+                    result.status = ParseResult::Status::ParserError;
+                    result.description = U"Leading zeros are not permitted";
+                    result.errorPos = current.pos;
+                    result.code = nullptr;
+                    return result;
+                } else if (current.val.size() >= 1 && current.val != U"0" &&
+                           current.val[0] == U'0') {
+                    result.status = ParseResult::Status::ParserError;
+                    result.description = U"Leading zeros are not permitted";
+                    result.errorPos = current.pos;
+                    result.code = nullptr;
+                    return result;
+                }
                 integerLiteral.numericValue = parseIntFrom(current.val);
                 topTask.second->values.push_back(integerLiteral);
                 break;
