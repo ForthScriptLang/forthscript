@@ -1,0 +1,8 @@
+[ $num
+	num 1 <= [1 return] if
+	num 1 - fib! num 2 - fib! +	
+] $fib
+
+[0 $i] [i 20 <] [i 1 + =i] [
+	i fib! to_string writeln
+] for

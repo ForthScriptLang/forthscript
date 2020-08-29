@@ -1,5 +1,6 @@
 #pragma once
 
+#include <core/callstack.hpp>
 #include <core/evalstack.hpp>
 #include <core/heap.hpp>
 #include <core/symtable.hpp>
@@ -43,10 +44,9 @@ struct Interpreter {
     EvaluationStack evalStack;
     Heap heap;
     SymbolTable symTable;
+    CallStack callStack;
     std::unordered_map<NativeWord, String*> symbolsToStrings;
     std::unordered_map<String*, NativeWord> stringsToSymbols;
-    size_t recursionDepth;
-    size_t maxRecursionDepth;
 
     Interpreter(size_t maxRecursionDepth);
     void defineNativeWord(const std::u32string& str, NativeWord word);
