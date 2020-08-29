@@ -26,6 +26,7 @@ ExecutionResult fromStringOp(Interpreter& interp) {
         val = Value();
         interp.evalStack.pushBack(val);
         interp.heap.collectGarbage();
+        return Success();
     }
     Value valueResult;
     valueResult.arr = result.code;
