@@ -509,8 +509,6 @@ Look at folder ```tests/cases``` or ```examples``` for more interesting examples
 
 Current goals from highest to lowest prioriy
 
-* Input. The input library I currently use has many issues. One of them is freezes when stack pretty print is large. Also, we are not sure about encodings: this works on linux, as everything is UTF-8 by default, but there is no guarantee ot strings and io working on windows for example.
-
 * NativeHandles. NativeHandle is a type exposed to native functions, that need some containers to store data. For instance, file descriptor, net socket or string builder object can be stored inside a NativeHandle, and some native functions will take this naitve handles as parametres to do things on them (read from file, load image from url, append string, ...).
 
 * Floating/Bigint types. I am personally leaned to something floating types, as they don't need one more dependency (and I totally don't want to reinvent the wheel).
@@ -531,4 +529,4 @@ These ones are the lowest priority imaginable
 
 ## Dependencies
 
-The project depends on https://github.com/yhirose/cpp-linenoise for line editing in REPL and on https://github.com/sryze/glob for globbing
+The project depends on https://github.com/arangodb/linenoise-ng for line editing in REPL and on https://github.com/sryze/glob for globbing. The files io/glob.cpp, io/glob.hpp, linenoise.h and src/linenoise/* are licensed by their respective licenses from original projects.
