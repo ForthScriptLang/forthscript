@@ -1,5 +1,5 @@
 # forthscript
-[![Run on Repl.it](https://repl.it/badge/github/ForthScriptLang/forthscript)](https://repl.it/github/ForthScriptLang/forthscript) ![C/C++ CI](https://github.com/ForthScriptLang/forthscript/workflows/C/C++%20CI/badge.svg?branch=master)
+[![Run on Repl.it](https://repl.it/@ForthScriptLang/forthscript#README.md)](https://repl.it/github/ForthScriptLang/forthscript) ![C/C++ CI](https://github.com/ForthScriptLang/forthscript/workflows/C/C++%20CI/badge.svg?branch=master)
 
 This is a repository with code for ForthScript language interpreter (previously known as overstacked).
 
