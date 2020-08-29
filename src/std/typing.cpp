@@ -56,9 +56,11 @@ ExecutionResult intToCharOp(Interpreter& interp) {
         return TypeError();
     }
     char32_t arr[2];
-    if (val.numericValue > UINT32_MAX || val.numericValue < 0) {
-        return ExecutionResult{ExecutionResultType::Error,
-                               U"Unable to cast to char", Value()};
+    if (val.numericValue >= 0x111000 || val.numericValue < 0) {
+        return ExecutionResult{
+            ExecutionResultType::Error,
+            U"Unable to cast value out of range from 0 to 0x111000 to char",
+            Value()};
     }
     arr[0] = (char32_t)(val.numericValue);
     arr[1] = U'\0';
