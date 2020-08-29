@@ -130,6 +130,11 @@ Length of the string can be obtained using ```len``` native word. To get nth cha
 [7]# "what is a string" 2 peek
 [7 "a"]# 
 ```
+Native word ```slice``` can be used to slice a string 
+```
+[]# "Hello, world!" 0 4 slice
+["Hell"]#
+```
 Unlike many other programming languages, strings in ForthScript are represented as 4 byte char arrays (UTF-32). There may be some issues with encodings, especially on Windows, where UTF-8 is not a default encoding, but it should be fixed with good encoding library soon. Stay tuned.
 ```
 []# "λ" len
