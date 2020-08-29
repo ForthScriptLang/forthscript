@@ -13,9 +13,11 @@ Running interpreter with no command line arguments will open REPL with line edit
 ```
 # Run repl
 forthscript
-# Run file.ost
-forthscript file.ost
+# Run file.fscript
+forthscript file.fscript
 ``` 
+```.fscript``` is a standard file extension for forthscript source files.
+
 All examples here are run in REPL. It can be exited by typing ```quit```.
 ```
 []# quit

@@ -1,0 +1,39 @@
+[ $hi $lo $A
+	lo hi < [
+		A lo hi partition! $p
+		A lo p quicksort_rec!
+		A p 1 + hi quicksort_rec!
+	] if
+	A
+] $quicksort_rec
+
+[ $hi $lo $A
+	hi lo + 2 / $mid
+	A mid peek $pivot
+	lo $i
+	hi $j
+	[i j <=] [
+
+		[A i peek pivot <] [i 1 + =i] while
+
+		[A j peek pivot >] [j 1 - =j] while
+
+		i j >= [
+			break
+		] if
+
+		A i peek $tmp
+		A i A j peek poke
+		A j tmp poke
+
+		i 1 + =i
+		j 1 - =j
+
+	] while
+	j
+] $partition
+
+[ $A A 0 A len 1 - quicksort_rec!] $quicksort
+
+"cases/quicksort/unsorted.fscript" readfile from_string,
+arr quicksort! to_string write

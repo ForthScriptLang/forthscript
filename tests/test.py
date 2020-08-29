@@ -10,8 +10,8 @@ import tempfile
 from helper import create_tests, cases_from_files, create_simple_cases
 
 interpreterPath = "../build/forthscript"
-inputCasePath = "/input.txt"
-outputCasePath = "/output.txt"
+inputCasePath = "/main.fscript"
+outputCasePath = "/expectedOutput.txt"
 
 # remove this with simpleCases.json and create_tests
 @create_tests('test_old', 'simpleCases.json')
