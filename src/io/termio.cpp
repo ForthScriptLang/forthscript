@@ -19,7 +19,8 @@ std::u32string readLine(const std::u32string &prompt,
 }
 
 void print(const std::u32string &str) {
-    std::cout << fromUTF32(str);
+    std::u32string copy = str;
+    linenoisePrintUTF32(copy.data(), copy.size());
     std::flush(std::cout);
 }
 

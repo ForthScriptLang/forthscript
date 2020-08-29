@@ -63,8 +63,9 @@ void linenoiseSetMultiLine(int ml);
 void linenoisePrintKeyCodes(void);
 /* the following are extensions to the original linenoise API */
 int linenoiseInstallWindowChangeHandler(void);
-/* returns type of key pressed: 1 = CTRL-C, 2 = CTRL-D, 0 = other */ 
+/* returns type of key pressed: 1 = CTRL-C, 2 = CTRL-D, 0 = other */
 int linenoiseKeyType(void);
+void linenoisePrintUTF32(char32_t* text, int len32);
 
 #ifdef __cplusplus
 }

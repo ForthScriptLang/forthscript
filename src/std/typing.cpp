@@ -47,6 +47,8 @@ Value getTypeOp(Value arg, Interpreter& interp) {
     return result;
 }
 
+bool validUTF32(char32_t ch);
+
 ExecutionResult intToCharOp(Interpreter& interp) {
     if (!interp.evalStack.assertDepth(1)) {
         return EvalStackUnderflow();
@@ -56,14 +58,13 @@ ExecutionResult intToCharOp(Interpreter& interp) {
         return TypeError();
     }
     char32_t arr[2];
-    if (val.numericValue >= 0x111000 || val.numericValue < 0) {
-        return ExecutionResult{
-            ExecutionResultType::Error,
-            U"Unable to cast value out of range from 0 to 0x111000 to char",
-            Value()};
+    if (val.numericValue < 0 || !validUTF32((char32_t)val.numericValue)) {
+        return ExecutionResult{ExecutionResultType::Error,
+                               U"Unknown unicode character", Value()};
     }
     arr[0] = (char32_t)(val.numericValue);
     arr[1] = U'\0';
+
     String* obj = interp.heap.makeStringObject(arr);
     Value result;
     result.type = ValueType::String;
