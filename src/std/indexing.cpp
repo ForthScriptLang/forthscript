@@ -117,7 +117,7 @@ ExecutionResult sliceOp(Interpreter& interp) {
         Array* result = interp.heap.makeArrayObject(Value(), 0);
         std::copy(indexable.arr->values.begin() + start.numericValue,
                   indexable.arr->values.begin() + end.numericValue,
-                  result->values.begin());
+                  std::back_inserter(result->values));
         Value pointer;
         pointer.type = ValueType::Array;
         pointer.arr = result;

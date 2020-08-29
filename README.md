@@ -157,11 +157,15 @@ Expression ```[1 2 3]``` won't instantiate a new array every time it is encounte
 []# [1 2 3]
 [[1 2 3]]#
 ```
-```len```, ```peek```, ```+``` and ```*``` words can be also used on arrays.
+```len```, ```peek```, ```+```, ```slice```, and ```*``` words can be also used on arrays.
 ```
 []# ["string"] [1 2 3] len * ["oof"] +
 [["string" "string" "string" "oof"]]# 3 peek
 ["oof"]#
+```
+```
+[]# [1 2 3 4 5] 1 4 slice
+[[2 3 4]]#
 ```
 The word ```poke``` allows to set element of an array.
 As it has three arguments, it is important to remember their order. From bottom to top there is reference to the array, index, and new element. 
