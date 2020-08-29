@@ -1,0 +1,26 @@
+[] $tests
+
+[ 
+	readln $src
+	Nil $top
+	[
+		clear
+		[ 
+			# parse code
+			src from_string $ast
+			# check for parsing errors
+			ast type "Nil" == [
+				"Parsing error" throw
+			] ifstr from_string! 
+			# now we have ast on the stack. Execute it
+			ast!
+			"hey" print_str
+			# get top element
+			=top
+		] 0 try not
+	] [] while
+	src writeln
+	top to_string writeln
+] $generate_test
+
+generate_test!
