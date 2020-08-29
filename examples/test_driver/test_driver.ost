@@ -4,7 +4,7 @@ cases_path "*" + $cases_pattern
 cases_pattern glob $cases_list
 
 # path to interpreter
-"build/pila" $interpreter_path
+"build/forthscript" $interpreter_path
 
 [] $successes
 [] $failures

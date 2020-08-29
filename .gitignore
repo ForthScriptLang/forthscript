@@ -5,7 +5,7 @@ build
 *.o
 *.exe
 __pycache__
-pila
+forthscript
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles

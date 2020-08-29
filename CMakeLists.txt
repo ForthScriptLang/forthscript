@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.9.4)
 
 include(CheckIPOSupported)
 
-project(pila)
+project(forthscript)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -26,16 +26,16 @@ include_directories(include)
 
 file(GLOB_RECURSE SOURCES src/*.cpp)
 
-add_executable(pila ${SOURCES})
+add_executable(forthscript ${SOURCES})
 
 # Enable lto on release
 if (CMAKE_BUILD_TYPE MATCHES Release)
     check_ipo_supported(RESULT supported OUTPUT error)
     if ( supported )
         message(STATUS "LTO builds are supported")
-        set_property(TARGET pila PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+        set_property(TARGET forthscript PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
     endif()
 endif()
 
-set_target_properties(pila PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE ${RUNTIME_OUTPUT_DIRECTORY})
-set_target_properties(pila PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG ${RUNTIME_OUTPUT_DIRECTORY})
+set_target_properties(forthscript PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE ${RUNTIME_OUTPUT_DIRECTORY})
+set_target_properties(forthscript PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG ${RUNTIME_OUTPUT_DIRECTORY})
