@@ -1,0 +1,44 @@
+{
+  "cases": [
+    {
+      "name": "0",
+      "input": "1 swap to_string write",
+      "expectedOutput": "Runtime error: Evaluation stack underflow\n"
+    },
+    {
+      "name": "1",
+      "input": "1 2 swap to_string write",
+      "expectedOutput": "1"
+    },
+    {
+      "name": "2",
+      "input": "\"pomello\" 2 swap write",
+      "expectedOutput": "pomello"
+    },
+    {
+      "name": "3",
+      "input": "1 \"pomello\" swap to_string write",
+      "expectedOutput": "1"
+    },
+    {
+      "name": "3",
+      "input": "swap",
+      "expectedOutput": "Runtime error: Evaluation stack underflow\n"
+    },
+    {
+      "name": "4",
+      "input": "\"1\" \"2\" swap swap swap swap swap swap swap swap write",
+      "expectedOutput": "2"
+    },
+    {
+      "name": "5",
+      "input": "\"1\" x swap write",
+      "expectedOutput": "1"
+    },
+    {
+      "name": "6",
+      "input": "x \"2\" swap to_string write",
+      "expectedOutput": "Nil"
+    }
+  ]
+}

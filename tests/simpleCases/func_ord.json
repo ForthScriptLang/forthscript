@@ -1,0 +1,54 @@
+{
+  "cases": [
+    {
+      "name": "0",
+      "input": "\"a\" ord to_string write",
+      "expectedOutput": "97"
+    },
+    {
+      "name": "1",
+      "input": "\"Y\" ord to_string write",
+      "expectedOutput": "89"
+    },
+    {
+      "name": "2",
+      "input": "\"~\" ord to_string write",
+      "expectedOutput": "126"
+    },
+    {
+      "name": "3",
+      "input": "\" \" ord to_string write",
+      "expectedOutput": "32"
+    },
+    {
+      "name": "4",
+      "input": "\"/\" ord to_string write",
+      "expectedOutput": "47"
+    },
+    {
+      "name": "5",
+      "input": "1 ord to_string write",
+      "expectedOutput": "Runtime error: Type error\n"
+    },
+    {
+      "name": "6",
+      "input": "F ord to_string write",
+      "expectedOutput": "Runtime error: Type error\n"
+    },
+    {
+      "name": "7",
+      "input": "\"notchar\" ord to_string write",
+      "expectedOutput": "Runtime error: Can't convert not one character string to char\n"
+    },
+    {
+      "name": "8",
+      "input": "\"NUL\" ord to_string write",
+      "expectedOutput": "Runtime error: Can't convert not one character string to char\n"
+    },
+    {
+      "name": "9",
+      "input": "ord",
+      "expectedOutput": "Runtime error: Evaluation stack underflow\n"
+    }
+  ]
+}
