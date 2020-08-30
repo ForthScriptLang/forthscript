@@ -145,24 +145,41 @@ ExecutionResult scopeCall(Interpreter& interp) {
     std::optional<Value> newTraceOptional = interp.evalStack.popBack();
     if_unlikely(!newTraceOptional) { return EvalStackUnderflow(); }
     Value newTrace = newTraceOptional.value();
-    if_unlikely(newTrace.type != ValueType::Array) { return TypeError(); }
-    ExecutionResult callResult = interp.callInterpreter(newTrace.arr, true);
-    if (callResult.result == ExecutionResultType::Return) {
-        return Success();
+    if (newTrace.type == ValueType::Array) {
+        ExecutionResult callResult = interp.callInterpreter(newTrace.arr, true);
+        if (callResult.result == ExecutionResultType::Return) {
+            return Success();
+        }
+        return callResult;
+    } else if (newTrace.type == ValueType::NativeWord) {
+        ExecutionResult callResult = newTrace.word(interp);
+        if (callResult.result == ExecutionResultType::Return) {
+            return Success();
+        }
+        return callResult;
     }
-    return callResult;
+    return TypeError();
 }
 
 ExecutionResult noScopeCall(Interpreter& interp) {
     std::optional<Value> newTraceOptional = interp.evalStack.popBack();
     if_unlikely(!newTraceOptional) { return EvalStackUnderflow(); }
     Value newTrace = newTraceOptional.value();
-    if_unlikely(newTrace.type != ValueType::Array) { return TypeError(); }
-    ExecutionResult callResult = interp.callInterpreter(newTrace.arr, false);
-    if (callResult.result == ExecutionResultType::Return) {
-        return Success();
+    if (newTrace.type == ValueType::Array) {
+        ExecutionResult callResult =
+            interp.callInterpreter(newTrace.arr, false);
+        if (callResult.result == ExecutionResultType::Return) {
+            return Success();
+        }
+        return callResult;
+    } else if (newTrace.type == ValueType::NativeWord) {
+        ExecutionResult callResult = newTrace.word(interp);
+        if (callResult.result == ExecutionResultType::Return) {
+            return Success();
+        }
+        return callResult;
     }
-    return callResult;
+    return TypeError();
 }
 
 ExecutionResult tryOp(Interpreter& interp) {

@@ -276,6 +276,13 @@ Where there is no need to create a new scope, native word ```,``` can be used. I
 []# [4 $a], a
 [4]#
 ```
+### Calling Native Words.
+```,``` and ```!``` operators also work for native words, not only arrays. When it comes to calling native words, ```,``` and ```!``` are synonims.
+```
+[]# 2 3 "+" to_native_word
+[2 3 +]# !
+[5]#
+```
 ### Stack manipulation
 There are some operators designed to move stack elements.
 ```
