@@ -2,27 +2,27 @@
   "cases": [
     {
       "name": "0",
-      "input": "[2 3 4] $arr arr 0 3 poke arr serialize write",
+      "input": "[2 3 4] $arr arr 0 3 poke arr to_string write",
       "expectedOutput": "[3 3 4]"
     },
     {
       "name": "1",
-      "input": "[2 3 4] $arr arr 0 \"lorem\" poke arr serialize write",
+      "input": "[2 3 4] $arr arr 0 \"lorem\" poke arr to_string write",
       "expectedOutput": "[\"lorem\" 3 4]"
     },
     {
       "name": "2",
-      "input": "[2 3 4] $arr arr -10 \"lorem\" poke arr serialize write",
+      "input": "[2 3 4] $arr arr -10 \"lorem\" poke arr to_string write",
       "expectedOutput": "Runtime error: Out of bounds\n"
     },
     {
       "name": "3",
-      "input": "\"lorem imsum\" $arr arr 3 \"ne lorem\" poke arr serialize write",
+      "input": "\"lorem imsum\" $arr arr 3 \"ne lorem\" poke arr to_string write",
       "expectedOutput": "Runtime error: Value is not indexable or immutable\n"
     },
     {
       "name": "4",
-      "input": "\"lorem imsum\" $arr arr -3 \"ne lorem\" poke arr serialize write",
+      "input": "\"lorem imsum\" $arr arr -3 \"ne lorem\" poke arr to_string write",
       "expectedOutput": "Runtime error: Out of bounds\n"
     }
   ]
