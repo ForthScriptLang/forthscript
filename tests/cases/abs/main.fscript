@@ -6,4 +6,4 @@
     n return    
   ] if_else
 ] $abs
--5 abs! to_string write
+-5 abs! serialize write

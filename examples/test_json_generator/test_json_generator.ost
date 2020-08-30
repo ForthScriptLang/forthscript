@@ -7,11 +7,11 @@
 		clear
 		[ 
 			# parse code
-			src from_string $ast
+			src parse $ast
 			# check for parsing errors
 			ast type "Nil" == [
 				"Parsing error" throw
-			] ifstr from_string! 
+			] ifstr parse! 
 			# now we have ast on the stack. Execute it
 			ast!
 			"hey" print_str
@@ -20,7 +20,7 @@
 		] 0 try not
 	] [] while
 	src writeln
-	top to_string writeln
+	top serialize writeln
 ] $generate_test
 
 generate_test!

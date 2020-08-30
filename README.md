@@ -140,12 +140,6 @@ Unlike many other programming languages, strings in ForthScript are represented 
 []# "λ" len
 [1]#
 ```
-Words ```ord``` and ```chr``` can be used to convert characters to integers and back
-```
-[]# "a" ord
-[97]# chr
-["a"]#
-```
 There are also two different operations on strings, called ```split``` and ```join```, but to use them, we need another type...
 ### Arrays
 Array is a type equivalent to ```list``` in python or ```std::vector<any>``` in c++. It is a resizable indexable collection, that may conatin elements of different types.
@@ -304,7 +298,6 @@ Nil can be also obtained by retrieving a variable that was not defined
 [Nil]#
 ```
 ### Control flow
-
 To be turing-complete, ForthScript needs some control flow constructs. They are implemented as native words, that take code and conditions from the top of the stack and implement logic of corresponding control flow operator. For example, this is how if looks like
 ```
 []# True [42] if
@@ -353,6 +346,40 @@ The code above can be also rewritten with for loop, that takes code for initial 
 []# 3 is_numeric!
 [True]# clear "string" is_numeric!
 [False]# 
+```
+### Type conversions
+Words ```ord``` and ```chr``` can be used to convert characters to integers and back
+```
+[]# "a" ord
+[97]# chr
+["a"]#
+```
+Word ```to_string``` is used to cast any type to String type.
+
+Word ```to_word``` is used to cast any type string/symbol type (Word, WordAssign, WordDeclare, String) to word. If initial type is a string, it checks that string satisfy identifier naming rules, and returns Nil otherwise.
+
+Similarly, ```to_word_assign```, ```to_word_declare``` are defined.
+```to_numeric``` can be used to parse integers from strings. It returns Nil if string is invalid numeric literal.
+
+```to_native_word``` takes any string/symbolic type, checks for presence of native word with such a name, and returns NativeWord if there is a word with this name or Nil otherwise.
+
+```to_array```, ```to_placeholder``` and ```to_slice_placeholder``` can be used to convert between array types. The reference to the array itself is not changed and copy is not performed.
+
+All these functions take one argument from the stack and push one return result back.
+```
+[]# 1 to_string
+["1"]# clear
+[]# [1 2 3] to_splice_placeholder
+[(1 2 3)]# clear
+[]# "+" to_native_word
+[+]# clear
+```
+```
+[]# "a" to_word_assign
+[=a]# to_word_declare
+[$a]# to_word
+[a]# to_string
+["a"]# quit
 ```
 ### IO and friends
 ```write``` can be used to print string to standard output.
@@ -404,15 +431,15 @@ On success, it pushes stdout&err contents, return code, and boolean ```True```. 
 [["brainfuck" "rot13" "abs" "is_prime" "quicksort" "pow_func_gen"]]# quit
 ```
 ### Serializing and deserializing forthscript values
-```to_string``` converts any forthscript value to string
+```serialize``` converts any forthscript value to string
 ```
 []# [1 2 ["inner array" $a a a + Nil] "wow" that [[is]] cool] $arr
-[]# arr to_string
+[]# arr serialize
 ["[1 2 [\"inner array\" $a a a + Nil] \"wow\" that [[is]] cool]"]#
 ```
-```from_string``` parses forthscript values from string. It always returns an array, even if there is only one element in it
+```parse``` parses forthscript values from string. It always returns an array, even if there is only one element in it
 ```
-[]# "1 2 3" from_string
+[]# "1 2 3" parse
 [[1 2 3]]#
 ```
 ### Error handling

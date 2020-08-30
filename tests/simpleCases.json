@@ -2,17 +2,17 @@
   "data": [
     {
       "name": "0",
-      "input": "[dup 0 != [swap over % gcd!] [drop] if_else] $gcd 6 9 gcd! to_string write",
+      "input": "[dup 0 != [swap over % gcd!] [drop] if_else] $gcd 6 9 gcd! serialize write",
       "expectedOutput": "3"
     },
     {
       "name": "1",
-      "input": "3 $a [5 $a]! a to_string write",
+      "input": "3 $a [5 $a]! a serialize write",
       "expectedOutput": "3"
     },
     {
       "name": "2",
-      "input": "3 $a [5 $a], a to_string write",
+      "input": "3 $a [5 $a], a serialize write",
       "expectedOutput": "5"
     }
   ]
