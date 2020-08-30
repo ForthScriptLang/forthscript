@@ -1,0 +1,74 @@
+{
+  "cases": [
+    {
+      "name": "0",
+      "input": "97 chr write",
+      "expectedOutput": "a"
+    },
+    {
+      "name": "1",
+      "input": "89 chr write",
+      "expectedOutput": "Y"
+    },
+    {
+      "name": "2",
+      "input": "126 chr write",
+      "expectedOutput": "~"
+    },
+    {
+      "name": "3",
+      "input": "32 chr write",
+      "expectedOutput": " "
+    },
+    {
+      "name": "4",
+      "input": "47 chr write",
+      "expectedOutput": "/"
+    },
+    {
+      "name": "5",
+      "input": "\"1\" chr to_string write",
+      "expectedOutput": "Runtime error: Type error\n"
+    },
+    {
+      "name": "6",
+      "input": "F chr to_string write",
+      "expectedOutput": "Runtime error: Type error\n"
+    },
+    {
+      "name": "7",
+      "input": "\"notchar\" chr to_string write",
+      "expectedOutput": "Runtime error: Type error\n"
+    },
+    {
+      "name": "8",
+      "input": "\"NUL\" chr to_string write",
+      "expectedOutput": "Runtime error: Type error\n"
+    },
+    {
+      "name": "9",
+      "input": "0 chr write",
+      "expectedOutput": ""
+    },
+    {
+      "name": "11",
+      "input": "-10 chr write",
+      "expectedOutput": "Runtime error: Unknown unicode character\n"
+    },
+    {
+      "name": "12",
+      "input": "1118208 chr write",
+      "expectedOutput": "Runtime error: Unknown unicode character\n"
+    },
+    {
+      "name": "12",
+      "input": "1114112 chr write",
+      "expectedOutput": "Runtime error: Unknown unicode character\n"
+    },
+    {
+      "name": "13",
+      "input": "chr",
+      "expectedOutput": "Runtime error: Evaluation stack underflow\n"
+    }
+  ]
+}

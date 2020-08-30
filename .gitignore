@@ -20,3 +20,8 @@ compile_commands.json
 CTestTestfile.cmake
 _deps
 .replit
+/forthscript.dir/Debug
+/x64/Debug
+*.vcxproj
+*.vcxproj.filters
+*.sln

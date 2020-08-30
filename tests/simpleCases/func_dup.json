@@ -1,0 +1,39 @@
+{
+  "cases": [
+    {
+      "name": "0",
+      "input": "1 dup to_string write to_string write",
+      "expectedOutput": "11"
+    },
+    {
+      "name": "1",
+      "input": "\"1\" dup write write",
+      "expectedOutput": "11"
+    },
+    {
+      "name": "2",
+      "input": "x dup to_string write to_string write",
+      "expectedOutput": "NilNil"
+    },
+    {
+      "name": "3",
+      "input": "[] dup to_string write to_string write",
+      "expectedOutput": "[][]"
+    },
+    {
+      "name": "4",
+      "input": "[dup] dup to_string write to_string write",
+      "expectedOutput": "[dup][dup]"
+    },
+    {
+      "name": "5",
+      "input": "[[1] [2]] dup to_string write to_string write",
+      "expectedOutput": "[[1] [2]][[1] [2]]"
+    },
+    {
+      "name": "6",
+      "input": "dup",
+      "expectedOutput": "Runtime error: Evaluation stack underflow\n"
+    }
+  ]
+}
