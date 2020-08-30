@@ -2,21 +2,6 @@
 
 enum class LexerState { Undefined, String, Identifier, Number, Comment };
 
-bool isValidIdentStart(char32_t val) {
-    return val == U'_' || (U'a' <= val && val <= U'z') ||
-           (U'A' <= val && val <= U'Z');
-}
-
-bool isNumericChar(char32_t val) { return (U'0' <= val && val <= U'9'); }
-
-bool isValidIdentChar(char32_t val) {
-    return isValidIdentStart(val) || isNumericChar(val);
-}
-
-bool isWhitespace(char32_t val) {
-    return val == U' ' || val == U'\t' || val == U'\n' || val == U'\r';
-}
-
 size_t lookupOperator(const std::u32string& str, size_t pos) {
     switch (str[pos]) {
         case U'+':

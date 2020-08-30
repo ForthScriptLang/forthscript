@@ -2,147 +2,147 @@
   "cases": [
     {
       "name": "0",
-      "input": "1 1 + to_string write",
+      "input": "1 1 + serialize write",
       "expectedOutput": "2"
     },
     {
       "name": "1",
-      "input": "1 1 - to_string write",
+      "input": "1 1 - serialize write",
       "expectedOutput": "0"
     },
     {
       "name": "2",
-      "input": "99999999 99999999 + to_string write",
+      "input": "99999999 99999999 + serialize write",
       "expectedOutput": "199999998"
     },
     {
       "name": "3",
-      "input": "4 8 * to_string write",
+      "input": "4 8 * serialize write",
       "expectedOutput": "32"
     },
     {
       "name": "4",
-      "input": "34 2 / to_string write",
+      "input": "34 2 / serialize write",
       "expectedOutput": "17"
     },
     {
       "name": "5",
-      "input": "34 0 / to_string write",
+      "input": "34 0 / serialize write",
       "expectedOutput": "Runtime error: Division by zero\n"
     },
     {
       "name": "6",
-      "input": "4 3 / to_string write",
+      "input": "4 3 / serialize write",
       "expectedOutput": "1"
     },
     {
       "name": "7",
-      "input": "7 3 % to_string write",
+      "input": "7 3 % serialize write",
       "expectedOutput": "1"
     },
     {
       "name": "8",
-      "input": "7 0 % to_string write",
+      "input": "7 0 % serialize write",
       "expectedOutput": "Runtime error: Division by zero\n"
     },
     {
       "name": "9",
-      "input": "7 12 % to_string write",
+      "input": "7 12 % serialize write",
       "expectedOutput": "7"
     },
     {
       "name": "10",
-      "input": "100 10 % to_string write",
+      "input": "100 10 % serialize write",
       "expectedOutput": "0"
     },
     {
       "name": "11",
-      "input": "9 109 - to_string write",
+      "input": "9 109 - serialize write",
       "expectedOutput": "-100"
     },
     {
       "name": "12",
-      "input": "9 109 - 10 * to_string write",
+      "input": "9 109 - 10 * serialize write",
       "expectedOutput": "-1000"
     },
     {
       "name": "13",
-      "input": "3 -2 + to_string write",
+      "input": "3 -2 + serialize write",
       "expectedOutput": "1"
     },
     {
       "name": "14",
-      "input": "3 -3 + to_string write",
+      "input": "3 -3 + serialize write",
       "expectedOutput": "0"
     },
     {
       "name": "15",
-      "input": "3 -4 + to_string write",
+      "input": "3 -4 + serialize write",
       "expectedOutput": "-1"
     },
     {
       "name": "16",
-      "input": "-3 -4 + to_string write",
+      "input": "-3 -4 + serialize write",
       "expectedOutput": "-7"
     },
     {
       "name": "17",
-      "input": "3 -4 * to_string write",
+      "input": "3 -4 * serialize write",
       "expectedOutput": "-12"
     },
     {
       "name": "18",
-      "input": "-3 -4 * to_string write",
+      "input": "-3 -4 * serialize write",
       "expectedOutput": "12"
     },
     {
       "name": "19",
-      "input": "3 -4 -8 + * to_string write",
+      "input": "3 -4 -8 + * serialize write",
       "expectedOutput": "-36"
     },
     {
       "name": "20",
-      "input": "3 -4 -8 + * to_string write",
+      "input": "3 -4 -8 + * serialize write",
       "expectedOutput": "-36"
     },
     {
       "name": "21",
-      "input": "-3 4 + to_string write",
+      "input": "-3 4 + serialize write",
       "expectedOutput": "1"
     },
     {
       "name": "22",
-      "input": "-3 4 + to_string write",
+      "input": "-3 4 + serialize write",
       "expectedOutput": "1"
     },
     {
       "name": "23",
-      "input": "-48 48 + to_string write",
+      "input": "-48 48 + serialize write",
       "expectedOutput": "0"
     },
     {
       "name": "24",
-      "input": "-48 48 + to_string write",
+      "input": "-48 48 + serialize write",
       "expectedOutput": "0"
     },
     {
       "name": "25",
-      "input": "-48 48 % to_string write",
+      "input": "-48 48 % serialize write",
       "expectedOutput": "0"
     },
     {
       "name": "26",
-      "input": "-48 23 % to_string write",
+      "input": "-48 23 % serialize write",
       "expectedOutput": "-2"
     },
     {
       "name": "27",
-      "input": "-48 -0 + to_string write",
+      "input": "-48 -0 + serialize write",
       "expectedOutput": "-48"
     },
     {
       "name": "27",
-      "input": "-48 -0 / to_string write",
+      "input": "-48 -0 / serialize write",
       "expectedOutput": "Runtime error: Division by zero\n"
     }
   ]

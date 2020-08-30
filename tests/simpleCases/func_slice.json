@@ -1,0 +1,40 @@
+{
+	"cases": [
+	  {
+		"name": "empty_string",
+		"input": "\"\" 0 0 slice write",
+		"expectedOutput": ""
+	  },
+	  {
+		"name": "empty_string_overrun",
+		"input": "\"\" 1 2 slice write",
+		"expectedOutput": "Runtime error: Out of bounds\n"
+	  },
+	  {
+		"name": "empty_array",
+		"input": "[] 0 0 slice serialize write",
+		"expectedOutput": "[]"
+	  },
+	  {
+		"name": "empty_array_overrun",
+		"input": "[] 1 2 slice serialize write",
+		"expectedOutput": "Runtime error: Out of bounds\n"
+	  },
+	  {
+		"name": "one_elem_array",
+		"input": "[1] 0 1 slice serialize write",
+		"expectedOutput": "[1]"
+	  },
+	  {
+		"name": "random_slice_array",
+		"input": "[1 2 3 True \"heh\"] 1 4 slice serialize write",
+		"expectedOutput": "[2 3 True]"
+	  },
+	  {
+		"name": "random_slice_array",
+		"input": "[1 2 3 True \"heh\"] 1 4 slice serialize write",
+		"expectedOutput": "[2 3 True]"
+	  }
+
+	]
+}

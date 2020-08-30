@@ -35,5 +35,5 @@
 
 [ $A A 0 A len 1 - quicksort_rec!] $quicksort
 
-"cases/quicksort/unsorted.fscript" readfile from_string,
-arr quicksort! to_string write
+"cases/quicksort/unsorted.fscript" readfile parse,
+arr quicksort! serialize write

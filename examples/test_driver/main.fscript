@@ -51,7 +51,7 @@ cases_pattern glob $cases_list
 		data 0 peek $index
 		data 1 peen $input_path
 		data 2 peek $command
-		i 1 + to_string ". " + cases_list index peek + 
+		i 1 + serialize ". " + cases_list index peek + 
 		" (\"" + command + "\")" + writeln
 	] for
 ] $report_results
@@ -73,9 +73,9 @@ failures report_results!
 # calculate coverage
 successes len 100 * successes len failures len + / $percentage
 # output statistics
-successes len to_string " tests passed, " + write
-failures len to_string " tests failed, " + write
-"percentage: " percentage to_string + "%" + writeln
+successes len serialize " tests passed, " + write
+failures len serialize " tests failed, " + write
+"percentage: " percentage serialize + "%" + writeln
 
 # deside on exit code depending on failures count
 failures len 0 != [

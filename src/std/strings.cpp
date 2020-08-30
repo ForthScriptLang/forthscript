@@ -112,8 +112,8 @@ ExecutionResult joinOp(Interpreter& interp) {
 MAKE_FROM_UNARY_OPERATOR(toStringNativeWord, toStringOp)
 
 void addStringManipulationNativeWords(Interpreter& interp) {
-    interp.defineNativeWord(U"to_string", toStringNativeWord);
-    interp.defineNativeWord(U"from_string", fromStringOp);
+    interp.defineNativeWord(U"serialize", toStringNativeWord);
+    interp.defineNativeWord(U"parse", fromStringOp);
     interp.defineNativeWord(U"join", joinOp);
     interp.defineNativeWord(U"split", splitOp);
 }

@@ -3,6 +3,6 @@
 2 gen_pow_func! $sqr
 1 gen_pow_func! $id
 
-4 id! to_string "\n"  + write
-5 sqr! to_string "\n" + write
-6 cube! to_string "\n" + write
+4 id! serialize "\n"  + write
+5 sqr! serialize "\n" + write
+6 cube! serialize "\n" + write
