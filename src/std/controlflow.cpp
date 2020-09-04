@@ -59,12 +59,17 @@ ExecutionResult whileOp(Interpreter& interp) {
                 loopCode.type != ValueType::Array) {
         return TypeError();
     }
+    interp.symTable.createScope();
     while (true) {
-        ExecutionResult res = interp.callInterpreter(condCode.arr, true);
-        if_unlikely(res.result != ExecutionResultType::Success) { return res; }
+        ExecutionResult res = interp.callInterpreter(condCode.arr, false);
+        if_unlikely(res.result != ExecutionResultType::Success) {
+            interp.symTable.leaveScope();
+            return res;
+        }
         std::optional<Value> testResult = interp.evalStack.popBack();
         if_unlikely(testResult.value().type != ValueType::Boolean) {
-            TypeError();
+            interp.symTable.leaveScope();
+            return TypeError();
         }
         if (!testResult.value().booleanValue) {
             break;
@@ -72,13 +77,16 @@ ExecutionResult whileOp(Interpreter& interp) {
         res = interp.callInterpreter(loopCode.arr, true);
         if (res.result != ExecutionResultType::Success) {
             if (res.result == ExecutionResultType::Break) {
+                interp.symTable.leaveScope();
                 return Success();
             } else if (res.result == ExecutionResultType::Continue) {
                 continue;
             }
+            interp.symTable.leaveScope();
             return res;
         }
     }
+    interp.symTable.leaveScope();
     return Success();
 }
 
@@ -104,7 +112,8 @@ ExecutionResult forOp(Interpreter& interp) {
         if_unlikely(res.result != ExecutionResultType::Success) { return res; }
         std::optional<Value> testResult = interp.evalStack.popBack();
         if_unlikely(testResult.value().type != ValueType::Boolean) {
-            TypeError();
+            interp.symTable.leaveScope();
+            return TypeError();
         }
         if (!testResult.value().booleanValue) {
             break;
@@ -120,7 +129,10 @@ ExecutionResult forOp(Interpreter& interp) {
             }
         }
         res = interp.callInterpreter(iterCode.arr, false);
-        if_unlikely(res.result != ExecutionResultType::Success) { return res; }
+        if_unlikely(res.result != ExecutionResultType::Success) {
+            interp.symTable.leaveScope();
+            return res;
+        }
     }
     interp.symTable.leaveScope();
     return Success();
