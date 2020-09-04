@@ -1,33 +1,35 @@
-[ $word
-	word to_string "+" == [
-		1 return
-	] if
-	word to_string "-" == [
-		1 return
-	] if
-	word to_string "*" == [
-		2 return
-	] if
-	word to_string "/" == [
-		2 return
-	] if
-	word to_string "%" == [
-		2 return
-	] if
-] $get_priority
-
-[ $arr2 $arr
-	[0 $i] [i arr2 len <] [i 1 + =i] [
-		arr arr2 i peek append
-	] for
-] $extend
-
-[$arr arr arr len 1 - peek] $back
-
-[$arr arr arr len 1 - Nil resize] $pop_back
-
-# this function translates commonl
 [ to_array $src
+	# helper functions
+	# function to get priority of the operation
+	[ $word
+		word to_string "+" == [
+			1 return
+		] if
+		word to_string "-" == [
+			1 return
+		] if
+		word to_string "*" == [
+			2 return
+		] if
+		word to_string "/" == [
+			2 return
+		] if
+		word to_string "%" == [
+			2 return
+		] if
+	] $get_priority
+
+	# function to add elements from one array to another
+	[ $arr2 $arr
+		[0 $i] [i arr2 len <] [i 1 + =i] [
+			arr arr2 i peek append
+		] for
+	] $extend
+
+	# functions to get and remove top elements from the stack
+	[$arr arr arr len 1 - peek] $back
+	[$arr arr arr len 1 - Nil resize] $pop_back
+
 	[]@ $result
 	[]@ $stack
 	# iterate over tokens
@@ -71,13 +73,3 @@
 	] while
 	result
 ] $arith_compile
-
-arith_compile to_string " $arith_compile" + writeln quit
-
-[True] [
-	[
-		"" write
-		readln dup "quit" == [quit] if parse arith_compile! dup
-		to_string "! => " + write ! to_string write
-	] 0 try not [to_string "error: " swap + writeln] ["" writeln] if_else
-] while
