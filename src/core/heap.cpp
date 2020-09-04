@@ -175,6 +175,6 @@ Array *Heap::deepCopy(Array *other) {
 
 void Heap::runGCIfOverThreshold() {
     if (objectCount > 2 * prevCount && objectCount > 256) {
-        collectGarbage();
+        // collectGarbage();
     }
 }
