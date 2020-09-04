@@ -1,0 +1,83 @@
+[ $word
+	word to_string "+" == [
+		1 return
+	] if
+	word to_string "-" == [
+		1 return
+	] if
+	word to_string "*" == [
+		2 return
+	] if
+	word to_string "/" == [
+		2 return
+	] if
+	word to_string "%" == [
+		2 return
+	] if
+] $get_priority
+
+[ $arr2 $arr
+	[0 $i] [i arr2 len <] [i 1 + =i] [
+		arr arr2 i peek append
+	] for
+] $extend
+
+[$arr arr arr len 1 - peek] $back
+
+[$arr arr arr len 1 - Nil resize] $pop_back
+
+# this function translates commonl
+[ to_array $src
+	[]@ $result
+	[]@ $stack
+	# iterate over tokens
+	Nil $prev_token
+	Nil $token
+	[0 $i] [i src len <] [token $prev_token i 1 + =i] [
+		src i peek =token
+		# check for numeric or variable type
+		token type "Numeric" == token type "Word" == or [
+			result token append
+			continue
+		] if
+		# check for native word type
+		token type "NativeWord" == [
+			token get_priority! $cur_priority
+			stack len 0 == [
+				stack token append
+			] [
+				Nil $tmp
+				[ stack len 0 != [
+					stack back! =tmp
+					tmp get_priority! $top_priority
+					top_priority cur_priority >=
+					] [False] if_else ] [
+					stack pop_back!
+					result tmp append
+				] while
+				stack token append
+			] if_else
+			continue
+		] if
+		# check for function calls/parens
+		token type "SplicePlaceholder" == [
+			result token arith_compile! extend!
+		] if
+	] for
+	[stack len 0 !=] [
+		stack back! $tmp
+		stack pop_back!
+		result tmp append
+	] while
+	result
+] $arith_compile
+
+arith_compile to_string " $arith_compile" + writeln quit
+
+[True] [
+	[
+		"" write
+		readln dup "quit" == [quit] if parse arith_compile! dup
+		to_string "! => " + write ! to_string write
+	] 0 try not [to_string "error: " swap + writeln] ["" writeln] if_else
+] while
