@@ -124,7 +124,6 @@ ExecutionResult forOp(Interpreter& interp) {
                 interp.symTable.leaveScope();
                 return Success();
             } else if (res.result != ExecutionResultType::Continue) {
-                interp.symTable.leaveScope();
                 return res;
             }
         }
