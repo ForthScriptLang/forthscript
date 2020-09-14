@@ -403,8 +403,8 @@ Hello, world
 ```
 ```readln``` can be used to get a string from standard input
 ```
-[]# readln
-I am writing something
+[]# "input> " readln
+input> I am writing something
 ["I am writing something"]# 
 ```
 ```readfile``` can be used to read a file in current working directory

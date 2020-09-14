@@ -1,0 +1,45 @@
+[ $mod $p [ $str
+		0 $result
+		1 $p_pow
+		[0 $i] [i str len <] [i 1 + =i] [
+			str i peek ord $char
+			char "a" ord - 1 + $offset
+			result offset + p_pow * {mod} % =result
+			p_pow {p} * {mod} % =p_pow 
+		] for
+		result
+	] @
+] $make_hash_function
+
+[{31 1000000009 make_hash_function!}! 65536 % 65536 + 65536 %]@ $hash_str
+
+[ $size
+	[] $result
+	[0 $i] [i size <] [i 1 + =i] [
+		result []@ append
+	] for
+	result
+] $empty_arrays
+
+[65536 empty_arrays!] $make_hashtable
+
+[ $key $table
+	key	hash_str! $hash
+	table hash peek $bucket
+	[0 $i] [i size <] [i 1 + =i] [
+		bucket i peek $elem
+		elem 0 peek key == [
+			elem 1 peek return
+		] if
+	]
+	None
+] $hashtable_get
+
+[ $value $key $table
+	
+] $hashtable_set
+
+[True] [
+	"Enter string to hash: " readln $input
+	input hash_str! to_string writeln
+] while

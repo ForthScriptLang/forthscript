@@ -1,26 +1,54 @@
 [] $tests
 
-[ 
-	readln $src
+[ $ind
+	"Enter test " ind to_string + " source code: " + readln $src
 	Nil $top
 	[
 		clear
-		[ 
+		[
 			# parse code
 			src parse $ast
 			# check for parsing errors
 			ast type "Nil" == [
 				"Parsing error" throw
-			] ifstr parse! 
+			] if
 			# now we have ast on the stack. Execute it
 			ast!
-			"hey" print_str
 			# get top element
 			=top
 		] 0 try not
 	] [] while
-	src writeln
-	top serialize writeln
+	[]@ $result
+	result src to_string " to_string write" + append
+	result top to_string append
+	result
 ] $generate_test
 
-generate_test!
+[ $comma $ind $test
+	""
+	# rendering starting string
+	"    {\n" +
+	# rendering name string
+	"      \"name\": \"" ind to_string + "\",\n" + +
+	# rendering input string
+	"      \"input\": \"" test 0 peek + "\",\n" + +
+	# rendering expected output string
+	"      \"expectedOutput\": \"" test 1 peek + "\"\n" + +
+	# rendering ending string
+	"    }" +
+	comma [",\n"] ["\n"] if_else +
+] $render_test_in_json
+
+"Enter test count: " readln to_numeric $count
+
+["{\n  \"cases\": [\n"] $strbuf
+
+[0 $i] [i count <] [i 1 + =i] [
+	i generate_test! $test
+	test i i count 1 - != render_test_in_json!
+	strbuf swap append
+] for
+
+strbuf "  ]\n}" append
+
+strbuf "" join writeln
