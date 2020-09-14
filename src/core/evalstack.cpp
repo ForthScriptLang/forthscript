@@ -24,8 +24,7 @@ std::optional<Value> EvaluationStack::popBack() {
 void EvaluationStack::pushBack(Value val) { stack.push_back(val); }
 
 void EvaluationStack::clear() {
-    stack.clear();
-    stack.shrink_to_fit();
+    stack.resize(barrier);
 }
 
 bool EvaluationStack::assertDepth(size_t count) const {
