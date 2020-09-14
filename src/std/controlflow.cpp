@@ -67,6 +67,10 @@ ExecutionResult whileOp(Interpreter& interp) {
             return res;
         }
         std::optional<Value> testResult = interp.evalStack.popBack();
+        if_unlikely(!testResult.has_value()) {
+            interp.symTable.leaveScope();
+            return EvalStackUnderflow();
+        }
         if_unlikely(testResult.value().type != ValueType::Boolean) {
             interp.symTable.leaveScope();
             return TypeError();
