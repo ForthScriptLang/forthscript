@@ -79,7 +79,7 @@ struct Array : Object {
 };
 
 struct NativeHandle : Object {
-    virtual ~NativeHandle() final;
+    virtual ~NativeHandle();
     virtual std::u32string toString();
     virtual void destruct();
     virtual Object *addPointedToQueue(struct Object *head);
