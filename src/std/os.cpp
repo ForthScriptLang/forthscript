@@ -73,7 +73,14 @@ ExecutionResult readFileOp(Interpreter& interp) {
 }
 
 ExecutionResult readLineOp(Interpreter& interp) {
-    std::u32string line = readLine(U"");
+    if (!interp.evalStack.assertDepth(1)) {
+        return EvalStackUnderflow();
+    }
+    Value prompt = interp.evalStack.popBack().value();
+    if (prompt.type != ValueType::String) {
+        return TypeError();
+    }
+    std::u32string line = readLine(prompt.str->get().c_str());
     Value result;
     result.type = ValueType::String;
     result.str = interp.heap.makeStringObject(line);
