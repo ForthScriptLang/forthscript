@@ -100,6 +100,7 @@ std::u32string prettyprint(Value val, Interpreter& interp) {
                     result.push_back(U' ');
                 }
             }
+            visited.erase(topTask.first.arr);
             continue;
         }
         Value& toPrint = topTask.first.arr->values[topTask.second];

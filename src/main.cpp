@@ -6,6 +6,7 @@
 #include <io/termio.hpp>
 #include <iostream>
 #include <locale>
+#include <prelude/repl.hpp>
 #include <std/arith.hpp>
 #include <std/arrays.hpp>
 #include <std/boolean.hpp>
@@ -39,7 +40,7 @@ void reportSyntaxError(ParseResult res) {
         print(U"Parser error at position ");
     }
     std::cout << res.errorPos;
-    print(U": ");
+    print(U" : ");
     print(res.description);
     print(U"\n");
 }
@@ -54,43 +55,35 @@ void reportRuntimeError(ExecutionResult res, Interpreter& interp) {
     print(U"\n");
 }
 
-void hostRepl() {
+int hostRepl() {
     Interpreter interp(1024);
     // initStd requires scope for adding native words
     interp.symTable.createScope();
     initStd(interp);
     initREPL(interp);
-    while (true) {
-        std::u32string prompt;
-        prompt.append(U"[");
-        for (size_t i = 0; i < interp.evalStack.getStack().size(); ++i) {
-            prompt.append(prettyprint(interp.evalStack.getStack()[i], interp));
-            if (i != interp.evalStack.getStack().size() - 1) {
-                prompt.append(U" ");
-            }
-        }
-        prompt.append(U"]# ");
-        std::u32string s = readLine(prompt);
-        ParseResult result = parse(s, interp);
-        if (result.isError()) {
-            reportSyntaxError(result);
-            interp.evalStack.clear();
-            interp.heap.collectGarbage();
-            continue;
-        }
-        ExecutionResult res = interp.callInterpreter(result.code, false);
-        if (res.result != ExecutionResultType::Success) {
-            reportRuntimeError(res, interp);
-            interp.evalStack.clear();
-            interp.heap.collectGarbage();
-        }
+    ParseResult result = parse(getPreludeREPLSource(), interp);
+    if (result.isError()) {
+        std::cerr << "The following parser error was encountered while parsing "
+                     "REPL prelude. This is the bug in Forthscript "
+                     "interpreter. Please report it";
+        reportSyntaxError(result);
+        interp.heap.collectGarbage();
+        return -1;
     }
+    ExecutionResult res = interp.callInterpreter(result.code, false);
+    if (res.result != ExecutionResultType::Success) {
+        std::cerr << "Prelude has not handled the following runtime error";
+        reportRuntimeError(res, interp);
+        interp.evalStack.clear();
+        interp.heap.collectGarbage();
+        return -1;
+    }
+    return 0;
 }
 
 int main(int argc, char** argv) {
     if (argc < 2) {
-        hostRepl();
-        return 0;
+        return hostRepl();
     }
     char* filename = argv[1];
     Interpreter interp(1024);

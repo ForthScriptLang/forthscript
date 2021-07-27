@@ -13,7 +13,9 @@ std::u32string toUTF32(const std::string &s);
 std::u32string readLine(const std::u32string &prompt,
                         [[maybe_unused]] bool disableAutocomplete) {
     std::string promptUtf8 = fromUTF32(prompt);
-    std::string result(linenoise(promptUtf8.c_str()));
+    char *raw = linenoise(promptUtf8.c_str());
+    std::string result(raw);
+    free(raw);
     linenoiseHistoryAdd(result.c_str());
     return toUTF32(result);
 }

@@ -1,7 +1,7 @@
 #include <expect.hpp>
 #include <std/controlflow.hpp>
 
-ExecutionResult ifElseOp(Interpreter& interp) {
+ExecutionResult doIfElse(Interpreter& interp, bool makeNewScope) {
     if (!interp.evalStack.assertDepth(3)) {
         return EvalStackUnderflow();
     }
@@ -15,12 +15,14 @@ ExecutionResult ifElseOp(Interpreter& interp) {
         return TypeError();
     }
     if (condition.booleanValue) {
-        ExecutionResult res = interp.callInterpreter(ifCodeVal.arr, true);
+        ExecutionResult res =
+            interp.callInterpreter(ifCodeVal.arr, makeNewScope);
         if (res.result != ExecutionResultType::Success) {
             return res;
         }
     } else {
-        ExecutionResult res = interp.callInterpreter(elseCodeVal.arr, true);
+        ExecutionResult res =
+            interp.callInterpreter(elseCodeVal.arr, makeNewScope);
         if (res.result != ExecutionResultType::Success) {
             return res;
         }
@@ -28,7 +30,12 @@ ExecutionResult ifElseOp(Interpreter& interp) {
     return Success();
 }
 
-ExecutionResult ifOp(Interpreter& interp) {
+ExecutionResult ifElseOp(Interpreter& interp) { return doIfElse(interp, true); }
+ExecutionResult inlineIfElseOp(Interpreter& interp) {
+    return doIfElse(interp, false);
+}
+
+ExecutionResult doIf(Interpreter& interp, bool makeNewScope) {
     if (!interp.evalStack.assertDepth(2)) {
         return EvalStackUnderflow();
     }
@@ -40,7 +47,8 @@ ExecutionResult ifOp(Interpreter& interp) {
         return TypeError();
     }
     if (condition.booleanValue) {
-        ExecutionResult res = interp.callInterpreter(ifCodeVal.arr, true);
+        ExecutionResult res =
+            interp.callInterpreter(ifCodeVal.arr, makeNewScope);
         if (res.result != ExecutionResultType::Success) {
             return res;
         }
@@ -48,7 +56,10 @@ ExecutionResult ifOp(Interpreter& interp) {
     return Success();
 }
 
-ExecutionResult whileOp(Interpreter& interp) {
+ExecutionResult ifOp(Interpreter& interp) { return doIf(interp, true); }
+ExecutionResult inlineIfOp(Interpreter& interp) { return doIf(interp, false); }
+
+ExecutionResult doWhile(Interpreter& interp, bool makeNewScope) {
     if (!interp.evalStack.assertDepth(2)) {
         return EvalStackUnderflow();
     }
@@ -59,42 +70,61 @@ ExecutionResult whileOp(Interpreter& interp) {
                 loopCode.type != ValueType::Array) {
         return TypeError();
     }
-    interp.symTable.createScope();
+    if (makeNewScope) {
+        interp.symTable.createScope();
+    }
     while (true) {
         ExecutionResult res = interp.callInterpreter(condCode.arr, false);
         if_unlikely(res.result != ExecutionResultType::Success) {
-            interp.symTable.leaveScope();
+            if (makeNewScope) {
+                interp.symTable.leaveScope();
+            }
             return res;
         }
         std::optional<Value> testResult = interp.evalStack.popBack();
         if_unlikely(!testResult.has_value()) {
-            interp.symTable.leaveScope();
+            if (makeNewScope) {
+                interp.symTable.leaveScope();
+            }
             return EvalStackUnderflow();
         }
         if_unlikely(testResult.value().type != ValueType::Boolean) {
-            interp.symTable.leaveScope();
+            if (makeNewScope) {
+                interp.symTable.leaveScope();
+            }
             return TypeError();
         }
         if (!testResult.value().booleanValue) {
             break;
         }
-        res = interp.callInterpreter(loopCode.arr, true);
+        res = interp.callInterpreter(loopCode.arr, makeNewScope);
         if (res.result != ExecutionResultType::Success) {
             if (res.result == ExecutionResultType::Break) {
-                interp.symTable.leaveScope();
+                if (makeNewScope) {
+                    interp.symTable.leaveScope();
+                }
                 return Success();
             } else if (res.result == ExecutionResultType::Continue) {
                 continue;
             }
-            interp.symTable.leaveScope();
+            if (makeNewScope) {
+                interp.symTable.leaveScope();
+            }
             return res;
         }
     }
-    interp.symTable.leaveScope();
+    if (makeNewScope) {
+        interp.symTable.leaveScope();
+    }
     return Success();
 }
 
-ExecutionResult forOp(Interpreter& interp) {
+ExecutionResult whileOp(Interpreter& interp) { return doWhile(interp, true); }
+ExecutionResult inlineWhileOp(Interpreter& interp) {
+    return doWhile(interp, false);
+}
+
+ExecutionResult doFor(Interpreter& interp, bool makeNewScope) {
     if (!interp.evalStack.assertDepth(4)) {
         return EvalStackUnderflow();
     }
@@ -108,7 +138,9 @@ ExecutionResult forOp(Interpreter& interp) {
         loopCode.type != ValueType::Array) {
         return TypeError();
     }
-    interp.symTable.createScope();
+    if (makeNewScope) {
+        interp.symTable.createScope();
+    }
     ExecutionResult res = interp.callInterpreter(initCode.arr, false);
     if_unlikely(res.result != ExecutionResultType::Success) { return res; }
     while (true) {
@@ -116,11 +148,15 @@ ExecutionResult forOp(Interpreter& interp) {
         if_unlikely(res.result != ExecutionResultType::Success) { return res; }
         std::optional<Value> testResult = interp.evalStack.popBack();
         if_unlikely(!testResult.has_value()) {
-            interp.symTable.leaveScope();
+            if (makeNewScope) {
+                interp.symTable.leaveScope();
+            }
             return EvalStackUnderflow();
         }
         if_unlikely(testResult.value().type != ValueType::Boolean) {
-            interp.symTable.leaveScope();
+            if (makeNewScope) {
+                interp.symTable.leaveScope();
+            }
             return TypeError();
         }
         if (!testResult.value().booleanValue) {
@@ -129,7 +165,9 @@ ExecutionResult forOp(Interpreter& interp) {
         res = interp.callInterpreter(loopCode.arr, true);
         if (res.result != ExecutionResultType::Success) {
             if (res.result == ExecutionResultType::Break) {
-                interp.symTable.leaveScope();
+                if (makeNewScope) {
+                    interp.symTable.leaveScope();
+                }
                 return Success();
             } else if (res.result != ExecutionResultType::Continue) {
                 return res;
@@ -143,6 +181,11 @@ ExecutionResult forOp(Interpreter& interp) {
     }
     interp.symTable.leaveScope();
     return Success();
+}
+
+ExecutionResult forOp(Interpreter& interp) { return doFor(interp, true); }
+ExecutionResult inlineForOp(Interpreter& interp) {
+    return doFor(interp, false);
 }
 
 ExecutionResult breakOp(Interpreter&) {
@@ -201,7 +244,7 @@ ExecutionResult noScopeCall(Interpreter& interp) {
     return TypeError();
 }
 
-ExecutionResult tryOp(Interpreter& interp) {
+ExecutionResult doTry(Interpreter& interp, bool makeNewScope) {
     if_unlikely(!interp.evalStack.assertDepth(2)) {
         return EvalStackUnderflow();
     }
@@ -215,7 +258,8 @@ ExecutionResult tryOp(Interpreter& interp) {
     size_t cleanSize = interp.evalStack.getStackSize() - argsCount.numericValue;
     size_t oldBarrier = interp.evalStack.getBarrier();
     interp.evalStack.setBarrier(cleanSize);
-    ExecutionResult callResult = interp.callInterpreter(newTrace.arr, true);
+    ExecutionResult callResult =
+        interp.callInterpreter(newTrace.arr, makeNewScope);
     Value val;
     val.type = ValueType::Boolean;
     interp.evalStack.setBarrier(oldBarrier);
@@ -237,6 +281,11 @@ ExecutionResult tryOp(Interpreter& interp) {
     return Success();
 }
 
+ExecutionResult tryOp(Interpreter& interp) { return doTry(interp, true); }
+ExecutionResult inlineTryOp(Interpreter& interp) {
+    return doTry(interp, false);
+}
+
 ExecutionResult throwOp(Interpreter& interp) {
     if_unlikely(!interp.evalStack.assertDepth(1)) {
         return EvalStackUnderflow();
@@ -246,9 +295,13 @@ ExecutionResult throwOp(Interpreter& interp) {
 }
 
 void addControlFlowNativeWords(Interpreter& interp) {
+    interp.defineNativeWord(U"inline_while", inlineWhileOp);
     interp.defineNativeWord(U"while", whileOp);
+    interp.defineNativeWord(U"inline_if_else", inlineIfElseOp);
     interp.defineNativeWord(U"if_else", ifElseOp);
+    interp.defineNativeWord(U"inline_if", inlineIfOp);
     interp.defineNativeWord(U"if", ifOp);
+    interp.defineNativeWord(U"inline_for", inlineForOp);
     interp.defineNativeWord(U"for", forOp);
     interp.defineNativeWord(U"break", breakOp);
     interp.defineNativeWord(U"return", returnOp);
@@ -256,5 +309,6 @@ void addControlFlowNativeWords(Interpreter& interp) {
     interp.defineNativeWord(U"!", scopeCall);
     interp.defineNativeWord(U",", noScopeCall);
     interp.defineNativeWord(U"try", tryOp);
+    interp.defineNativeWord(U"inline_try", inlineTryOp);
     interp.defineNativeWord(U"throw", throwOp);
 }
