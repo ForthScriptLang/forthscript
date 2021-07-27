@@ -46,7 +46,30 @@ ExecutionResult clearOp(Interpreter& interp) {
     return Success();
 }
 
+ExecutionResult getStackCopyOp(Interpreter& interp) {
+    const std::vector<Value>& stack = interp.evalStack.getStack();
+    Array* result = interp.heap.makeArrayObject(Value{}, stack.size());
+    for (size_t i = 0; i < stack.size(); ++i) {
+        result->values[i] = stack[i];
+    }
+    Value stackCopy;
+    stackCopy.type = ValueType::Array;
+    stackCopy.arr = result;
+    interp.evalStack.pushBack(stackCopy);
+    return Success();
+}
+
+ExecutionResult getStackSizeOp(Interpreter& interp) {
+    Value result;
+    result.type = ValueType::Numeric;
+    result.numericValue = interp.evalStack.getStackSize();
+    interp.evalStack.pushBack(result);
+    return Success();
+}
+
 void addStackManipNativeWords(Interpreter& interp) {
+    interp.defineNativeWord(U"get_stack_size", getStackSizeOp);
+    interp.defineNativeWord(U"get_stack_copy", getStackCopyOp);
     interp.defineNativeWord(U"drop", dropOp);
     interp.defineNativeWord(U"swap", swapOp);
     interp.defineNativeWord(U"over", overOp);
