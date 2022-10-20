@@ -7,11 +7,18 @@ import os
 import threading
 import unittest
 import tempfile
+import glob
 from helper import create_tests, cases_from_files, create_simple_cases
 
 interpreterPath = "../build/forthscript"
 inputCasePath = "/main.fscript"
 outputCasePath = "/expectedOutput.txt"
+
+# Print "../build" directory contents
+print('../build directory contains these files:')
+for filepath in glob.iglob('../build/*'):
+    print(f'* {filepath}')
+
 
 # remove this with simpleCases.json and create_tests
 @create_tests('test_old', 'simpleCases.json')
