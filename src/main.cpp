@@ -72,7 +72,7 @@ int hostRepl() {
     }
     ExecutionResult res = interp.callInterpreter(result.code, false);
     if (res.result != ExecutionResultType::Success) {
-        std::cerr << "Prelude has not handled the following runtime error";
+        std::cerr << "Prelude has not handled the following error:\n";
         reportRuntimeError(res, interp);
         interp.evalStack.clear();
         interp.heap.collectGarbage();

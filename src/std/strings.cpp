@@ -23,10 +23,9 @@ ExecutionResult fromStringOp(Interpreter& interp) {
     }
     ParseResult result = parse(val.str->get(), interp);
     if (result.isError()) {
-        val = Value();
-        interp.evalStack.pushBack(val);
         interp.heap.collectGarbage();
-        return Success();
+        return ExecutionResult{ExecutionResultType::Error,
+                               U"Failed to parse input", Value()};
     }
     Value valueResult;
     valueResult.arr = result.code;

@@ -4,15 +4,27 @@ include(CheckIPOSupported)
 
 project(forthscript)
 
+# https://stackoverflow.com/questions/42582456/cmake-function-to-convert-string-to-c-string-literal
+function(convert_to_cstring_literal var value)
+    string(REGEX REPLACE "([\\\"])" "\\\\\\1" escaped "${value}")
+    string(REPLACE "\n" "\\n" escaped "${escaped}")
+    set("${var}" "\"${escaped}\"" PARENT_SCOPE)
+endfunction()
+
 set(CMAKE_CXX_STANDARD 17)
+set(REPL_SOURCE_PATH "${CMAKE_SOURCE_DIR}/src/prelude/repl.fscript")
 
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/build)
-set(RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build)
+# Bundle REPL source
+message(STATUS "REPL source in ${REPL_SOURCE_PATH}")
+file(READ "${REPL_SOURCE_PATH}" REPL_SOURCE)
+convert_to_cstring_literal(REPL_SOURCE "${REPL_SOURCE}")
+message(STATUS "REPL code listing follows \n${REPL_SOURCE}")
+add_definitions(-DFORTHSCRIPT_REPL_SOURCE=${REPL_SOURCE})
 
-# Setting NDEBUG variable
+# Set NDEBUG variable
 message(STATUS "Build type selected = ${CMAKE_BUILD_TYPE}")
 if (CMAKE_BUILD_TYPE MATCHES Release)
-	add_definitions(-DNDEBUG)
+    add_definitions(-DNDEBUG)
 endif()
 
 # Enabling warnings as errors
@@ -28,7 +40,7 @@ file(GLOB_RECURSE SOURCES src/*.cpp)
 
 add_executable(forthscript ${SOURCES})
 
-# Enable lto on release
+# Enable LTO on release
 if (CMAKE_BUILD_TYPE MATCHES Release)
     check_ipo_supported(RESULT supported OUTPUT error)
     if ( supported )
@@ -36,6 +48,3 @@ if (CMAKE_BUILD_TYPE MATCHES Release)
         set_property(TARGET forthscript PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
     endif()
 endif()
-
-set_target_properties(forthscript PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE ${RUNTIME_OUTPUT_DIRECTORY})
-set_target_properties(forthscript PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG ${RUNTIME_OUTPUT_DIRECTORY})
