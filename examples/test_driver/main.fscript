@@ -1,10 +1,13 @@
+# this example has to be ran from the root directory of the source tree
+"test_root" readfile "SbQVHcuecUS-lv9xehGSGg\n" != ["run from the repo root" writeln 1 exit] if
+
 # get list of cases
 "tests/cases/" $cases_path
 cases_path "*" + $cases_pattern 
 cases_pattern glob $cases_list
 
 # path to interpreter
-"build/forthscript" $interpreter_path
+"../build/forthscript" $interpreter_path
 
 [] $successes
 [] $failures
@@ -13,17 +16,17 @@ cases_pattern glob $cases_list
 	# remove . and .. from tests
 	cases_list i peek dup "." == swap ".." == or [ continue ] if
 	# get path to test folder
-	cases_path cases_list i peek + $folder_path
+	"cases/" cases_list i peek + $folder_path
 	# get path to file with source code
-	folder_path "/input.txt" + $input_path
+	folder_path "/main.fscript" + $input_path
 	# get path to file with expected output
-	folder_path "/output.txt" + $output_path
+	"tests/" folder_path "/expectedOutput.txt" + + $output_path
 	# get path to log file in case of error
-	folder_path "/errorlog.txt" + $log_output_path
+	"tests/" folder_path "/errorlog.txt" + + $log_output_path
 	# get expected output
 	output_path readfile $expected_output
 	# get command to interpreter
-	interpreter_path " " + input_path + $command
+	"cd tests && " interpreter_path " " input_path + + + $command
 	# run interpreter
 	"" command exec [
 		# collect result from the stack
@@ -38,9 +41,10 @@ cases_pattern glob $cases_list
 			actual_output log_output_path writefile
 		] if_else
 	] [
-		"Failed to run interpreter. Command:" writeln
-		cmd writeln
-		-1 exit
+		"Failed to run \'" write
+		cmd write
+		"\'" writeln
+		1 exit
 	] if_else
 ] for
 

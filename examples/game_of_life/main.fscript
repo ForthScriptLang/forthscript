@@ -77,7 +77,7 @@ field len False alloc $copy
 	] for
 ] $redraw
 
-#draw glider
+# draw a glider
 0 2 True set!
 1 2 True set!
 2 2 True set!
