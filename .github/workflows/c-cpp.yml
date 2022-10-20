@@ -24,4 +24,4 @@ jobs:
         - name: Building interpreter
           run: mkdir build && cd build && cmake .. && cmake --build ./ && cd ..
         - name: Run tests
-          run: cd tests && python test.py && cd ".."
+          run: cd tests && python test.py && cd ..

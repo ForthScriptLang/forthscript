@@ -48,3 +48,6 @@ if (CMAKE_BUILD_TYPE MATCHES Release)
         set_property(TARGET forthscript PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
     endif()
 endif()
+
+set_target_properties(forthscript PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR})
+set_target_properties(forthscript PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR})

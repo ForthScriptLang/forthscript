@@ -14,12 +14,6 @@ interpreterPath = "../build/forthscript"
 inputCasePath = "/main.fscript"
 outputCasePath = "/expectedOutput.txt"
 
-# Print "../build" directory contents
-print('../build directory contains these files:')
-for filepath in glob.iglob('../build/*'):
-    print(f'* {filepath}')
-
-
 # remove this with simpleCases.json and create_tests
 @create_tests('test_old', 'simpleCases.json')
 class SimpleTestsOld(unittest.TestCase):
